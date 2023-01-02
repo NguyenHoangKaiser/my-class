@@ -20,6 +20,11 @@ const config = {
         hostname: "images.unsplash.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
+        port: "",
+      },
     ],
   },
 };

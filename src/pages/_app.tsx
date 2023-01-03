@@ -1,5 +1,6 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
+import NextNProgress from "nextjs-progressbar";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 
@@ -14,6 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <ThemeProvider storageKey="theme" attribute="class">
+        <NextNProgress color={"blue"} options={{ showSpinner: true }} />
         <Component {...pageProps} />
       </ThemeProvider>
     </SessionProvider>

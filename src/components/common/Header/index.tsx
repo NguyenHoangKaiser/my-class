@@ -11,16 +11,6 @@ import {
   LoggedInLinks,
   MobileMenu,
 } from "./components";
-// import {
-//   MobileMenu,
-//   MobileMenuButton,
-//   LoggedInLinks,
-//   LoggedOutLinks,
-//   LoggedInSection,
-//   LoggedOutSection,
-//   Logo,
-//   ThemeButton,
-// } from "src/components/common/Header/components";
 
 const Header = () => {
   const session = useSession();

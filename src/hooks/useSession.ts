@@ -10,6 +10,11 @@ export const useSession = () => {
     useEffect(() => {
       fetch("/api/mock-role")
         .then((response) => response.json())
+        .catch(() => {
+          throw new Error(
+            "Failed to fetch mock role, please choose a role in the mock role footer or remove the NEXT_PUBLIC_MOCK_NEXT_AUTH environment variable."
+          );
+        })
         .then(({ role }) => {
           setMockRole(role);
         });

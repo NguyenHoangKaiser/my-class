@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html,
+body,
+document,
+#__next {
+  @apply h-max;
+}
+
+.link {
+  @apply cursor-pointer text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-300 hover:dark:text-blue-200;
+}
+
+.link-primary {
+  @apply cursor-pointer text-blue-600 hover:text-blue-500;
+}
+
+.link-secondary {
+  @apply cursor-pointer hover:underline;
+}
+
+input,
+textarea {
+  @apply border bg-white p-2 dark:bg-gray-500;
+}
+
+.markdown h3 {
+  @apply text-2xl font-bold;
+}
+
+.markdown h4 {
+  @apply text-xl font-bold;
+}
+
+.markdown h5 {
+  @apply text-lg font-bold;
+}
+
+.markdown ul {
+  list-style: square;
+}
+
+.markdown li {
+  margin-left: 16px;
+}
+
+.markdown a {
+  @apply link;
+}

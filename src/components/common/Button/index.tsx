@@ -1,6 +1,6 @@
 import type { ReactHTML, ReactNode } from "react";
 import React from "react";
-import { Spinner } from "../Icons/Spinner";
+import Spinner from "../Icons/Spinner";
 
 export enum Variant {
   Primary,

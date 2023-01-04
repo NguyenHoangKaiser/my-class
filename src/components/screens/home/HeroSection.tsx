@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 
-const HeroSection = () => {
+function HeroSection() {
   return (
     <div className="relative bg-gray-50 dark:bg-gray-800">
       <div className="mx-auto max-w-7xl">
@@ -55,6 +55,6 @@ const HeroSection = () => {
       </div>
     </div>
   );
-};
+}
 
 export default HeroSection;

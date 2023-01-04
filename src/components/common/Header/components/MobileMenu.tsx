@@ -3,9 +3,9 @@ import Link from "next/link";
 type TMobileMenuProps = {
   isLoggedIn: boolean;
   hasRole: boolean;
-}
+};
 
-const MobileMenu = ({ isLoggedIn, hasRole }: TMobileMenuProps) => {
+function MobileMenu({ isLoggedIn, hasRole }: TMobileMenuProps) {
   return (
     <div className="sm:hidden" id="mobile-menu">
       <div className="space-y-1 px-2 pt-2 pb-3">
@@ -56,6 +56,6 @@ const MobileMenu = ({ isLoggedIn, hasRole }: TMobileMenuProps) => {
       </div>
     </div>
   );
-};
+}
 
 export default MobileMenu;

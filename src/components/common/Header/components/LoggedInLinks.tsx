@@ -5,7 +5,7 @@ type TLink = {
   title: string;
 };
 
-const LoggedInLinks = ({ role }: { role: string }) => {
+function LoggedInLinks({ role }: { role: string }) {
   const linksByRole: Record<string, TLink[]> = {
     student: [
       {
@@ -49,6 +49,6 @@ const LoggedInLinks = ({ role }: { role: string }) => {
       ))}
     </>
   );
-};
+}
 
 export default LoggedInLinks;

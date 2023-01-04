@@ -7,7 +7,7 @@ export enum Themes {
   Light = "light",
 }
 
-const ThemeButton = () => {
+function ThemeButton() {
   const { resolvedTheme: theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -31,6 +31,6 @@ const ThemeButton = () => {
       {isDarkMode ? <SunIcon /> : <MoonIcon />}
     </button>
   );
-};
+}
 
 export default ThemeButton;

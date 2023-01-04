@@ -1,4 +1,4 @@
-const FeatureSection = () => {
+function FeatureSection() {
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-screen-xl py-8 px-4 sm:py-16 lg:px-6">
@@ -7,7 +7,7 @@ const FeatureSection = () => {
             Designed for business teams like yours
           </h2>
           <p className="text-gray-500 dark:text-gray-400 sm:text-xl">
-            Here at Flowbite we focus on markets where technology, innovation,
+            Here at FlowBite we focus on markets where technology, innovation,
             and capital can unlock long-term value and drive economic growth.
           </p>
         </div>
@@ -145,6 +145,6 @@ const FeatureSection = () => {
       </div>
     </section>
   );
-};
+}
 
 export default FeatureSection;

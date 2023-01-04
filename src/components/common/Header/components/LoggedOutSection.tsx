@@ -1,8 +1,8 @@
 type TLoggedOutSectionProps = {
   signIn: () => void;
-}
+};
 
-const LoggedOutSection = ({ signIn }: TLoggedOutSectionProps) => {
+function LoggedOutSection({ signIn }: TLoggedOutSectionProps) {
   return (
     <div className="relative ml-3">
       <a
@@ -17,6 +17,6 @@ const LoggedOutSection = ({ signIn }: TLoggedOutSectionProps) => {
       </a>
     </div>
   );
-};
+}
 
 export default LoggedOutSection;

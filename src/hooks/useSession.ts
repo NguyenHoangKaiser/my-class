@@ -3,7 +3,13 @@ import { useSession as useNextAuthSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { getMockUser } from "src/libs/mockUser";
 
-export const useSession = () => {
+/**
+ * We use this hook to mock the NextAuth session in development.
+ * ! This should not be used in production. Will be removed in production builds.
+ * @see https://next-auth.js.org/getting-started/client
+ * @returns {import("next-auth").Session} session
+ */
+const useSession = () => {
   if (process.env.NEXT_PUBLIC_MOCK_NEXT_AUTH) {
     const [mockRole, setMockRole] = useState(null);
 
@@ -41,3 +47,5 @@ export const useSession = () => {
     return useNextAuthSession();
   }
 };
+
+export default useSession;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSession } from "src/hooks/useSession";
+
 import { signIn } from "next-auth/react";
 import {
   MobileMenuButton,
@@ -11,8 +11,9 @@ import {
   LoggedInLinks,
   MobileMenu,
 } from "./components";
+import { useSession } from "src/hooks";
 
-const Header = () => {
+function Header() {
   const session = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isLoggedIn = !!session.data;
@@ -32,8 +33,9 @@ const Header = () => {
             <div className="hidden sm:ml-6 sm:block">
               <nav className="flex space-x-4">
                 {isLoggedIn ? (
-                  //@ts-expect-error TODO: fix this
-                  <LoggedInLinks role={userMetadata?.role} />
+                  userMetadata?.role && (
+                    <LoggedInLinks role={userMetadata?.role} />
+                  )
                 ) : (
                   <LoggedOutLinks />
                 )}
@@ -42,7 +44,6 @@ const Header = () => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <ThemeButton />
-
             {isLoggedIn ? (
               <LoggedInSection image={userMetadata?.image} />
             ) : (
@@ -56,6 +57,6 @@ const Header = () => {
       )}
     </header>
   );
-};
+}
 
 export default Header;

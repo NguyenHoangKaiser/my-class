@@ -5,7 +5,7 @@ interface UseClickOutsideProps {
   onClose: () => void;
 }
 
-export const useClickOutside = ({ ref, onClose }: UseClickOutsideProps) => {
+const useClickOutside = ({ ref, onClose }: UseClickOutsideProps) => {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current?.contains(e.target as Node)) return;
@@ -19,3 +19,5 @@ export const useClickOutside = ({ ref, onClose }: UseClickOutsideProps) => {
     };
   }, [ref, onClose]);
 };
+
+export default useClickOutside;

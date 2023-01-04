@@ -1,4 +1,4 @@
-export const PageFooter = () => {
+function PageFooter() {
   return (
     <footer className="bg-neutral text-neutral-content p-10">
       <div>
@@ -23,4 +23,6 @@ export const PageFooter = () => {
       </div>
     </footer>
   );
-};
+}
+
+export default PageFooter;

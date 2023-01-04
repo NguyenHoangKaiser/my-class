@@ -1,6 +1,7 @@
 import React from "react";
-import { Button } from "src/components/common/Button";
+import Button from "src/components/common/Button";
 import Roles from "src/utils/constants";
+
 const becomeRole = (role: string) => {
   fetch("/api/mock-role", {
     method: "POST",
@@ -17,7 +18,7 @@ const becomeRole = (role: string) => {
   });
 };
 
-const Footer = () => {
+function Footer() {
   return (
     <>
       <footer className="bg-gray-50 p-4 shadow  dark:bg-gray-900">
@@ -80,6 +81,6 @@ const Footer = () => {
       )}
     </>
   );
-};
+}
 
 export default Footer;

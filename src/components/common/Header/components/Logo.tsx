@@ -1,16 +1,15 @@
 import Link from "next/link";
 import React from "react";
-import { useSession } from "src/hooks/useSession";
+import { useSession } from "src/hooks";
 
-const Logo = () => {
+function Logo() {
   const session = useSession();
 
   return (
     <Link
       href={
         session.data
-          ? //@ts-expect-error Fix later
-            session.data?.user?.role === "teacher"
+          ? session.data?.user?.role === "teacher"
             ? "/classrooms"
             : "/dashboard"
           : "/"
@@ -19,6 +18,6 @@ const Logo = () => {
       WDJ Classroom
     </Link>
   );
-};
+}
 
 export default Logo;

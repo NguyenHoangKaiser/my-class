@@ -1,15 +1,11 @@
 import { useRef, useState } from "react";
-import { useClickOutside } from "src/hooks/useClickOutside";
 import { trpc } from "src/utils/trpc";
 import AccountMenu from "./AccountMenu";
 import profileImage from "src/assets/profile.jpeg";
 import Image from "next/image";
+import { useClickOutside } from "src/hooks";
 
-const LoggedInSection = ({
-  image,
-}: {
-  image: string | undefined | null;
-}) => {
+function LoggedInSection({ image }: { image: string | undefined | null }) {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const openAccountMenuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -75,6 +71,6 @@ const LoggedInSection = ({
       </div>
     </>
   );
-};
+}
 
 export default LoggedInSection;

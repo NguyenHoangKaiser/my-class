@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import { useClickOutside } from "src/hooks/useClickOutside";
+import { useClickOutside } from "src/hooks";
 
 type TMobileMenuProps = {
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const MobileMenuButton = ({ setIsMobileMenuOpen }: TMobileMenuProps) => {
+function MobileMenuButton({ setIsMobileMenuOpen }: TMobileMenuProps) {
   const openNavigationMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   function toggleMobileMenu() {
@@ -63,6 +63,6 @@ const MobileMenuButton = ({ setIsMobileMenuOpen }: TMobileMenuProps) => {
       </svg>
     </button>
   );
-};
+}
 
 export default MobileMenuButton;

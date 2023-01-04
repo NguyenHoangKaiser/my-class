@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Monda
+- Font Author: Copyright 2021 The Monda Project Authors (https://github.com/googlefonts/mondaFont)
+- Font Source: http://fonts.gstatic.com/s/monda/v16/TK3gWkYFABsmjsLaGz8Dl-tPKo2t.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

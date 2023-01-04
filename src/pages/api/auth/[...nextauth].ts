@@ -17,10 +17,9 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    //TODO redirect to dashboard after login
-    // async redirect({ baseUrl }) {
-    //   return `${baseUrl}/dashboard`;
-    // },
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/welcome`;
+    },
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),

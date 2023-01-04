@@ -13,9 +13,14 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        session.user.role = user.role;
       }
       return session;
     },
+    //TODO redirect to dashboard after login
+    // async redirect({ baseUrl }) {
+    //   return `${baseUrl}/dashboard`;
+    // },
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),

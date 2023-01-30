@@ -38,10 +38,14 @@ const DashboardPage: NextPage = () => {
 
 export default DashboardPage;
 
+/**
+ * We use getServerSideProps to check if the user is logged in and if they have a role.
+ * If they don't have a role, we redirect them to the welcome page.
+ * @param context
+ * @returns
+ */
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
-
-  console.log(session);
 
   if (!session) {
     return {

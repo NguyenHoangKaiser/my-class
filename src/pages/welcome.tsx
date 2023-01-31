@@ -6,7 +6,7 @@ import student from "src/assets/student.jpeg";
 import { trpc } from "src/utils/trpc";
 import { useRouter } from "next/router";
 import reloadSession from "src/utils/reloadSession";
-import HeaderLayout from "src/layouts";
+import HeaderLayout from "src/layouts/HeaderLayout";
 import Button, { Variant } from "src/components/common/Button";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 

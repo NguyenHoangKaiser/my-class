@@ -1,6 +1,5 @@
 import type { Classroom } from "@prisma/client";
 import Link from "next/link";
-import React from "react";
 import { Card } from "src/components/common";
 import Button, { Variant } from "src/components/common/Button";
 

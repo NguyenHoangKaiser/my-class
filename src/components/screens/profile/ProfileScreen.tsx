@@ -11,7 +11,7 @@ type FormData = {
   displayName: string;
 };
 
-export const ProfileScreen = () => {
+function ProfileScreen() {
   const { dismiss, show, isDisplayed } = useDismissible();
 
   const {
@@ -75,4 +75,6 @@ export const ProfileScreen = () => {
       </form>
     </HeaderLayout>
   );
-};
+}
+
+export default ProfileScreen;

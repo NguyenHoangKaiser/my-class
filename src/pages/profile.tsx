@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ProfileScreen } from "src/components/screens/profile/ProfileScreen";
+import ProfileScreen from "src/components/screens/profile/ProfileScreen";
 
 const ProfilePage: NextPage = () => {
   return (

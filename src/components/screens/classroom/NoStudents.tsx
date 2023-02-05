@@ -15,7 +15,7 @@ export const NoStudents = () => {
       <div className="text-center text-2xl">
         You have no students enrolled yet!
       </div>
-      <div className="text-center">
+      <div className="self-center">
         <Button variant={Variant.Primary}>Send Email Invite</Button>
       </div>
     </div>

@@ -2,17 +2,17 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
-import { ClassroomScreen } from "src/components/screens/classroom/ClassroomScreen";
 import HeaderLayout from "src/layouts/HeaderLayout";
 
-const ClassroomPage: NextPage = () => {
+const ClassroomAssignmentPage: NextPage = () => {
   const router = useRouter();
   const classroomId = router.query.classroomId as string;
+  const assignmentId = router.query.assignmentId as string;
 
   return (
     <>
       <Head>
-        <title>Classrooms</title>
+        <title>Assignment {assignmentId}</title>
         <meta
           name="description"
           content="all of the classrooms you've created as a teacher"
@@ -20,10 +20,13 @@ const ClassroomPage: NextPage = () => {
       </Head>
 
       <HeaderLayout>
-        <ClassroomScreen classroomId={classroomId} />
+        {/* <AssignmentScreen
+          classroomId={classroomId}
+          assignmentId={assignmentId}
+        /> */}
       </HeaderLayout>
     </>
   );
 };
 
-export default ClassroomPage;
+export default ClassroomAssignmentPage;

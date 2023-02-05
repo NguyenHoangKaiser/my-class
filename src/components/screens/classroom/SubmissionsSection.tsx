@@ -9,16 +9,33 @@ import { DownloadIcon } from "src/components/common/Icons";
 import Table from "src/components/common/Table";
 import { trpc } from "src/utils/trpc";
 
-const GradeEditable = ({ submission, onUpdate }) => {
+type TSubmission = {
+  id: string;
+  fileName: string;
+  assignmentName: string;
+  assignmentId: string;
+  assignmentNumber: number;
+  studentId: string;
+  studentName: string | null;
+  grade: number | null;
+};
+
+const GradeEditable = ({
+  submission,
+  onUpdate,
+}: {
+  submission: TSubmission;
+  onUpdate: () => void;
+}) => {
   const [isEditing, toggleIsEditing] = useToggle(false);
 
   const { register, handleSubmit } = useForm<{ grade: number }>();
 
   const updateGradeMutation = trpc.submission.updateGrade.useMutation();
 
-  const handleGradeSave = async ({ grade }) => {
+  const handleGradeSave = async ({ grade }: { grade: number }) => {
     await updateGradeMutation.mutateAsync({
-      grade: parseInt(grade),
+      grade: grade,
       submissionId: submission.id,
     });
     toggleIsEditing();
@@ -54,14 +71,18 @@ const GradeEditable = ({ submission, onUpdate }) => {
   );
 };
 
-export const SubmissionsSection = ({ classroomId }) => {
+export const SubmissionsSection = ({
+  classroomId,
+}: {
+  classroomId: string;
+}) => {
   const submissionsQuery = trpc.submission.getSubmissionForClassroom.useQuery({
     classroomId,
   });
 
   return (
     <section>
-      <h2>Submissions</h2>
+      <h3 className="mb-6 text-center">Submissions</h3>
       {submissionsQuery.data && (
         <Table
           headers={[

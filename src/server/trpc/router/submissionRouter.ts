@@ -103,4 +103,21 @@ export const submissionRouter = router({
         },
       });
     }),
+  // createPresignedUrl: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       assignmentId: z.string(),
+  //       fileName: z.string(),
+  //     })
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const studentId = ctx.session.user.id;
+  //     const submissionId = ctx.prisma.submission.create({
+  //       data: {
+  //         filename: input.fileName,
+  //         assignmentId: input.assignmentId,
+  //         studentId,
+  //       },
+  //     });
+  //   }),
 });

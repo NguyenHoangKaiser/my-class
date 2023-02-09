@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
+import { AssignmentScreen } from "src/components/screens/assignments/AssignmentScreen";
 import HeaderLayout from "src/layouts/HeaderLayout";
 
 const ClassroomAssignmentPage: NextPage = () => {
@@ -20,10 +21,10 @@ const ClassroomAssignmentPage: NextPage = () => {
       </Head>
 
       <HeaderLayout>
-        {/* <AssignmentScreen
-          classroomId={classroomId}
+        <AssignmentScreen
+          // classroomId={classroomId}
           assignmentId={assignmentId}
-        /> */}
+        />
       </HeaderLayout>
     </>
   );

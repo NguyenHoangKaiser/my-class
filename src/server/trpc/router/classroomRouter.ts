@@ -122,6 +122,16 @@ export const classroomRouter = router({
       });
       return assignments;
     }),
+  getAssignment: protectedProcedure
+    .input(z.object({ assignmentId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const assignment = await ctx.prisma.assignment.findUnique({
+        where: {
+          id: input.assignmentId,
+        },
+      });
+      return assignment;
+    }),
   enrollInClassroom: protectedProcedure
     .input(z.object({ classroomId: z.string() }))
     .mutation(async ({ ctx, input }) => {

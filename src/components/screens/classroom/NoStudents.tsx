@@ -6,13 +6,15 @@ import Button, { Variant } from "src/components/common/Button";
 export const NoStudents = () => {
   return (
     <div className="flex flex-col gap-8">
-      <Image
-        width="300"
-        height="300"
-        src={assignmentsImage}
-        alt="no students enrolled"
-      />
-      <div className="text-center text-2xl">
+      <div className="self-center">
+        <Image
+          width="300"
+          height="300"
+          src={assignmentsImage}
+          alt="no students enrolled"
+        />
+      </div>
+      <div className="mt-6 text-center text-2xl">
         You have no students enrolled yet!
       </div>
       <div className="self-center">

@@ -34,7 +34,7 @@ export const ClassroomOverviewScreen = ({
   }, [userQuery.data, classroomId, router]);
 
   return (
-    <div className="container m-auto">
+    <div className="container m-auto flex h-full flex-col items-center justify-end gap-5">
       <h2>{classroom?.name}</h2>
       <h2>{classroom?.description}</h2>
       <Button variant={Variant.Primary} onClick={handleEnroll}>

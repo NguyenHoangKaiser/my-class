@@ -9,13 +9,17 @@ function NoAssignments({
 }) {
   return (
     <div className="flex flex-col gap-8">
-      <Image
-        width="300"
-        height="300"
-        src={assignmentsImage}
-        alt="no classrooms found"
-      />
-      <div className="text-center text-2xl">You have no assignments yet!</div>
+      <div className="self-center">
+        <Image
+          width="300"
+          height="300"
+          src={assignmentsImage}
+          alt="no classrooms found"
+        />
+      </div>
+      <div className="mt-6 text-center text-2xl">
+        You have no assignments yet!
+      </div>
       <div className="self-center">
         <Button onClick={openAssignmentModal} variant={Variant.Primary}>
           Create An Assignment

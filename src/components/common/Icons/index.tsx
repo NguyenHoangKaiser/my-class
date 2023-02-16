@@ -6,3 +6,5 @@ export { default as PencilSquare } from "./PencilSquare";
 export { default as PeopleIcon } from "./PeopleIcon";
 export { default as EyeIcon } from "./EyeIcon";
 export { default as DownloadIcon } from "./DownloadIcon";
+export { default as TrashIcon } from "./TrashIcon";
+export { default as UploadIcon } from "./UploadIcon";

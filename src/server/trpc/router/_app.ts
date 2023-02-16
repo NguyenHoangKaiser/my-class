@@ -1,3 +1,4 @@
+import { assignmentRouter } from "./assignmentRouter";
 import { submissionRouter } from "./submissionRouter";
 import { router } from "../trpc";
 import { authRouter } from "./auth";
@@ -11,6 +12,7 @@ export const appRouter = router({
   student: studentRouter,
   classroom: classroomRouter,
   submission: submissionRouter,
+  assignment: assignmentRouter,
 });
 
 // export type definition of API

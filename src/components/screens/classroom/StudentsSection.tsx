@@ -1,7 +1,7 @@
 import React from "react";
 import { EmptyStateWrapper } from "src/components/common";
 import { trpc } from "src/utils/trpc";
-import { NoStudents } from "./NoStudents";
+import NoStudents from "./NoStudents";
 import Students from "./Students";
 
 function StudentsSection({ classroomId }: { classroomId: string }) {

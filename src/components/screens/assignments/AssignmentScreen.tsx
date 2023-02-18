@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Badge, MainHeading } from "src/components/common";
 import { BadgeVariant } from "src/components/common/Badge";
 import Button, { Variant } from "src/components/common/Button";
+import { useFileUpload } from "src/hooks";
 import { trpc } from "src/utils/trpc";
 
 export const AssignmentScreen = ({
@@ -11,9 +12,6 @@ export const AssignmentScreen = ({
 }: {
   assignmentId: string;
 }) => {
-  const [file, setFile] = useState<File>();
-  const fileRef = useRef<HTMLInputElement>(null);
-
   const assignmentQuery = trpc.classroom.getAssignment.useQuery({
     assignmentId,
   });
@@ -22,40 +20,18 @@ export const AssignmentScreen = ({
     assignmentId,
   });
 
-  // const { mutateAsync: createPresignedUrl } =
-  //   trpc.submission.createPresignedUrl.useMutation();
+  const createFileUrl = trpc.submission.createFileUrl.useMutation();
 
-  const onFileChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setFile(e.currentTarget.files?.[0]);
-  };
-
-  const uploadAssignment = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!file) return;
-    // const { url, fields }: { url: string; fields: any } =
-    //   (await createPresignedUrl({
-    //     filename: file.name,
-    //     assignmentId,
-    //   })) as any;
-    // const data = {
-    //   ...fields,
-    //   "Content-Type": file.type,
-    //   file,
-    // };
-    const formData = new FormData();
-    // for (const name in data) {
-    //   formData.append(name, data[name]);
-    // }
-    // await fetch(url, {
-    //   method: "POST",
-    //   body: formData,
-    // });
-    setFile(undefined);
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-    submissionQuery.refetch();
-  };
+  const { file, fileRef, handleFileChange, uploadFile } = useFileUpload({
+    getUploadUrl: (fileToUpload: File) =>
+      createFileUrl.mutateAsync({
+        filename: fileToUpload.name,
+        assignmentId,
+      }),
+    onFileUploaded: () => {
+      submissionQuery.refetch();
+    },
+  });
 
   const formattedDueDate = assignmentQuery.data?.dueDate
     ? DateTime.fromISO(assignmentQuery.data?.dueDate).toLocaleString(
@@ -81,18 +57,23 @@ export const AssignmentScreen = ({
           )}
 
           <div className="flex justify-end place-self-end">
-            <form className="text-white" onSubmit={uploadAssignment}>
-              <label htmlFor="file-upload">Upload Assignment</label>
+            <form className="text-white" onSubmit={uploadFile}>
+              <label
+                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="file-upload"
+              >
+                Upload Assignment
+              </label>
               <input
                 ref={fileRef}
                 id="file-upload"
-                className="ml-4 text-white"
-                onChange={onFileChange}
+                className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+                onChange={handleFileChange}
                 type="file"
-              ></input>
+              />
               {file && (
                 <Button
-                  className="ml-4"
+                  className="mt-4"
                   type="submit"
                   variant={Variant.Primary}
                 >

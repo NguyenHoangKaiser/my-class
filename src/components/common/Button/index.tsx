@@ -22,7 +22,7 @@ function Button({
   [key: string]: unknown;
 }) {
   const colors = {
-    [Variant.Primary]: "bg-blue-50 text-black hover:bg-blue-100",
+    [Variant.Primary]: "bg-blue-200 text-black hover:bg-blue-100",
     [Variant.Secondary]: "bg-gray-500 text-white hover:bg-gray-400",
     [Variant.Danger]: "bg-red-500 text-white hover:bg-red-400",
   };

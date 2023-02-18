@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "src/libs/supabaseClient";
 
-export const useFileUpload = ({
+const useFileUpload = ({
   onFileUploaded,
   getUploadUrl,
 }: {
@@ -37,3 +37,5 @@ export const useFileUpload = ({
 
   return { fileRef, file, handleFileChange, uploadFile };
 };
+
+export default useFileUpload;

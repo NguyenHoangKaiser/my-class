@@ -37,7 +37,7 @@ function Students({ students }: { students: TStudent[] }) {
               />{" "}
               {student.name}
             </div>,
-            "65% (D)",
+            "65% (D) (Not Graded Yet)",
             (
               <div className="flex gap-4">
                 <Link

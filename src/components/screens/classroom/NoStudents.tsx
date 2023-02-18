@@ -3,7 +3,7 @@ import assignmentsImage from "src/assets/assignments.svg";
 import Image from "next/image";
 import Button, { Variant } from "src/components/common/Button";
 
-export const NoStudents = () => {
+function NoStudents() {
   return (
     <div className="flex flex-col gap-8">
       <div className="self-center">
@@ -22,4 +22,6 @@ export const NoStudents = () => {
       </div>
     </div>
   );
-};
+}
+
+export default NoStudents;

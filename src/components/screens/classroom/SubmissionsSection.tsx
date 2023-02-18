@@ -7,6 +7,8 @@ import LinkButton, {
 import FormGroup from "src/components/common/Form/FormGroup";
 import { DownloadIcon } from "src/components/common/Icons";
 import Table from "src/components/common/Table";
+import { supabase } from "src/libs/supabaseClient";
+import { getKeyUrl } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
 
 type TSubmission = {
@@ -50,7 +52,12 @@ const GradeEditable = ({
             <span className="flex gap-2">
               <input
                 id="grade"
-                {...register("grade", { required: true, valueAsNumber: true })}
+                {...register("grade", {
+                  required: true,
+                  valueAsNumber: true,
+                  min: 0,
+                  max: 10,
+                })}
               />
 
               <Button type="submit" variant={Variant.Primary}>
@@ -80,6 +87,27 @@ export const SubmissionsSection = ({
     classroomId,
   });
 
+  //TODO: extract this to a helper function
+  const getDownloadUrl = async ({
+    submissionId,
+    filename,
+    studentId,
+  }: {
+    submissionId: string;
+    filename: string;
+    studentId: string;
+  }) => {
+    const { data } = await supabase.storage
+      .from("files")
+      .getPublicUrl(getKeyUrl({ submissionId, studentId, filename }), {
+        download: true,
+      });
+
+    if (data) {
+      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <section>
       <h3 className="mb-6 text-center">Submissions</h3>
@@ -102,20 +130,22 @@ export const SubmissionsSection = ({
             </>,
             submission.assignmentName,
             submission.assignmentNumber,
-            <>
-              <a
-                className="link flex gap-2"
-                target="_blank"
-                href={`/api/download-submission?submissionId=${submission.id}`}
-                download={submission.fileName}
-                rel="noreferrer"
+            <div className="-ml-4" key={submission.id}>
+              <LinkButton
+                variant={LinkButtonVariant.Primary}
+                onClick={() =>
+                  getDownloadUrl({
+                    submissionId: submission.id,
+                    filename: submission.fileName,
+                    studentId: submission.studentId,
+                  })
+                }
               >
-                <DownloadIcon />
-                Download
-              </a>
-            </>,
+                <DownloadIcon /> Download
+              </LinkButton>
+            </div>,
           ])}
-        ></Table>
+        />
       )}
     </section>
   );

@@ -1,21 +1,9 @@
-import { supabase } from "./../../../libs/supabaseClient";
-import z from "zod";
-import { router, protectedProcedure } from "../trpc";
 import { assertIsAssignmentAdmin } from "src/server/utils/assert";
+import { getKeyUrl } from "src/utils/helper";
+import z from "zod";
+import { protectedProcedure, router } from "../trpc";
 
 export const BucketName = "files";
-
-export const getObjectKey = ({
-  assignmentId,
-  attachmentId,
-  filename,
-}: {
-  assignmentId: string;
-  attachmentId: string;
-  filename: string;
-}) => {
-  return `assignments/${assignmentId}/${attachmentId}/${filename}`;
-};
 
 export const assignmentRouter = router({
   updateDescription: protectedProcedure
@@ -117,7 +105,7 @@ export const assignmentRouter = router({
       });
       return assignment?.attachments;
     }),
-  createPresignedUrl: protectedProcedure
+  createFileUrl: protectedProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -133,11 +121,11 @@ export const assignmentRouter = router({
         },
       });
       // return a path to the file in the bucket
-      const objectKey = getObjectKey({
+      const url = getKeyUrl({
         assignmentId: input.assignmentId,
         attachmentId: attachment.id,
         filename: attachment.filename,
       });
-      return objectKey;
+      return url;
     }),
 });

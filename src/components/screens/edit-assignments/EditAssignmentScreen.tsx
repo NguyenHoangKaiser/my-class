@@ -1,41 +1,25 @@
-import React from "react";
-import { trpc } from "src/utils/trpc";
-// import { Button, Variant } from "../../common/Button/Button";
-// import { EmptyStateWrapper } from "../../common/EmptyStateWrapper";
-// import { MainHeading } from "../../common/MainHeading";
-// import { AttachmentsTable } from "./AttachmentsTable";
-// import { EmptyStateAttachments } from "./EmptyStateAttachments";
 import { DateTime } from "luxon";
-// import { Badge, BadgeVariant } from "../../common/Badge";
-import { useForm } from "react-hook-form";
-// import { PencilSquare } from "../../common/Icons/PencilSquare";
-// import { LinkButton, LinkButtonVariant } from "../../common/Button/LinkButton";
-import { useToggle } from "react-use";
-// import { UploadIcon } from "../../common/Icons/UploadIcon";
-import ReactMarkdown from "react-markdown";
 import { useRouter } from "next/router";
-import { useIsClassroomAdmin } from "src/hooks";
-// import { TrashIcon } from "../../common/Icons/TrashIcon";
-// import { FormGroup } from "../../common/Form/FormGroup/FormGroup";
-// import { EditDateModal } from "./EditDateModal";
-import { useFileUpload } from "./hooks/useFileUpload";
+import { useForm } from "react-hook-form";
+import ReactMarkdown from "react-markdown";
+import { useToggle } from "react-use";
 import { Badge, EmptyStateWrapper, MainHeading } from "src/components/common";
+import { BadgeVariant } from "src/components/common/Badge";
+import Button, { Variant } from "src/components/common/Button";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
+import FormGroup from "src/components/common/Form/FormGroup";
 import {
   PencilSquare,
   TrashIcon,
   UploadIcon,
 } from "src/components/common/Icons";
-import FormGroup from "src/components/common/Form/FormGroup";
-import Button, { Variant } from "src/components/common/Button";
-import { BadgeVariant } from "src/components/common/Badge";
-import EmptyStateAttachments from "./EmptyStateAttachments";
+import { useFileUpload, useIsClassroomAdmin } from "src/hooks";
+import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "./AttachmentsTable";
 import EditDateModal from "./EditDateModal";
-import { supabase } from "src/libs/supabaseClient";
-// import { useIsClassroomAdmin } from "../../../hooks/useIsClassAdmin";
+import EmptyStateAttachments from "./EmptyStateAttachments";
 
 type UpdateDescriptionForm = {
   description: string;
@@ -65,15 +49,11 @@ export const EditAssignmentScreen = ({
   const router = useRouter();
 
   useIsClassroomAdmin(classroomId);
-  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (!file) return;
-  // const {data, error} = await supabase.storage.from('files').upload(`assignments/${assignmentId}/${att}/${file.name}`, file);
-  const createPresignedUrl = trpc.assignment.createPresignedUrl.useMutation();
+  const createFileUrl = trpc.assignment.createFileUrl.useMutation();
 
   const { file, fileRef, handleFileChange, uploadFile } = useFileUpload({
     getUploadUrl: (fileToUpload: File) =>
-      createPresignedUrl.mutateAsync({
+      createFileUrl.mutateAsync({
         filename: fileToUpload.name,
         assignmentId,
       }),
@@ -241,16 +221,21 @@ export const EditAssignmentScreen = ({
 
         <div className="mb-6 flex justify-start">
           <form className="text-white" onSubmit={uploadFile}>
-            <label htmlFor="file-upload">Upload Attachment</label>
+            <label
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              htmlFor="file-upload"
+            >
+              Upload Attachment
+            </label>
             <input
               ref={fileRef}
               id="file-upload"
-              className="ml-4 text-white"
+              className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
               onChange={handleFileChange}
               type="file"
             />
             {file && (
-              <Button className="ml-4" type="submit" variant={Variant.Primary}>
+              <Button className="mt-4" type="submit" variant={Variant.Primary}>
                 Upload
               </Button>
             )}

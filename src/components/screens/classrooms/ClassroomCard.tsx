@@ -7,8 +7,7 @@ function ClassroomCard({ classroom }: { classroom: Classroom }) {
     <Card
       titleAs="h2"
       title={classroom.name}
-      body="ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia,
-      nulla! Maiores et perferendis eaque, exercitationem praesentium nihil."
+      body={classroom.description ?? "Default description"}
     >
       <div className="flex justify-end">
         <Link href={`/classrooms/${classroom.id}`} className="text-blue-500">

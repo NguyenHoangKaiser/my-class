@@ -1,17 +1,8 @@
-import { assertIsClassroomAdmin } from "./../../utils/assert";
+import { assertIsClassroomAdmin, assertIsStudent } from "./../../utils/assert";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { router, protectedProcedure } from "../trpc";
-
-export const getObjectKey = ({
-  studentId,
-  submissionId,
-}: {
-  studentId: string;
-  submissionId: string;
-}) => {
-  return `submissions/${studentId}/${submissionId}`;
-};
+import { getKeyUrl } from "src/utils/helper";
 
 export const submissionRouter = router({
   getSubmission: protectedProcedure
@@ -70,7 +61,7 @@ export const submissionRouter = router({
           assignmentId: assignment.id,
           assignmentNumber: assignment.number,
           studentId: submission.studentId,
-          studentName: submission.student.displayName,
+          studentName: submission.student.name,
           grade: submission.grade,
         }))
       );
@@ -103,21 +94,28 @@ export const submissionRouter = router({
         },
       });
     }),
-  // createPresignedUrl: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       assignmentId: z.string(),
-  //       fileName: z.string(),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const studentId = ctx.session.user.id;
-  //     const submissionId = ctx.prisma.submission.create({
-  //       data: {
-  //         filename: input.fileName,
-  //         assignmentId: input.assignmentId,
-  //         studentId,
-  //       },
-  //     });
-  //   }),
+  createFileUrl: protectedProcedure
+    .input(
+      z.object({
+        assignmentId: z.string(),
+        filename: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      assertIsStudent(ctx);
+      const studentId = ctx.session.user.id as string;
+      const submission = await ctx.prisma.submission.create({
+        data: {
+          filename: input.filename,
+          assignmentId: input.assignmentId,
+          studentId: studentId,
+        },
+      });
+      const url = getKeyUrl({
+        studentId,
+        submissionId: submission.id,
+        filename: input.filename,
+      });
+      return url;
+    }),
 });

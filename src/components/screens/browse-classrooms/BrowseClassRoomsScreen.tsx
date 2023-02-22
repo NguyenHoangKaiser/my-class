@@ -7,15 +7,24 @@ import Button, { Variant } from "src/components/common/Button";
 function BrowseClassroomsScreen() {
   const findClassroom = trpc.classroom.findClassroom.useQuery();
   const classrooms = trpc.student.getClassrooms.useQuery();
+  const teacherClass = trpc.classroom.getClassroomsForTeacher.useQuery();
 
   const isEnrolled = (classroomId: string) => {
     return classrooms.data?.some(({ id }) => id === classroomId);
   };
 
+  const isTeacher = (classroomId: string) => {
+    return teacherClass.data?.some(({ id }) => id === classroomId);
+  };
+
+  const classroomNotTeacher = findClassroom.data?.filter(
+    (classroom) => !isTeacher(classroom.id)
+  );
+
   return (
     <section>
       <div className="my-8">Filters</div>
-      {findClassroom.data?.map((classroom) => (
+      {classroomNotTeacher?.map((classroom) => (
         <div key={classroom.id}>
           <article className="flex gap-8">
             <figure>

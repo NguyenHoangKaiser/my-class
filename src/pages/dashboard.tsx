@@ -61,6 +61,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         permanent: false,
       },
     };
+  } else if (session.user.role === "teacher") {
+    return {
+      redirect: {
+        destination: "/classrooms",
+        permanent: false,
+      },
+    };
   } else {
     return { props: {} };
   }

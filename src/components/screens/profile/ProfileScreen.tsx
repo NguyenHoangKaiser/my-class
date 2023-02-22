@@ -50,29 +50,30 @@ function ProfileScreen() {
         />
       )}
 
-      <h2 className="mb-4 text-2xl">Settings</h2>
-
-      <form onSubmit={handleSubmit(handleProfileSubmit)} className="w-1/3">
-        <FormGroup
-          label="Display Name"
-          error={errors.displayName && "Display name is required"}
-          name="displayName"
-        >
-          <>
-            <input
-              id="displayName"
-              className="mb-2"
-              {...register("displayName", { required: true })}
-            />
-            <Button
-              isLoading={updateDisplayName.isLoading}
-              className="self-end"
-            >
-              Update
-            </Button>
-          </>
-        </FormGroup>
-      </form>
+      <section className="px-5">
+        <h2 className="mb-4 text-2xl">Settings</h2>
+        <form onSubmit={handleSubmit(handleProfileSubmit)} className="w-1/3">
+          <FormGroup
+            label="Display Name"
+            error={errors.displayName && "Display name is required"}
+            name="displayName"
+          >
+            <>
+              <input
+                id="displayName"
+                className="mb-2"
+                {...register("displayName", { required: true })}
+              />
+              <Button
+                isLoading={updateDisplayName.isLoading}
+                className="self-end"
+              >
+                Update
+              </Button>
+            </>
+          </FormGroup>
+        </form>
+      </section>
     </HeaderLayout>
   );
 }

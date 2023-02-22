@@ -1,8 +1,9 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { ClassroomOverviewScreen } from "src/components/screens/classroom-overview/ClassroomOverviewScreen";
 import HeaderLayout from "src/layouts/HeaderLayout";
+import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const ClassroomOverviewPage: NextPage = () => {
   const router = useRouter();
@@ -26,3 +27,25 @@ const ClassroomOverviewPage: NextPage = () => {
 };
 
 export default ClassroomOverviewPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  } else if (!session.user?.role) {
+    return {
+      redirect: {
+        destination: "/welcome",
+        permanent: false,
+      },
+    };
+  } else {
+    return { props: {} };
+  }
+};

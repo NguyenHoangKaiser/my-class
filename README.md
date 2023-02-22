@@ -26,3 +26,11 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+## TODO list for this project
+
+- [ ] Ability to show graded assignments for student users
+- [ ] Ability to show student profile for teacher users
+- [ ] Ability to show teacher profile for student users
+- [ ] Ability to show submissions history for student users
+- [ ] Check for when the user logged out but the session is still active

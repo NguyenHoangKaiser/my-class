@@ -1,12 +1,14 @@
 import Image from "next/image";
 import assignmentsImage from "src/assets/assignments.svg";
 import Button, { Variant } from "src/components/common/Button";
+import { useSession } from "src/hooks";
 
 function NoAssignments({
   openAssignmentModal,
 }: {
   openAssignmentModal: () => void;
 }) {
+  const session = useSession();
   return (
     <div className="flex flex-col gap-8">
       <div className="self-center">
@@ -20,11 +22,13 @@ function NoAssignments({
       <div className="mt-6 text-center text-2xl">
         You have no assignments yet!
       </div>
-      <div className="self-center">
-        <Button onClick={openAssignmentModal} variant={Variant.Primary}>
-          Create An Assignment
-        </Button>
-      </div>
+      {session.data?.user?.role === "teacher" && (
+        <div className="self-center">
+          <Button onClick={openAssignmentModal} variant={Variant.Primary}>
+            Create An Assignment
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

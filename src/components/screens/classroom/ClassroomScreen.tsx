@@ -18,7 +18,7 @@ import { SubmissionsSection } from "./SubmissionsSection";
 import CreateAssignmentModal from "./CreateAssignmentModal";
 import EditClassroomModal from "./EditClassroomModal";
 
-export const ClassroomScreen = ({ classroomId }: { classroomId: string }) => {
+function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
 
   const assignmentsQuery = trpc.classroom.getAssignments.useQuery({
@@ -140,4 +140,6 @@ export const ClassroomScreen = ({ classroomId }: { classroomId: string }) => {
       )}
     </>
   );
-};
+}
+
+export default ClassroomScreen;

@@ -1,9 +1,10 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { AssignmentScreen } from "src/components/screens/assignments/AssignmentScreen";
 import HeaderLayout from "src/layouts/HeaderLayout";
+import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const ClassroomAssignmentPage: NextPage = () => {
   const router = useRouter();
@@ -31,3 +32,25 @@ const ClassroomAssignmentPage: NextPage = () => {
 };
 
 export default ClassroomAssignmentPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  } else if (!session.user?.role) {
+    return {
+      redirect: {
+        destination: "/welcome",
+        permanent: false,
+      },
+    };
+  } else {
+    return { props: {} };
+  }
+};

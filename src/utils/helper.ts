@@ -1,3 +1,5 @@
+import { supabase } from "src/libs/supabaseClient";
+
 type AssignmentKey = {
   assignmentId: string;
   attachmentId: string;
@@ -17,4 +19,27 @@ function getKeyUrl(key: Key): string {
   return `submissions/${key.submissionId}/${key.studentId}/${key.filename}`;
 }
 
-export { getKeyUrl };
+const supabaseDeleteFile = async (key: Key) => {
+  const { error } = await supabase.storage
+    .from("files")
+    .remove([getKeyUrl(key)]);
+  if (error) {
+    alert(error.message);
+    console.log(error);
+    return;
+  }
+};
+
+const getDownloadUrl = async (key: Key) => {
+  const { data } = await supabase.storage
+    .from("files")
+    .getPublicUrl(getKeyUrl(key), {
+      download: true,
+    });
+
+  if (data) {
+    window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+  }
+};
+
+export { getKeyUrl, supabaseDeleteFile, getDownloadUrl };

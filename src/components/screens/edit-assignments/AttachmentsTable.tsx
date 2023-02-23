@@ -5,8 +5,7 @@ import { DownloadIcon, TrashIcon } from "src/components/common/Icons";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
-import { supabase } from "src/libs/supabaseClient";
-import { getKeyUrl } from "src/utils/helper";
+import { getDownloadUrl, supabaseDeleteFile } from "src/utils/helper";
 
 function AttachmentsTable({
   attachments,
@@ -23,43 +22,11 @@ function AttachmentsTable({
     assignmentId,
   }: Attachment) => {
     if (!confirm("Confirm delete attachment ?")) return;
-    const { error } = await supabase.storage.from("files").remove([
-      getKeyUrl({
-        assignmentId: assignmentId,
-        attachmentId: id,
-        filename: filename,
-      }),
-    ]);
-    if (error) {
-      alert(error.message);
-      console.log(error);
-      return;
-    }
+    supabaseDeleteFile({ assignmentId, attachmentId: id, filename });
     await deleteAttachment.mutateAsync({
       attachmentId: id,
     });
     onAttachmentDeleted();
-  };
-
-  //TODO: extract this to a helper function
-  const getDownloadUrl = async ({
-    attachmentId,
-    filename,
-    assignmentId,
-  }: {
-    attachmentId: string;
-    filename: string;
-    assignmentId: string;
-  }) => {
-    const { data } = await supabase.storage
-      .from("files")
-      .getPublicUrl(getKeyUrl({ assignmentId, attachmentId, filename }), {
-        download: true,
-      });
-
-    if (data) {
-      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
-    }
   };
 
   return (

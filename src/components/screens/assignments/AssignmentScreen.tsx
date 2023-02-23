@@ -47,46 +47,38 @@ export const AssignmentScreen = ({
         title={`Assignment #${assignmentQuery.data?.number}`}
         subTitle={assignmentQuery.data?.name}
       >
-        <>
-          {isSubmissionSubmitted ? (
-            <Badge variant={BadgeVariant.Success}>Submitted</Badge>
-          ) : (
-            <Badge variant={BadgeVariant.Error}>
-              Due on {formattedDueDate}
-            </Badge>
-          )}
-
-          <div className="flex justify-end place-self-end">
-            <form className="text-white" onSubmit={uploadFile}>
-              <label
-                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                htmlFor="file-upload"
-              >
-                Upload Assignment
-              </label>
-              <input
-                ref={fileRef}
-                id="file-upload"
-                className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-                onChange={handleFileChange}
-                type="file"
-              />
-              {file && (
-                <Button
-                  className="mt-4"
-                  type="submit"
-                  variant={Variant.Primary}
-                >
-                  Upload
-                </Button>
-              )}
-            </form>
-          </div>
-        </>
+        {isSubmissionSubmitted ? (
+          <Badge variant={BadgeVariant.Success}>Submitted</Badge>
+        ) : (
+          <Badge variant={BadgeVariant.Error}>Due on {formattedDueDate}</Badge>
+        )}
       </MainHeading>
 
-      <div className="markdown mb-12">
+      <div className="markdown ml-5 mb-12">
         <ReactMarkdown>{assignmentQuery.data?.description ?? ""}</ReactMarkdown>
+      </div>
+
+      <div className="ml-5 flex">
+        <form className="text-white" onSubmit={uploadFile}>
+          <label
+            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="file-upload"
+          >
+            Upload Assignment
+          </label>
+          <input
+            ref={fileRef}
+            id="file-upload"
+            className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+            onChange={handleFileChange}
+            type="file"
+          />
+          {file && (
+            <Button className="mt-4" type="submit" variant={Variant.Primary}>
+              Upload
+            </Button>
+          )}
+        </form>
       </div>
     </section>
   );

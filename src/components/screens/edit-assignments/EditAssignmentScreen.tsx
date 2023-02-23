@@ -20,6 +20,7 @@ import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "./AttachmentsTable";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
+import { supabaseDeleteFile } from "src/utils/helper";
 
 type UpdateDescriptionForm = {
   description: string;
@@ -104,8 +105,16 @@ export const EditAssignmentScreen = ({
   };
 
   const handleDeleteAssignment = async () => {
-    if (!confirm("are you sure?")) return;
+    if (!confirm("Confirm delete assignment?")) return;
     await deleteAssignment.mutateAsync({ assignmentId });
+    attachmentsQuery.data?.forEach((attachment) => {
+      supabaseDeleteFile({
+        assignmentId: attachment.assignmentId,
+        attachmentId: attachment.id,
+        filename: attachment.filename,
+      });
+    });
+
     router.push(`/classrooms/${classroomId}`);
   };
 

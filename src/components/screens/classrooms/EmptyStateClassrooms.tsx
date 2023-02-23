@@ -9,7 +9,7 @@ function EmptyStateClassrooms({
   openClassroomModal: () => void;
 }) {
   return (
-    <div className="flex flex-col justify-center gap-8">
+    <div className="flex flex-col items-center justify-center gap-8 px-5">
       <Image
         width="300"
         height="300"

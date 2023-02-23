@@ -15,7 +15,7 @@ function Logo() {
           : "/"
       }
     >
-      WDJ Classroom
+      My-Classroom
     </Link>
   );
 }

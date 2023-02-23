@@ -24,7 +24,8 @@ function Footer() {
       <footer className="bg-gray-50 p-4 shadow  dark:bg-gray-900">
         <div className="container mx-auto md:flex md:items-center md:justify-between md:p-6">
           <span className="text-sm text-gray-500 dark:text-gray-50 sm:text-center">
-            © 2022 <a className="hover:underline">WDJ</a>. All Rights Reserved.
+            © 2022 <a className="hover:underline">HUYHOANG</a>. All Rights
+            Reserved.
           </span>
           <ul className="mt-3 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-50 sm:mt-0">
             <li>

@@ -1,4 +1,4 @@
-import type { Assignment } from "@prisma/client";
+import type { Assignment, Attachment } from "@prisma/client";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { DateTime } from "luxon";
@@ -11,7 +11,9 @@ function TeacherAssignments({
   classroomId,
   openAssignmentModal,
 }: {
-  assignments: Assignment[];
+  assignments: (Assignment & {
+    attachments: Attachment[];
+  })[];
   classroomId: string;
   openAssignmentModal: () => void;
 }) {
@@ -29,7 +31,7 @@ function TeacherAssignments({
       </div>
       <div className="overflow-x-auto">
         <Table
-          headers={["Number", "Name", "Due Date", "Actions"]}
+          headers={["Number", "Name", "Due Date", "Attachments", "Action"]}
           rows={assignments.map((assignment, idx) => [
             assignment.number,
             assignment.name,
@@ -38,6 +40,7 @@ function TeacherAssignments({
                 DateTime.DATE_MED
               )}
             </span>,
+            assignment.attachments.length,
             (
               <span className="flex gap-4">
                 <Link

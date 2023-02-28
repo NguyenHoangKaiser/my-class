@@ -107,13 +107,6 @@ export const EditAssignmentScreen = ({
   const handleDeleteAssignment = async () => {
     if (!confirm("Confirm delete assignment?")) return;
     await deleteAssignment.mutateAsync({ assignmentId });
-    attachmentsQuery.data?.forEach((attachment) => {
-      supabaseDeleteFile({
-        assignmentId: attachment.assignmentId,
-        attachmentId: attachment.id,
-        filename: attachment.filename,
-      });
-    });
 
     router.push(`/classrooms/${classroomId}`);
   };
@@ -219,8 +212,8 @@ export const EditAssignmentScreen = ({
             EmptyComponent={<EmptyStateAttachments />}
             NonEmptyComponent={
               <AttachmentsTable
-                onAttachmentDeleted={handleOnAttachmentDelete}
-                attachments={attachmentsQuery.data ?? []}
+                data={attachmentsQuery.data ?? []}
+                onFilesDeleted={handleOnAttachmentDelete}
               />
             }
             isLoading={attachmentsQuery.isLoading}

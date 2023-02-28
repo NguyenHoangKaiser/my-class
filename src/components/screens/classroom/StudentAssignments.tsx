@@ -20,7 +20,6 @@ function StudentAssignments({
 
   const submissionsQuery = trpc.submission.getSubmissionForStudent.useQuery(
     {
-      classroomId,
       studentId: session.data?.user?.id as string,
     },
     {
@@ -29,9 +28,14 @@ function StudentAssignments({
   );
 
   const getSubmission = (assignmentId: string) => {
-    return submissionsQuery.data?.find(
-      (submission) => submission.assignmentId === assignmentId
+    const grade = submissionsQuery.data?.filter(
+      (submission) =>
+        submission.assignmentId === assignmentId && submission.grade !== null
     );
+    if (!grade) return null;
+    // @ts-expect-error - Even though grade maybe null, the reduce function still works
+    const average = grade?.reduce((a, b) => a + b?.grade, 0) / grade?.length;
+    return average;
   };
 
   return (
@@ -46,7 +50,7 @@ function StudentAssignments({
           headers={["Number", "Grade", "Name", "Due Date", "Actions"]}
           rows={assignments.map((assignment, idx) => [
             assignment.number,
-            getSubmission(assignment.id)?.grade ?? "N/A",
+            getSubmission(assignment.id) ?? "N/A",
             assignment.name,
             <span key={idx} className="whitespace-nowrap">
               {DateTime.fromISO(assignment.dueDate).toLocaleString(

@@ -24,6 +24,7 @@ export const userRouter = router({
       },
       include: {
         enrolledIn: true,
+        submissions: true,
       },
     });
     return user;

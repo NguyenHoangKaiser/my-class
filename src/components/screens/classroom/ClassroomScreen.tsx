@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useAtom } from "jotai";
 import { useSession } from "src/hooks";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
-import { PencilSquare } from "src/components/common/Icons";
+import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import Button, { Variant } from "src/components/common/Button";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
@@ -14,9 +14,12 @@ import NoAssignments from "./NoAssignments";
 import TeacherAssignments from "./TeacherAssignments";
 import StudentAssignments from "./StudentAssignments";
 import StudentsSection from "./StudentsSection";
-import { SubmissionsSection } from "./SubmissionsSection";
 import CreateAssignmentModal from "./CreateAssignmentModal";
 import EditClassroomModal from "./EditClassroomModal";
+import SubmissionsSection from "./SubmissionsSection";
+import LinkButton, {
+  LinkButtonVariant,
+} from "src/components/common/Button/LinkButton";
 
 function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
@@ -30,6 +33,8 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const classrooms = trpc.student.getClassrooms.useQuery();
 
   const unenrollMutation = trpc.classroom.unEnroll.useMutation();
+
+  const deleteClassroom = trpc.classroom.deleteClassroom.useMutation();
 
   const {
     openEditClassroomModal,
@@ -66,16 +71,29 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
     }
   };
 
+  const handleDeleteClassroom = async () => {
+    if (!confirm("Confirm delete classroom?")) return;
+    await deleteClassroom.mutateAsync({ classroomId });
+
+    router.push("/classrooms");
+  };
+
   return (
     <>
       <MainHeading title={classroom?.name ?? "loading..."}>
         {hasAdminAccess && (
-          <button
-            className="link flex items-center"
-            onClick={openEditClassroomModal}
-          >
-            <PencilSquare /> Edit
-          </button>
+          <div className="flex gap-3">
+            <LinkButton className="text-base" onClick={openEditClassroomModal}>
+              <PencilSquare /> Edit
+            </LinkButton>
+            <LinkButton
+              className="text-base"
+              onClick={handleDeleteClassroom}
+              variant={LinkButtonVariant.Danger}
+            >
+              <TrashIcon /> Delete
+            </LinkButton>
+          </div>
         )}
 
         {showUnenroll && (

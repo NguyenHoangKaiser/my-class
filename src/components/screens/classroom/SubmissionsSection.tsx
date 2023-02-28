@@ -7,9 +7,9 @@ import LinkButton, {
 import FormGroup from "src/components/common/Form/FormGroup";
 import { DownloadIcon } from "src/components/common/Icons";
 import Table from "src/components/common/Table";
-import { supabase } from "src/libs/supabaseClient";
-import { getKeyUrl } from "src/utils/helper";
+import { getDownloadUrl } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
+import EmptyStateAttachments from "../edit-assignments/EmptyStateAttachments";
 
 type TSubmission = {
   id: string;
@@ -78,46 +78,22 @@ const GradeEditable = ({
   );
 };
 
-export const SubmissionsSection = ({
-  classroomId,
-}: {
-  classroomId: string;
-}) => {
+function SubmissionsSection({ classroomId }: { classroomId: string }) {
   const submissionsQuery = trpc.submission.getSubmissionForClassroom.useQuery({
     classroomId,
   });
 
-  //TODO: extract this to a helper function
-  const getDownloadUrl = async ({
-    submissionId,
-    filename,
-    studentId,
-  }: {
-    submissionId: string;
-    filename: string;
-    studentId: string;
-  }) => {
-    const { data } = await supabase.storage
-      .from("files")
-      .getPublicUrl(getKeyUrl({ submissionId, studentId, filename }), {
-        download: true,
-      });
-
-    if (data) {
-      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <section>
       <h3 className="mb-6 text-center">Submissions</h3>
-      {submissionsQuery.data && (
+      {submissionsQuery.data && submissionsQuery.data?.length > 0 ? (
         <Table
           headers={[
             "Student",
             "Grade",
             "Assignment Name",
             "Assignment Number",
+            "File Name",
             "actions",
           ]}
           rows={submissionsQuery.data.map((submission) => [
@@ -130,6 +106,7 @@ export const SubmissionsSection = ({
             </>,
             submission.assignmentName,
             submission.assignmentNumber,
+            submission.fileName,
             <div className="-ml-4" key={submission.id}>
               <LinkButton
                 variant={LinkButtonVariant.Primary}
@@ -146,7 +123,11 @@ export const SubmissionsSection = ({
             </div>,
           ])}
         />
+      ) : (
+        <EmptyStateAttachments isSubmissions={true} />
       )}
     </section>
   );
-};
+}
+
+export default SubmissionsSection;

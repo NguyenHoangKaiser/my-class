@@ -1,11 +1,13 @@
 import { DateTime } from "luxon";
 import React, { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Badge, MainHeading } from "src/components/common";
+import { Badge, EmptyStateWrapper, MainHeading } from "src/components/common";
 import { BadgeVariant } from "src/components/common/Badge";
 import Button, { Variant } from "src/components/common/Button";
 import { useFileUpload } from "src/hooks";
 import { trpc } from "src/utils/trpc";
+import AttachmentsTable from "../edit-assignments/AttachmentsTable";
+import EmptyStateAttachments from "../edit-assignments/EmptyStateAttachments";
 
 export const AssignmentScreen = ({
   assignmentId,
@@ -13,6 +15,10 @@ export const AssignmentScreen = ({
   assignmentId: string;
 }) => {
   const assignmentQuery = trpc.classroom.getAssignment.useQuery({
+    assignmentId,
+  });
+
+  const attachmentsQuery = trpc.assignment.getAttachments.useQuery({
     assignmentId,
   });
 
@@ -41,6 +47,10 @@ export const AssignmentScreen = ({
 
   const isSubmissionSubmitted = !!submissionQuery.data;
 
+  const handleOnAttachmentDelete = () => {
+    submissionQuery.refetch();
+  };
+
   return (
     <section>
       <MainHeading
@@ -54,17 +64,44 @@ export const AssignmentScreen = ({
         )}
       </MainHeading>
 
-      <div className="markdown ml-5 mb-12">
+      <div className="markdown mb-12 px-5">
         <ReactMarkdown>{assignmentQuery.data?.description ?? ""}</ReactMarkdown>
       </div>
 
-      <div className="ml-5 flex">
+      <div className="mb-8 px-5">
+        <h2 className="px mb-5 text-2xl">Attachments</h2>
+        <EmptyStateWrapper
+          EmptyComponent={<EmptyStateAttachments isSubmissions={true} />}
+          NonEmptyComponent={
+            <AttachmentsTable data={attachmentsQuery.data ?? []} />
+          }
+          isLoading={attachmentsQuery.isLoading}
+          data={attachmentsQuery.data}
+        />
+      </div>
+
+      <div className="mb-8 px-5">
+        <h2 className="px mb-5 text-2xl">Submission</h2>
+        <EmptyStateWrapper
+          EmptyComponent={<EmptyStateAttachments />}
+          NonEmptyComponent={
+            <AttachmentsTable
+              data={submissionQuery.data ?? []}
+              onFilesDeleted={handleOnAttachmentDelete}
+            />
+          }
+          isLoading={submissionQuery.isLoading}
+          data={submissionQuery.data}
+        />
+      </div>
+
+      <div className="flex px-5">
         <form className="text-white" onSubmit={uploadFile}>
           <label
             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             htmlFor="file-upload"
           >
-            Upload Assignment
+            Upload Submissions
           </label>
           <input
             ref={fileRef}

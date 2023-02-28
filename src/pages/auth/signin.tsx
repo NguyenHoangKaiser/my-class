@@ -35,9 +35,6 @@ InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { error } = useRouter().query;
 
-  console.log(providers);
-  console.log(session);
-
   useEffect(() => {
     if (session) {
       router.push("/");

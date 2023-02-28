@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import React from "react";
+import classNames from "classnames";
 
 export enum LinkButtonVariant {
   Primary,
@@ -11,10 +12,12 @@ function LinkButton({
   children,
   onClick,
   variant = LinkButtonVariant.Primary,
+  className,
 }: {
   children: ReactNode;
   onClick: () => void;
   variant?: LinkButtonVariant;
+  className?: string;
 }) {
   const colors = {
     [LinkButtonVariant.Primary]:
@@ -25,7 +28,10 @@ function LinkButton({
       "text-sm text-gray-700 px-4 py-2 hover:text-gray-800 flex items-center gap-2",
   };
   return (
-    <button onClick={onClick} className={colors[variant]}>
+    <button
+      onClick={onClick}
+      className={classNames(colors[variant], className)}
+    >
       {children}
     </button>
   );

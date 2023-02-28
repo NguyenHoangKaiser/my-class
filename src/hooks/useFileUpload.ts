@@ -19,15 +19,11 @@ const useFileUpload = ({
     e.preventDefault();
     if (!file) return;
     const url = await getUploadUrl(file);
-    console.log("url", file.name, url);
-    const { data, error } = await supabase.storage
-      .from("files")
-      .upload(url, file);
+
+    const { error } = await supabase.storage.from("files").upload(url, file);
     if (error) {
-      console.log("error", error);
       return;
     }
-    console.log("data", data);
     setFile(undefined);
     if (fileRef.current) {
       fileRef.current.value = "";

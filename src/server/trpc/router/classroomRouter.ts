@@ -5,6 +5,7 @@ import {
 } from "./../../utils/assert";
 import z from "zod";
 import { router, protectedProcedure } from "../trpc";
+import { supabaseDeleteFile } from "src/utils/helper";
 
 export const classroomRouter = router({
   getStudents: protectedProcedure
@@ -119,6 +120,9 @@ export const classroomRouter = router({
         where: {
           classroomId: input.classroomId,
         },
+        include: {
+          attachments: true,
+        },
       });
       return assignments;
     }),
@@ -166,6 +170,42 @@ export const classroomRouter = router({
               id: input.classroomId,
             },
           },
+        },
+      });
+      return classroom;
+    }),
+  deleteClassroom: protectedProcedure
+    .input(z.object({ classroomId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      assertIsClassroomAdmin(ctx, input.classroomId);
+      const assignments = await ctx.prisma.assignment.findMany({
+        where: {
+          classroomId: input.classroomId,
+        },
+        include: {
+          submissions: true,
+          attachments: true,
+        },
+      });
+      for (const assignment of assignments) {
+        for (const submission of assignment.submissions) {
+          supabaseDeleteFile({
+            submissionId: submission.id,
+            studentId: submission.studentId,
+            filename: submission.filename,
+          });
+        }
+        for (const attachment of assignment.attachments) {
+          supabaseDeleteFile({
+            attachmentId: attachment.id,
+            assignmentId: attachment.assignmentId,
+            filename: attachment.filename,
+          });
+        }
+      }
+      const classroom = await ctx.prisma.classroom.delete({
+        where: {
+          id: input.classroomId,
         },
       });
       return classroom;

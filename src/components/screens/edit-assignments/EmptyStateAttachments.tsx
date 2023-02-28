@@ -1,8 +1,10 @@
 import Image from "next/image";
 import React from "react";
 import teacherImage from "src/assets/teacher.svg";
-
-function EmptyStateAttachments() {
+type EmptyStateAttachmentsProps = {
+  isSubmissions?: boolean;
+};
+function EmptyStateAttachments({ isSubmissions }: EmptyStateAttachmentsProps) {
   return (
     <div className="mx-auto flex w-1/3 flex-col items-center justify-center gap-8">
       <Image
@@ -11,7 +13,15 @@ function EmptyStateAttachments() {
         src={teacherImage}
         alt="no classrooms found"
       />
-      <div className="text-2xl">You have no attachments yet!</div>
+      {isSubmissions ? (
+        <p className="text-center text-xl">
+          No submissions have been made for this assignment yet.
+        </p>
+      ) : (
+        <p className="text-center text-xl">
+          No attachments have been added for this assignment yet.
+        </p>
+      )}
     </div>
   );
 }

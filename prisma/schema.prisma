@@ -14,12 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -55,6 +49,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String?
+  createdAt     DateTime     @default(now())
   accounts      Account[]
   sessions      Session[]
   classrooms    Classroom[]  @relation("Classroom")
@@ -76,6 +71,7 @@ model Classroom {
   name        String
   teacher     User         @relation("Classroom", fields: [userId], references: [id])
   userId      String
+  createdAt   DateTime     @default(now())
   students    User[]       @relation("EnrolledIn")
   ratings     Rating[]
   assignments Assignment[]
@@ -95,6 +91,7 @@ model Assignment {
   name        String
   description String
   attachments Attachment[]
+  createdAt   DateTime     @default(now())
   dueDate     String       @default("2023-09-30T00:00:00Z")
   classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   classroomId String
@@ -103,6 +100,7 @@ model Assignment {
 
 model Submission {
   id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
   filename     String
   studentId    String
   student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)

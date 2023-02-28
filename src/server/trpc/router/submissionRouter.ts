@@ -2,13 +2,13 @@ import { assertIsClassroomAdmin, assertIsStudent } from "./../../utils/assert";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { router, protectedProcedure } from "../trpc";
-import { getKeyUrl } from "src/utils/helper";
+import { getKeyUrl, supabaseDeleteFile } from "src/utils/helper";
 
 export const submissionRouter = router({
   getSubmission: protectedProcedure
     .input(z.object({ assignmentId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const submission = await ctx.prisma.submission.findFirst({
+      const submission = await ctx.prisma.submission.findMany({
         where: {
           assignmentId: input.assignmentId,
           studentId: ctx.session.user.id,
@@ -17,14 +17,12 @@ export const submissionRouter = router({
       return submission;
     }),
   getSubmissionForStudent: protectedProcedure
-    .input(z.object({ studentId: z.string(), classroomId: z.string() }))
+    .input(z.object({ studentId: z.string() }))
     .query(async ({ ctx, input }) => {
       const submission = await ctx.prisma.submission.findMany({
         where: {
-          assignmentId: input.studentId,
-          assignment: {
-            classroomId: input.classroomId,
-          },
+          studentId: input.studentId,
+          // assignmentId: input.assignmentId,
         },
       });
       return submission;
@@ -117,5 +115,27 @@ export const submissionRouter = router({
         filename: input.filename,
       });
       return url;
+    }),
+  deleteSubmission: protectedProcedure
+    .input(z.object({ submissionId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const submission = await ctx.prisma.submission.findUnique({
+        where: {
+          id: input.submissionId,
+        },
+      });
+      if (!submission) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      supabaseDeleteFile({
+        submissionId: submission.id,
+        studentId: submission.studentId,
+        filename: submission.filename,
+      });
+      await ctx.prisma.submission.delete({
+        where: {
+          id: input.submissionId,
+        },
+      });
     }),
 });

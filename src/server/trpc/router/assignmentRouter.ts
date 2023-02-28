@@ -2,6 +2,9 @@ import { assertIsAssignmentAdmin } from "src/server/utils/assert";
 import { getKeyUrl } from "src/utils/helper";
 import z from "zod";
 import { protectedProcedure, router } from "../trpc";
+import { supabase } from "src/libs/supabaseClient";
+import { supabaseDeleteFile } from "src/utils/helper";
+import { TRPCError } from "@trpc/server";
 
 export const BucketName = "files";
 
@@ -68,6 +71,19 @@ export const assignmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       //TODO add authorization
+      const attachment = await ctx.prisma.attachment.findUnique({
+        where: {
+          id: input.attachmentId,
+        },
+      });
+      if (!attachment) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      supabaseDeleteFile({
+        assignmentId: attachment.assignmentId,
+        attachmentId: attachment.id,
+        filename: attachment.filename,
+      });
       await ctx.prisma.attachment.delete({
         where: {
           id: input.attachmentId,
@@ -82,6 +98,32 @@ export const assignmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       //TODO add authorization
+      const assignment = await ctx.prisma.assignment.findUnique({
+        where: {
+          id: input.assignmentId,
+        },
+        include: {
+          submissions: true,
+          attachments: true,
+        },
+      });
+      //delete all files in the bucket associated with this assignment
+      if (assignment) {
+        for (const submission of assignment.submissions) {
+          supabaseDeleteFile({
+            submissionId: submission.id,
+            studentId: submission.studentId,
+            filename: submission.filename,
+          });
+        }
+        for (const attachment of assignment.attachments) {
+          supabaseDeleteFile({
+            assignmentId: assignment.id,
+            attachmentId: attachment.id,
+            filename: attachment.filename,
+          });
+        }
+      }
       await ctx.prisma.assignment.delete({
         where: {
           id: input.assignmentId,

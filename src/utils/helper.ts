@@ -25,7 +25,6 @@ const supabaseDeleteFile = async (key: Key) => {
     .remove([getKeyUrl(key)]);
   if (error) {
     alert(error.message);
-    console.log(error);
     return;
   }
 };

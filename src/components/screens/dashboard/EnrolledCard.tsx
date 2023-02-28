@@ -14,9 +14,11 @@ function EnrolledCard({ classroom }: TProp) {
     classroomId: classroom.id,
   });
   const assignments = assignmentsQuery.data;
-  const soonestDueDate = assignments?.reduce((a, b) =>
-    a.dueDate < b.dueDate ? a : b
-  ).dueDate;
+
+  const soonestDueDate = assignments?.sort((a, b) =>
+    a.dueDate < b.dueDate ? -1 : 1
+  )[0]?.dueDate;
+
   return (
     <Card
       title={classroom.name}

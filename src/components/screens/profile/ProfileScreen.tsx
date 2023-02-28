@@ -1,4 +1,5 @@
-import type { User } from "@prisma/client";
+import type { Classroom, Submission, User } from "@prisma/client";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { MainHeading } from "src/components/common";
 import Alert, { useDismissible } from "src/components/common/Alert";
@@ -23,11 +24,29 @@ function ProfileScreen() {
 
   const updateDisplayName = trpc.user.updateDisplayName.useMutation();
 
-  trpc.user.getUser.useQuery(undefined, {
-    onSuccess(userData: User) {
+  const { data: userData } = trpc.user.getUser.useQuery(undefined, {
+    onSuccess(
+      userData: User & {
+        enrolledIn: Classroom[];
+        submissions: Submission[];
+      }
+    ) {
       setValue("displayName", userData.displayName ?? userData.name ?? "");
     },
   });
+
+  //This function can be expensive, so we only want to run it when the data changes
+  const averageGrade = React.useMemo(() => {
+    if (!userData || userData.submissions.length === 0) {
+      return "N/A";
+    }
+    return userData.submissions.reduce(
+      (acc, submission) =>
+        //@ts-expect-error - Grade can be null
+        acc + submission?.grade / userData.submissions.length,
+      0
+    );
+  }, [userData]);
 
   const queryClient = trpc.useContext();
 
@@ -66,13 +85,23 @@ function ProfileScreen() {
               />
               <Button
                 isLoading={updateDisplayName.isLoading}
-                className="self-end"
+                className="self-start"
               >
                 Update
               </Button>
             </>
           </FormGroup>
         </form>
+        {userData?.role === "student" && (
+          <div className="mt-6 w-1/3 flex-col gap-4">
+            <h3 className="mb-4 text-2xl">Your stats</h3>
+            <p>{`Total class currently enrolled in: ${
+              userData?.enrolledIn.length ?? 0
+            }`}</p>
+            <p>{`Total submissions: ${userData?.submissions.length ?? 0}`}</p>
+            <p>{`Average submission's grade: ${averageGrade}`}</p>
+          </div>
+        )}
       </section>
     </HeaderLayout>
   );

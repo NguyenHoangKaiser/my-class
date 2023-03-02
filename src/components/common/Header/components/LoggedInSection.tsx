@@ -4,11 +4,56 @@ import AccountMenu from "./AccountMenu";
 import profileImage from "src/assets/profile.jpeg";
 import Image from "next/image";
 import { useClickOutside } from "src/hooks";
+import { Avatar, Dropdown, MenuProps, message, theme } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+
+const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  message.info("Click on left button.");
+  console.log("click left button", e);
+};
+
+const handleMenuClick: MenuProps["onClick"] = (e) => {
+  message.info("Click on menu item.");
+  console.log("click", e);
+};
+
+const items: MenuProps["items"] = [
+  {
+    label: "1st menu item",
+    key: "1",
+    icon: <UserOutlined />,
+  },
+  {
+    label: "2nd menu item",
+    key: "2",
+    icon: <UserOutlined />,
+  },
+  {
+    label: "3rd menu item",
+    key: "3",
+    icon: <UserOutlined />,
+    danger: true,
+  },
+  {
+    label: "4rd menu item",
+    key: "4",
+    icon: <UserOutlined />,
+    danger: true,
+    disabled: true,
+  },
+];
+
+const menuProps = {
+  items,
+  onClick: handleMenuClick,
+};
 
 function LoggedInSection({ image }: { image: string | undefined | null }) {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const openAccountMenuButtonRef = useRef<HTMLButtonElement>(null);
-
+  const {
+    token: { colorBgLayout, colorTextTertiary },
+  } = theme.useToken();
   const userQuery = trpc.user.getUser.useQuery();
 
   function toggleAccountMenu() {
@@ -33,15 +78,7 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
   return (
     <>
       <div className="mr-3 text-white"></div>
-
-      {/* <button
-        type="button"
-        className="p-1 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-      >
-        <span className="sr-only">View notifications</span>
-        <BellIcon />
-      </button> */}
-
+      {/* 
       <div className="relative ml-3">
         <div className="flex items-center justify-between">
           <div className="pr-4">{displayName}</div>
@@ -68,6 +105,14 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
           </button>
         </div>
         {isAccountMenuOpen && <AccountMenu />}
+      </div> */}
+      <div className="ml-3 flex items-center justify-between">
+        <div className="pr-4">{displayName}</div>
+        <div>
+          <Dropdown menu={{ items }} trigger={["click"]}>
+            <Avatar src={image} />
+          </Dropdown>
+        </div>
       </div>
     </>
   );

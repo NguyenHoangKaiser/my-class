@@ -6,7 +6,6 @@ import student from "src/assets/student.jpeg";
 import { trpc } from "src/utils/trpc";
 import { useRouter } from "next/router";
 import reloadSession from "src/utils/reloadSession";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import Button, { Variant } from "src/components/common/Button";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
@@ -59,7 +58,6 @@ const Welcome: NextPage = () => {
         />
       </Head>
 
-      <HeaderLayout>
         <main className="container m-auto">
           <div className="mx-auto flex h-full flex-col items-center justify-center p-4">
             <h1 className="text-4xl text-gray-900 dark:text-white">
@@ -121,7 +119,6 @@ const Welcome: NextPage = () => {
             </div>
           </div>
         </main>
-      </HeaderLayout>
     </>
   );
 };

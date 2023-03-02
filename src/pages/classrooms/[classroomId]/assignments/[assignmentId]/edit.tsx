@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { EditAssignmentScreen } from "src/components/screens/edit-assignments/EditAssignmentScreen";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const ClassroomPage: NextPage = () => {
@@ -21,12 +20,10 @@ const ClassroomPage: NextPage = () => {
         />
       </Head>
 
-      <HeaderLayout>
-        <EditAssignmentScreen
-          classroomId={classroomId}
-          assignmentId={assignmentId}
-        />
-      </HeaderLayout>
+      <EditAssignmentScreen
+        classroomId={classroomId}
+        assignmentId={assignmentId}
+      />
     </>
   );
 };

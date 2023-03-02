@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import ClassroomScreen from "src/components/screens/classroom/ClassroomScreen";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const ClassroomPage: NextPage = () => {
@@ -20,9 +19,7 @@ const ClassroomPage: NextPage = () => {
         />
       </Head>
 
-      <HeaderLayout>
-        <ClassroomScreen classroomId={classroomId} />
-      </HeaderLayout>
+      <ClassroomScreen classroomId={classroomId} />
     </>
   );
 };

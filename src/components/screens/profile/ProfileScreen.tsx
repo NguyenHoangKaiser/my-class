@@ -8,7 +8,6 @@ import Button from "src/components/common/Button";
 import LinkButton from "src/components/common/Button/LinkButton";
 import FormGroup from "src/components/common/Form/FormGroup";
 import Table from "src/components/common/Table";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import { trpc } from "src/utils/trpc";
 
 type FormData = {
@@ -68,7 +67,7 @@ function ProfileScreen() {
   };
 
   return (
-    <HeaderLayout>
+    <>
       <MainHeading title="Your Profile" />
 
       {isDisplayed && (
@@ -152,7 +151,7 @@ function ProfileScreen() {
           </>
         )}
       </section>
-    </HeaderLayout>
+    </>
   );
 }
 

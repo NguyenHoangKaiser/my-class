@@ -1,7 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import ClassroomsScreen from "src/components/screens/classrooms/ClassroomsScreen";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const Classrooms: NextPage = () => {
@@ -15,9 +14,7 @@ const Classrooms: NextPage = () => {
         />
       </Head>
 
-      <HeaderLayout>
-        <ClassroomsScreen />
-      </HeaderLayout>
+      <ClassroomsScreen />
     </>
   );
 };

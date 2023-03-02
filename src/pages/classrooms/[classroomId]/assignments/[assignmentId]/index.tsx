@@ -3,12 +3,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { AssignmentScreen } from "src/components/screens/assignments/AssignmentScreen";
-import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
 const ClassroomAssignmentPage: NextPage = () => {
   const router = useRouter();
-  const classroomId = router.query.classroomId as string;
   const assignmentId = router.query.assignmentId as string;
 
   return (
@@ -21,12 +19,10 @@ const ClassroomAssignmentPage: NextPage = () => {
         />
       </Head>
 
-      <HeaderLayout>
-        <AssignmentScreen
-          // classroomId={classroomId}
-          assignmentId={assignmentId}
-        />
-      </HeaderLayout>
+      <AssignmentScreen
+        // classroomId={classroomId}
+        assignmentId={assignmentId}
+      />
     </>
   );
 };

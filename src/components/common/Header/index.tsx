@@ -53,7 +53,7 @@ function Header() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <MobileMenu isLoggedIn={isLoggedIn} hasRole={false} />
+        <MobileMenu isLoggedIn={isLoggedIn} hasRole={userMetadata?.role} />
       )}
     </header>
   );

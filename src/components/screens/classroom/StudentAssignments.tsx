@@ -35,7 +35,7 @@ function StudentAssignments({
     if (!grade) return null;
     // @ts-expect-error - Even though grade maybe null, the reduce function still works
     const average = grade?.reduce((a, b) => a + b?.grade, 0) / grade?.length;
-    return average;
+    if (!average) return null;
   };
 
   return (

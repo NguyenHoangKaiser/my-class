@@ -60,16 +60,16 @@ function SideNavigation() {
   return (
     <aside className="w-64 flex-none" aria-label="Sidebar">
       <div className="overflow-y-auto py-4 px-3">
-        <ul className="space-y-2">
+        <ul className="space-y-2 rounded-xl bg-gray-100 dark:bg-gray-700">
           {links.map((link) => (
             <li key={link.name} onClick={() => setSelectedTab(link.tab)}>
               <a
                 href="#"
                 className={classNames(
-                  "flex items-center rounded-lg p-2 text-base font-normal hover:bg-gray-100 dark:hover:bg-gray-700",
+                  "flex items-center rounded-lg p-2 text-base font-normal ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2",
                   link.tab === selectedTab
-                    ? "text-blue-700 dark:text-blue-300 hover:dark:text-blue-200"
-                    : "text-gray-900 dark:text-white"
+                    ? "bg-primary-200 text-primary-700 shadow "
+                    : "text-blue-400 hover:bg-white/[0.12] hover:text-primary-600 dark:hover:text-blue-400"
                 )}
               >
                 {link.icon}

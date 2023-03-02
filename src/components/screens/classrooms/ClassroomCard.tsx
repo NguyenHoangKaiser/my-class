@@ -1,6 +1,7 @@
 import type { Classroom } from "@prisma/client";
 import Link from "next/link";
 import { Card } from "src/components/common";
+import Button, { Variant } from "src/components/common/Button";
 
 function ClassroomCard({ classroom }: { classroom: Classroom }) {
   return (
@@ -10,9 +11,9 @@ function ClassroomCard({ classroom }: { classroom: Classroom }) {
       body={classroom.description ?? "Default description"}
     >
       <div className="flex justify-end">
-        <Link href={`/classrooms/${classroom.id}`} className="text-blue-500">
-          Manage Classroom
-        </Link>
+        <Button variant={Variant.Primary}>
+          <Link href={`/classrooms/${classroom.id}`}>Manage Classroom</Link>
+        </Button>
       </div>
     </Card>
   );

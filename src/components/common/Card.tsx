@@ -22,6 +22,7 @@ function Card({
         width={400}
         style={{ objectFit: "cover" }}
         src={student}
+        className="transition duration-300 ease-in-out hover:scale-110"
         alt="a student"
       />
       <section className="px-6">

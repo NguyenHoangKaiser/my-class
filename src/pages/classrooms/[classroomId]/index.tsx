@@ -31,6 +31,7 @@ export default ClassroomPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
+  const classroomId = context.params?.classroomId as string;
 
   if (!session) {
     return {
@@ -46,6 +47,46 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         permanent: false,
       },
     };
+    //!! Make sure the user is a teacher or student in the classroom
+    //!! But calling prisma in getServerSideProps is not recommended
+    // } else if (session.user?.role === "teacher") {
+    //   const isClassTeacher = await prisma?.classroom.findFirst({
+    //     where: {
+    //       id: classroomId,
+    //       userId: session?.user?.id,
+    //     },
+    //   });
+
+    //   if (!isClassTeacher) {
+    //     return {
+    //       redirect: {
+    //         destination: "/classrooms",
+    //         permanent: false,
+    //       },
+    //     };
+    //   }
+    //   return { props: {} };
+    // } else if (session.user?.role === "student") {
+    //   const isClassStudent = await prisma?.classroom.findFirst({
+    //     where: {
+    //       id: classroomId,
+    //       students: {
+    //         some: {
+    //           id: session?.user?.id,
+    //         },
+    //       },
+    //     },
+    //   });
+
+    //   if (!isClassStudent) {
+    //     return {
+    //       redirect: {
+    //         destination: "/classrooms",
+    //         permanent: false,
+    //       },
+    //     };
+    //   }
+    //   return { props: {} };
   } else {
     return { props: {} };
   }

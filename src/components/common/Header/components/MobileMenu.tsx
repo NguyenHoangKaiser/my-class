@@ -2,7 +2,7 @@ import Link from "next/link";
 
 type TMobileMenuProps = {
   isLoggedIn: boolean;
-  hasRole: boolean;
+  hasRole: string | undefined;
 };
 
 function MobileMenu({ isLoggedIn, hasRole }: TMobileMenuProps) {
@@ -11,27 +11,30 @@ function MobileMenu({ isLoggedIn, hasRole }: TMobileMenuProps) {
       <div className="space-y-1 px-2 pt-2 pb-3">
         {isLoggedIn && (
           <>
-            {hasRole && (
+            {hasRole && hasRole === "teacher" && (
+              <Link
+                href="/classrooms"
+                className="link-secondary block rounded-md px-3 py-2 text-base font-medium"
+                aria-current="page"
+              >
+                Classrooms
+              </Link>
+            )}
+            {hasRole && hasRole === "student" && (
               <>
-                <a
-                  href="#"
+                <Link
+                  href="/dashboard"
                   className="link-secondary block rounded-md px-3 py-2 text-base font-medium"
                   aria-current="page"
                 >
                   Dashboard
-                </a>
-                <a
-                  href="#"
+                </Link>
+                <Link
+                  href="/browse-classrooms"
                   className="link-secondary block rounded-md px-3 py-2 text-base font-medium"
                 >
-                  Assignments
-                </a>
-                <a
-                  href="#"
-                  className="link-secondary block rounded-md px-3 py-2 text-base font-medium"
-                >
-                  Students
-                </a>
+                  Find a Classroom
+                </Link>
               </>
             )}
             {!hasRole && (
@@ -40,7 +43,7 @@ function MobileMenu({ isLoggedIn, hasRole }: TMobileMenuProps) {
                 className="link-secondary block rounded-md px-3 py-2 text-base font-medium"
                 aria-current="page"
               >
-                Finish Setup
+                Finish Setup 2
               </Link>
             )}
           </>

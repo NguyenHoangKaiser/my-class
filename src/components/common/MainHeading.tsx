@@ -19,7 +19,7 @@ function MainHeading({
 
         {children}
       </section>
-      <hr className="mb-8" />
+      <hr className="mb-8 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:opacity-100" />
     </>
   );
 }

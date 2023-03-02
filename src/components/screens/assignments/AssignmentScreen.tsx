@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import React, { useRef, useState } from "react";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Badge, EmptyStateWrapper, MainHeading } from "src/components/common";
 import { BadgeVariant } from "src/components/common/Badge";
@@ -45,8 +45,6 @@ export const AssignmentScreen = ({
       )
     : "N/A";
 
-  const isSubmissionSubmitted = !!submissionQuery.data;
-
   const handleOnAttachmentDelete = () => {
     submissionQuery.refetch();
   };
@@ -57,7 +55,7 @@ export const AssignmentScreen = ({
         title={`Assignment #${assignmentQuery.data?.number}`}
         subTitle={assignmentQuery.data?.name}
       >
-        {isSubmissionSubmitted ? (
+        {submissionQuery.data && submissionQuery.data.length > 0 ? (
           <Badge variant={BadgeVariant.Success}>Submitted</Badge>
         ) : (
           <Badge variant={BadgeVariant.Error}>Due on {formattedDueDate}</Badge>

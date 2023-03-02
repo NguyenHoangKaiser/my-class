@@ -14,7 +14,7 @@ function EmptyStateDashboard() {
       />
       <div className="text-2xl">You have no classrooms yet!</div>
       <Link href="/browse-classrooms" passHref>
-        <Button as="a" variant={Variant.Primary}>
+        <Button variant={Variant.Primary}>
           Browse for Classrooms
         </Button>
       </Link>

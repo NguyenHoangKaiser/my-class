@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useForm } from "react-hook-form";
 import { useToggle } from "react-use";
 import Button, { Variant } from "src/components/common/Button";
@@ -31,7 +32,11 @@ const GradeEditable = ({
 }) => {
   const [isEditing, toggleIsEditing] = useToggle(false);
 
-  const { register, handleSubmit } = useForm<{ grade: number }>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ grade: number }>();
 
   const updateGradeMutation = trpc.submission.updateGrade.useMutation();
 
@@ -52,9 +57,14 @@ const GradeEditable = ({
             <span className="flex gap-2">
               <input
                 id="grade"
+                className={classNames(
+                  "border",
+                  errors.grade ? "border-red-500" : "border-white"
+                )}
                 {...register("grade", {
                   required: true,
                   valueAsNumber: true,
+
                   min: 0,
                   max: 10,
                 })}

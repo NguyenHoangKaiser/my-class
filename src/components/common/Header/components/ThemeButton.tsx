@@ -26,7 +26,7 @@ function ThemeButton() {
   return (
     <button
       onClick={toggleTheme}
-      title={isDarkMode ? "toggle light mode" : "toggle dark mode"}
+      title={isDarkMode ? "Toggle light mode" : "Toggle dark mode"}
     >
       {isDarkMode ? <SunIcon /> : <MoonIcon />}
     </button>

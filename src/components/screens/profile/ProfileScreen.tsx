@@ -1,10 +1,13 @@
 import type { Classroom, Submission, User } from "@prisma/client";
+import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { MainHeading } from "src/components/common";
 import Alert, { useDismissible } from "src/components/common/Alert";
 import Button from "src/components/common/Button";
+import LinkButton from "src/components/common/Button/LinkButton";
 import FormGroup from "src/components/common/Form/FormGroup";
+import Table from "src/components/common/Table";
 import HeaderLayout from "src/layouts/HeaderLayout";
 import { trpc } from "src/utils/trpc";
 
@@ -14,6 +17,7 @@ type FormData = {
 
 function ProfileScreen() {
   const { dismiss, show, isDisplayed } = useDismissible();
+  const router = useRouter();
 
   const {
     register,
@@ -34,19 +38,24 @@ function ProfileScreen() {
       setValue("displayName", userData.displayName ?? userData.name ?? "");
     },
   });
+  const { data: classData } = trpc.user.getGradeEachClassroom.useQuery();
+  console.log("classData", classData);
 
-  //This function can be expensive, so we only want to run it when the data changes
-  const averageGrade = React.useMemo(() => {
-    if (!userData || userData.submissions.length === 0) {
-      return "N/A";
+  const totalGrade = classData?.reduce((acc, curr) => {
+    if (curr.grade < 0) {
+      return acc;
     }
-    return userData.submissions.reduce(
-      (acc, submission) =>
-        //@ts-expect-error - Grade can be null
-        acc + submission?.grade / userData.submissions.length,
-      0
-    );
-  }, [userData]);
+    return acc + curr.grade;
+  }, 0);
+
+  const submissionHasGrade = userData?.submissions.filter(
+    (submission) => submission.grade !== null
+  );
+
+  const averageGrade =
+    submissionHasGrade && totalGrade
+      ? totalGrade / submissionHasGrade.length
+      : 0;
 
   const queryClient = trpc.useContext();
 
@@ -93,14 +102,54 @@ function ProfileScreen() {
           </FormGroup>
         </form>
         {userData?.role === "student" && (
-          <div className="mt-6 w-1/3 flex-col gap-4">
-            <h3 className="mb-4 text-2xl">Your stats</h3>
-            <p>{`Total class currently enrolled in: ${
-              userData?.enrolledIn.length ?? 0
-            }`}</p>
-            <p>{`Total submissions: ${userData?.submissions.length ?? 0}`}</p>
-            <p>{`Average submission's grade: ${averageGrade}`}</p>
-          </div>
+          <>
+            <div className="mt-6 w-1/3 flex-col gap-4">
+              <h3 className="mb-4 text-2xl">Your stats</h3>
+              <p>{`Total class currently enrolled in: ${
+                userData?.enrolledIn.length ?? 0
+              }`}</p>
+              <p>{`Total submissions: ${userData?.submissions.length ?? 0}`}</p>
+              <p>{`Average submission's grade: ${averageGrade}`}</p>
+            </div>
+            {classData && classData.length > 0 && (
+              <div className="mt-4 flex flex-col gap-4">
+                <div className="flex items-center gap-8">
+                  <h3 className="text-2xl">Grade Table</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table
+                    headers={[
+                      "Class name",
+                      "Total Assignments",
+                      "Total Submission Graded",
+                      "Grade",
+                      "Actions",
+                    ]}
+                    rows={classData.map((classroom, index) => [
+                      classroom.name,
+                      classroom.assignments.length,
+                      classroom.assignments.filter(
+                        (assignment) =>
+                          assignment.submissions.filter(
+                            (submission) => submission.grade !== null
+                          ).length > 0
+                      ).length,
+                      classroom.grade < 0 ? "N/A" : classroom.grade,
+                      <LinkButton
+                        onClick={() => {
+                          router.push(`/classrooms/${classroom.id}`);
+                        }}
+                        key={index}
+                        className="self-start"
+                      >
+                        View
+                      </LinkButton>,
+                    ])}
+                  />
+                </div>
+              </div>
+            )}
+          </>
         )}
       </section>
     </HeaderLayout>

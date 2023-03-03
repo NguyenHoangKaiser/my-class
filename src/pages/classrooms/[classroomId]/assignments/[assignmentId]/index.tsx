@@ -1,11 +1,13 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import { AssignmentScreen } from "src/components/screens/assignments/AssignmentScreen";
+import HeaderLayout from "src/layouts/HeaderLayout";
+import type { NextPageWithLayout } from "src/pages/_app";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
-const ClassroomAssignmentPage: NextPage = () => {
+const ClassroomAssignmentPage: NextPageWithLayout = () => {
   const router = useRouter();
   const assignmentId = router.query.assignmentId as string;
 
@@ -26,6 +28,10 @@ const ClassroomAssignmentPage: NextPage = () => {
     </>
   );
 };
+
+ClassroomAssignmentPage.getLayout = (page) => (
+  <HeaderLayout>{page}</HeaderLayout>
+);
 
 export default ClassroomAssignmentPage;
 

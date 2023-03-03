@@ -1,34 +1,26 @@
+import { Row, Col, Typography, Space, Divider } from "antd";
 import React from "react";
+
+const { Paragraph, Text, Link } = Typography;
 
 function Footer() {
   return (
-    <div className="container mx-auto md:flex md:items-center md:justify-between md:px-6">
-      <span className="text-sm text-gray-500 dark:text-gray-50 sm:text-center">
-        © 2022 <a className="hover:underline">HUYHOANG</a>. All Rights Reserved.
-      </span>
-      <ul className="mt-3 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-50 sm:mt-0">
-        <li>
-          <a href="#" className="mr-4 hover:underline md:mr-6 ">
-            About
-          </a>
-        </li>
-        <li>
-          <a href="#" className="mr-4 hover:underline md:mr-6">
-            Terms of Service
-          </a>
-        </li>
-        <li>
-          <a href="#" className="mr-4 hover:underline md:mr-6">
-            Privacy Policy
-          </a>
-        </li>
-        <li>
-          <a href="#" className="hover:underline">
-            Contact
-          </a>
-        </li>
-      </ul>
+    <div className="flex flex-1 items-center justify-between">
+      <Space>
+        <Text>© 2022</Text>
+        <Link className="hover:underline">NGUYEN HUY HOANG</Link>
+        <Text>All Rights Reserved.</Text>
+      </Space>
+      <Space split={<Divider type="vertical" />}>
+        <Typography.Link>About</Typography.Link>
+        <Typography.Link>Terms of Service</Typography.Link>
+        <Typography.Link>Privacy Policy</Typography.Link>
+      </Space>
     </div>
+
+    // <Paragraph>
+    //   © 2022 <Text strong>HUYHOANG</Text>. All Rights Reserved.
+    // </Paragraph>
   );
 }
 

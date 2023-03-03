@@ -1,9 +1,11 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import BrowseClassroomsScreen from "src/components/screens/browse-classrooms/BrowseClassRoomsScreen";
+import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
+import type { NextPageWithLayout } from "./_app";
 
-const BrowseClassroomsPage: NextPage = () => {
+const BrowseClassroomsPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -15,6 +17,8 @@ const BrowseClassroomsPage: NextPage = () => {
     </>
   );
 };
+
+BrowseClassroomsPage.getLayout = (page) => <HeaderLayout>{page}</HeaderLayout>;
 
 export default BrowseClassroomsPage;
 

@@ -1,9 +1,11 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import ClassroomsScreen from "src/components/screens/classrooms/ClassroomsScreen";
+import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
+import type { NextPageWithLayout } from "../_app";
 
-const Classrooms: NextPage = () => {
+const Classrooms: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -18,6 +20,8 @@ const Classrooms: NextPage = () => {
     </>
   );
 };
+
+Classrooms.getLayout = (page) => <HeaderLayout>{page}</HeaderLayout>;
 
 export default Classrooms;
 

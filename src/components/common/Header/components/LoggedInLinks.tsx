@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Typography } from "antd";
 
 type TLink = {
   href: string;
@@ -39,7 +40,7 @@ function LoggedInLinks({ role }: { role: string }) {
     <>
       {links.map((link) => (
         <Link key={link.href} href={link.href} aria-current="page">
-          {link.title}
+          <Typography.Text>{link.title}</Typography.Text>
         </Link>
       ))}
     </>

@@ -1,9 +1,11 @@
-import type { NextPage, GetServerSideProps } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import DashboardScreen from "src/components/screens/dashboard";
+import HeaderLayout from "src/layouts/HeaderLayout";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
+import type { NextPageWithLayout } from "./_app";
 
-const DashboardPage: NextPage = () => {
+const DashboardPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -32,6 +34,8 @@ const DashboardPage: NextPage = () => {
     </>
   );
 };
+
+DashboardPage.getLayout = (page) => <HeaderLayout>{page}</HeaderLayout>;
 
 export default DashboardPage;
 

@@ -1,11 +1,13 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import ClassroomScreen from "src/components/screens/classroom/ClassroomScreen";
+import HeaderLayout from "src/layouts/HeaderLayout";
+import type { NextPageWithLayout } from "src/pages/_app";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 
-const ClassroomPage: NextPage = () => {
+const ClassroomPage: NextPageWithLayout = () => {
   const router = useRouter();
   const classroomId = router.query.classroomId as string;
 
@@ -24,11 +26,13 @@ const ClassroomPage: NextPage = () => {
   );
 };
 
+ClassroomPage.getLayout = (page) => <HeaderLayout>{page}</HeaderLayout>;
+
 export default ClassroomPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
-  const classroomId = context.params?.classroomId as string;
+  // const classroomId = context.params?.classroomId as string;
 
   if (!session) {
     return {

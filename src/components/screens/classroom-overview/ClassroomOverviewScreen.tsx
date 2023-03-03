@@ -37,9 +37,17 @@ export const ClassroomOverviewScreen = ({
     <div className="container m-auto flex h-full flex-col items-center justify-end gap-5">
       <h2>{classroom?.name}</h2>
       <h2>{classroom?.description}</h2>
-      <Button variant={Variant.Primary} onClick={handleEnroll}>
-        Enroll
-      </Button>
+      <div className="flex gap-5">
+        <Button variant={Variant.Primary} onClick={handleEnroll}>
+          Enroll
+        </Button>
+        <Button
+          variant={Variant.Secondary}
+          onClick={() => router.push("/browse-classrooms")}
+        >
+          Choose a different classroom
+        </Button>
+      </div>
     </div>
   );
 };

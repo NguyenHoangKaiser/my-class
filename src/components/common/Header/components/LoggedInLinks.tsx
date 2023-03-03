@@ -39,8 +39,13 @@ function LoggedInLinks({ role }: { role: string }) {
   return (
     <>
       {links.map((link) => (
-        <Link key={link.href} href={link.href} aria-current="page">
-          <Typography.Text>{link.title}</Typography.Text>
+        <Link
+          key={link.href}
+          href={link.href}
+          aria-current="page"
+          className="link-header"
+        >
+          {link.title}
         </Link>
       ))}
     </>

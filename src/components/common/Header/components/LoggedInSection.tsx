@@ -1,7 +1,7 @@
 import { trpc } from "src/utils/trpc";
 import type { MenuProps } from "antd";
 import { Avatar, Dropdown } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 
@@ -68,7 +68,7 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
                 }}
                 src={
                   image ?? (
-                    <UserOutlined
+                    <LogoutOutlined
                       style={{
                         fontSize: 20,
                       }}

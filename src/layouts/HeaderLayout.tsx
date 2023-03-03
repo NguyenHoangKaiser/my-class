@@ -1,11 +1,9 @@
 import type { MenuProps } from "antd";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Layout, Menu, theme } from "antd";
 import MyFooter from "src/components/common/Footer";
 import MyHeader from "src/components/common/Header";
 import {
-  DesktopOutlined,
   FileOutlined,
-  PieChartOutlined,
   ReadOutlined,
   TeamOutlined,
   UserOutlined,
@@ -31,17 +29,8 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("Classroom List", "/classrooms", <ReadOutlined />),
-  getItem(
-    "Option 2",
-    "/classrooms/cleo2ggql0003tz2cbudy4vs0",
-    <DesktopOutlined />
-  ),
-  getItem("User", "sub1", <UserOutlined />, [
-    getItem("Tom", "3"),
-    getItem("Bill", "4"),
-    getItem("Alex", "5"),
-  ]),
+  getItem("Classrooms", "/classrooms", <ReadOutlined />),
+  getItem("Profile", "/profile", <UserOutlined />),
   getItem("Team", "sub2", <TeamOutlined />, [
     getItem("Team 1", "6"),
     getItem("Team 2", "8"),
@@ -79,7 +68,7 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           onClick={({ key }) => {
             router.push(key.toString());
           }}
-          defaultSelectedKeys={["/classrooms/cleo2ggql0003tz2cbudy4vs0"]}
+          selectedKeys={[router.asPath]}
           mode="inline"
           items={items}
           style={{
@@ -92,10 +81,10 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           <MyHeader />
         </Header>
         <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
+          {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
+          </Breadcrumb> */}
           {children}
         </Content>
         <Footer

@@ -65,7 +65,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const showUnenroll = classrooms.data?.some(({ id }) => id === classroomId);
 
   const handleUnenroll = async () => {
-    if (confirm("are you sure you want to unenroll")) {
+    if (confirm("You will be unenrolled from this classroom. Are you sure?")) {
       await unenrollMutation.mutateAsync({ classroomId });
       router.push("/dashboard");
     }

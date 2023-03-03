@@ -23,7 +23,7 @@ function BrowseClassroomsScreen() {
   );
 
   return (
-    <section>
+    <section className="px-5">
       <div className="my-8">Filters</div>
       {classroomNotTeacher && classroomNotTeacher.length > 0 ? (
         classroomNotTeacher?.map((classroom) => (

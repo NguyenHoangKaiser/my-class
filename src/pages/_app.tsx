@@ -5,12 +5,12 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { ConfigProvider, theme as Theme } from "antd";
 import type { ReactElement } from "react";
-import { useAtom } from "jotai";
+import { useState } from "react";
 import type { NextPage } from "next";
 import { trpc } from "../utils/trpc";
 import "../styles/globals.css";
 import ThemeButton, {
-  themeAtom,
+  Themes,
 } from "src/components/common/Header/components/ThemeButton";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -25,7 +25,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
-  const [mode] = useAtom(themeAtom);
+  const [mode, setMode] = useState<Themes>(Themes.Light); // initial value (will be updated if user changes them)
 
   const { defaultAlgorithm, darkAlgorithm } = Theme;
 
@@ -36,11 +36,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <ThemeProvider storageKey="theme" attribute="class">
         <ConfigProvider
           theme={{
-            algorithm: mode === "dark" ? darkAlgorithm : defaultAlgorithm,
+            algorithm: mode === Themes.Dark ? darkAlgorithm : defaultAlgorithm,
           }}
         >
           <NextNProgress color={"blue"} options={{ showSpinner: true }} />
-          <ThemeButton />
+          <ThemeButton setMode={setMode} />
           {getLayout(<Component {...pageProps} />)}
         </ConfigProvider>
       </ThemeProvider>

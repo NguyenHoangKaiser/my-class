@@ -14,7 +14,7 @@ const items: MenuProps["items"] = [
   {
     label: "Sign out",
     key: "2",
-    icon: <UserOutlined />,
+    icon: <LogoutOutlined />,
   },
 ];
 
@@ -68,7 +68,7 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
                 }}
                 src={
                   image ?? (
-                    <LogoutOutlined
+                    <UserOutlined
                       style={{
                         fontSize: 20,
                       }}

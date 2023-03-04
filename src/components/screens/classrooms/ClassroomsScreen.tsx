@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
-import Button, { Variant } from "src/components/common/Button";
 import { trpc } from "src/utils/trpc";
 import EmptyStateClassrooms from "./EmptyStateClassrooms";
 import ClassroomsList from "./ClassroomList";
 import CreateClassroomModal from "./CreateClassroomModal";
+import { Button } from "antd";
+import { useRouter } from "next/router";
 
 function ClassroomsScreen() {
   const [showCreateClassroomModal, setShowCreateClassroomModal] =
     useState(false);
+  const router = useRouter();
 
   const {
     data: classrooms,
@@ -32,7 +34,11 @@ function ClassroomsScreen() {
   return (
     <>
       <MainHeading title={"My Classrooms"}>
-        <Button variant={Variant.Primary} onClick={openClassroomModal}>
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => router.push("/classrooms/create-classroom")}
+        >
           Create a Class
         </Button>
       </MainHeading>

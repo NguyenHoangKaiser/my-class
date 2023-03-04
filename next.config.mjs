@@ -8,6 +8,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  transpilePackages: ["antd"],
   swcMinify: true,
   i18n: {
     locales: ["en"],

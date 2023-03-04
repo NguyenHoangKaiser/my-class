@@ -1,7 +1,7 @@
+import { Button } from "antd";
 import Image from "next/image";
 import React from "react";
 import teacherImage from "../../../assets/teacher.svg";
-import Button, { Variant } from "src/components/common/Button";
 
 function EmptyStateClassrooms({
   openClassroomModal,
@@ -17,8 +17,8 @@ function EmptyStateClassrooms({
         alt="no classrooms found"
       />
       <div className="text-2xl">You have no classrooms yet!</div>
-      <Button variant={Variant.Primary} onClick={openClassroomModal}>
-        Create a Classroom
+      <Button type="primary" size="large" onClick={openClassroomModal}>
+        Create a Class
       </Button>
     </div>
   );

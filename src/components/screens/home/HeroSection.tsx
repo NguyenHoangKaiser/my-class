@@ -1,6 +1,7 @@
+import { Button } from "antd";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-
+type TFunction = () => void;
 function HeroSection() {
   return (
     <div className="relative  bg-gray-50 dark:bg-gray-800">
@@ -20,7 +21,7 @@ function HeroSection() {
             <div className="sm:text-center lg:text-left">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
                 <div className="block dark:text-white">Teach and Learn</div>
-                <div className="block text-indigo-600 xl:inline">
+                <div className="block text-primary-600 xl:inline">
                   in Online Classrooms
                 </div>
               </h1>
@@ -28,15 +29,19 @@ function HeroSection() {
                 You should use this app because I made it.
               </p>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                <div className="rounded-md shadow">
-                  <a
-                    onClick={() => signIn()}
-                    href="#"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 md:py-4 md:px-10 md:text-lg"
-                  >
-                    Get Started
-                  </a>
-                </div>
+                {/* This is a hack because signIn type diff */}
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={signIn as TFunction}
+                  style={{
+                    height: "3.5rem",
+                    width: "12rem",
+                    fontSize: "1.25rem",
+                  }}
+                >
+                  Get Started
+                </Button>
               </div>
             </div>
           </main>

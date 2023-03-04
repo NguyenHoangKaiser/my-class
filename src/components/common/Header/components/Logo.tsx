@@ -1,12 +1,7 @@
 import Link from "next/link";
 import React from "react";
-import { Typography } from "antd";
 function Logo() {
-  return (
-    <Link href="/" className="link-header">
-      My-Classroom
-    </Link>
-  );
+  return <Link href="/">My-Classroom</Link>;
 }
 
 export default Logo;

@@ -6,18 +6,18 @@ import { Layout, theme } from "antd";
 const { Header, Footer, Content } = Layout;
 function HomeScreen() {
   const {
-    token: { colorBgContainer, colorBgLayout },
+    token: { colorPrimaryBg },
   } = theme.useToken();
   return (
     <Layout>
-      <Header style={{ padding: 0, backgroundColor: colorBgContainer }}>
+      <Header style={{ padding: 0, backgroundColor: colorPrimaryBg }}>
         <MyHeader />
       </Header>
       <Content>
         <HeroSection />
         <FeatureSection />
       </Content>
-      <Footer>
+      <Footer style={{ backgroundColor: colorPrimaryBg }}>
         <MyFooter />
       </Footer>
     </Layout>

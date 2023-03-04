@@ -1,48 +1,96 @@
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
-import MyFooter from "src/components/common/Footer";
 import MyHeader from "src/components/common/Header";
 import {
   FileOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   ReadOutlined,
+  SearchOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
+
 type MenuItem = Required<MenuProps>["items"][number];
 
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[]
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
+const itemsTeacher: MenuItem[] = [
+  {
+    label: "Classrooms",
+    key: "/classrooms",
+    icon: <ReadOutlined />,
+  },
+  {
+    label: "Profile",
+    key: "/profile",
+    icon: <UserOutlined />,
+  },
+  {
+    label: "Team",
+    key: "sub2",
+    icon: <TeamOutlined />,
+    children: [
+      {
+        label: "Team 1",
+        key: "6",
+      },
+      {
+        label: "Team 2",
+        key: "8",
+      },
+    ],
+  },
+  {
+    label: "Files",
+    key: "9",
+    icon: <FileOutlined />,
+  },
+];
 
-const items: MenuItem[] = [
-  getItem("Classrooms", "/classrooms", <ReadOutlined />),
-  getItem("Profile", "/profile", <UserOutlined />),
-  getItem("Team", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
-  ]),
-  getItem("Files", "9", <FileOutlined />),
+const itemsStudent: MenuItem[] = [
+  {
+    label: "Classrooms",
+    key: "/dashboard",
+    icon: <ReadOutlined />,
+  },
+  {
+    label: "Browse Classrooms",
+    key: "/browse-classrooms",
+    icon: <SearchOutlined />,
+  },
+  {
+    label: "Profile",
+    key: "/profile",
+    icon: <UserOutlined />,
+  },
+  {
+    label: "Team",
+    key: "sub2",
+    icon: <TeamOutlined />,
+    children: [
+      {
+        label: "Team 1",
+        key: "6",
+      },
+      {
+        label: "Team 2",
+        key: "8",
+      },
+    ],
+  },
 ];
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, colorBgLayout },
-  } = theme.useToken();
+  const { token } = theme.useToken();
+  const session = useSession();
+  const isLoggedIn = !!session.data;
+  const userMetadata = session.data?.user;
+
   const router = useRouter();
   console.log("HeaderLayout", router.asPath);
   return (
@@ -54,14 +102,25 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
       <Sider
         collapsible
         theme="light"
+        trigger={null}
         collapsed={collapsed}
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+          overflow: "auto",
+          height: "100vh",
+          left: 0,
+          borderRightWidth: 1,
+          borderColor: token.colorBorder,
+        }}
         onCollapse={(value) => setCollapsed(value)}
       >
         <div
           style={{
             height: 32,
             margin: 16,
-            background: colorBgLayout,
+            background: token.colorBgLayout,
           }}
         />
         <Menu
@@ -70,26 +129,54 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           }}
           selectedKeys={[router.asPath]}
           mode="inline"
-          items={items}
+          items={
+            isLoggedIn && userMetadata?.role === "teacher"
+              ? itemsTeacher
+              : itemsStudent
+          }
           style={{
             borderRight: 0,
+            // backgroundColor: token.colorPrimaryBg,
           }}
         />
       </Sider>
-      <Layout>
-        <Header style={{ padding: 0, backgroundColor: colorBgContainer }}>
+      <Layout style={{ position: "relative" }}>
+        <Header
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            padding: 0,
+            backgroundColor: token.colorPrimaryBg,
+            // position: "relative",
+          }}
+        >
+          {React.createElement(
+            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+            {
+              className: "trigger",
+              style: {
+                fontSize: 20,
+                marginLeft: 16,
+                position: "absolute",
+                top: 20,
+                left: 5,
+              },
+              onClick: () => setCollapsed(!collapsed),
+            }
+          )}
           <MyHeader />
         </Header>
-        <Content style={{ margin: "0 16px" }}>
+        <Content className="bg-primary-100 px-4 dark:bg-gray-800">
           {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
           </Breadcrumb> */}
           {children}
         </Content>
-        <Footer
+        {/* <Footer
           style={{
-            backgroundColor: colorBgContainer,
+            backgroundColor: colorPrimaryBg,
             maxHeight: 48,
             display: "flex",
             justifyItems: "center",
@@ -97,7 +184,7 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           }}
         >
           <MyFooter />
-        </Footer>
+        </Footer> */}
       </Layout>
     </Layout>
   );

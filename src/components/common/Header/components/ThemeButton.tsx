@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
-import type { SetStateAction } from "jotai";
+import { atom, useAtom } from "jotai";
 import { FloatButton } from "antd";
 import {
   BulbOutlined,
@@ -13,18 +13,17 @@ export enum Themes {
   Light = "light",
 }
 
-function ThemeButton({
-  setMode,
-}: {
-  setMode: React.Dispatch<SetStateAction<Themes>>;
-}) {
+export const modeAtom = atom<Themes>(Themes.Light);
+
+function ThemeButton() {
   const { resolvedTheme: theme, setTheme } = useTheme();
+  const [, setModeAtom] = useAtom(modeAtom);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    setMode(theme === Themes.Dark ? Themes.Dark : Themes.Light);
-  }, [setMode, theme]);
+    setModeAtom(theme === Themes.Dark ? Themes.Dark : Themes.Light);
+  }, [setModeAtom, theme]);
 
   if (!mounted) return null;
 
@@ -37,17 +36,15 @@ function ThemeButton({
   return (
     <FloatButton.Group
       trigger="hover"
-      type="primary"
-      style={{ right: 40 }}
+      type="default"
+      style={{ right: 30 }}
       icon={<SlidersOutlined />}
     >
       <FloatButton icon={<CommentOutlined />} />
       <FloatButton
         onClick={toggleTheme}
         icon={<BulbOutlined />}
-        tooltip={
-          <div>{isDarkMode ? "Toggle Light Mode" : "Toggle Dark Mode"}</div>
-        }
+        tooltip={<div>{"Light Mode"}</div>}
         type={isDarkMode ? "default" : "primary"}
       />
       <FloatButton.BackTop visibilityHeight={0} />

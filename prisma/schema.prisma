@@ -48,6 +48,8 @@ model User {
   email         String?      @unique
   emailVerified DateTime?
   image         String?
+  age           Int?
+  gender        String?
   role          String?
   createdAt     DateTime     @default(now())
   accounts      Account[]
@@ -72,10 +74,19 @@ model Classroom {
   teacher     User         @relation("Classroom", fields: [userId], references: [id])
   userId      String
   createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   students    User[]       @relation("EnrolledIn")
   ratings     Rating[]
   assignments Assignment[]
-  description String       @default("no description provided")
+  subjects    Subject[]
+  description String       @default("No description provided")
+}
+
+model Subject {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  classrooms  Classroom[]
 }
 
 model Attachment {
@@ -92,15 +103,18 @@ model Assignment {
   description String
   attachments Attachment[]
   createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   dueDate     String       @default("2023-09-30T00:00:00Z")
   classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   classroomId String
   submissions Submission[]
+  submitRatio Float        @default(0)
 }
 
 model Submission {
   id           String     @id @default(cuid())
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   filename     String
   studentId    String
   student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -113,7 +127,10 @@ model Rating {
   id          String    @id @default(cuid())
   studentId   String
   classroomId String
+  comment     String    @default("No comment provided")
   amount      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 }

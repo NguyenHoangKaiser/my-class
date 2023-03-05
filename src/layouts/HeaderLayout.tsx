@@ -13,6 +13,9 @@ import {
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import logo from "src/assets/logo.png";
+import Link from "next/link";
 
 const { Header, Content, Sider } = Layout;
 
@@ -117,12 +120,19 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div
-          style={{
-            height: 32,
-            margin: 16,
-            background: token.colorBgLayout,
-          }}
-        />
+          className="m-4 flex h-9 items-center justify-center"
+          // style={{
+          //   background: token.colorBgLayout,
+          // }}
+        >
+          {collapsed ? (
+            <Link href="/">
+              <Image src={logo} alt="Logo" width={32} height={32} />
+            </Link>
+          ) : (
+            <Link href="/">My-Classroom</Link>
+          )}
+        </div>
         <Menu
           onClick={({ key }) => {
             router.push(key.toString());
@@ -148,26 +158,26 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
             zIndex: 1,
             padding: 0,
             backgroundColor: token.colorPrimaryBg,
-            // position: "relative",
           }}
         >
           {React.createElement(
             collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
             {
               className: "trigger",
+              title: collapsed ? "Expand" : "Collapse",
               style: {
                 fontSize: 20,
                 marginLeft: 16,
                 position: "absolute",
-                top: 20,
-                left: 5,
+                top: 23,
+                left: 0,
               },
               onClick: () => setCollapsed(!collapsed),
             }
           )}
           <MyHeader />
         </Header>
-        <Content className="bg-primary-100 px-4 dark:bg-gray-800">
+        <Content className="bg-gray-50 dark:bg-gray-800">
           {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>

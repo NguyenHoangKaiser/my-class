@@ -17,22 +17,22 @@ function CreateClassroomScreen() {
         onFinish={onFinish}
       >
         <Form.Item
-          label="Username"
-          name="username"
+          label="Class Name"
+          name="className"
           rules={[{ required: true, message: "Please input your Username!" }]}
         >
-          <Input size="large" placeholder="Username" />
+          <Input size="large" placeholder="Your class name" />
         </Form.Item>
         <Form.Item
-          label="Password"
-          name="password"
+          label="Description"
+          name="description"
           rules={[{ required: true, message: "Please input your Password!" }]}
         >
-          <Input size="large" type="password" placeholder="Password" />
+          <Input.TextArea size="large" placeholder="Description" />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 3, span: 6 }}>
           <Button type="primary" htmlType="submit" size="large" block>
-            Log in
+            Create Classroom
           </Button>
         </Form.Item>
       </Form>

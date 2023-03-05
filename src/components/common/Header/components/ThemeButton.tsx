@@ -13,7 +13,7 @@ export enum Themes {
   Light = "light",
 }
 
-export const modeAtom = atom<Themes>(Themes.Light);
+export const modeAtom = atom<Themes>(Themes.Dark);
 
 function ThemeButton() {
   const { resolvedTheme: theme, setTheme } = useTheme();

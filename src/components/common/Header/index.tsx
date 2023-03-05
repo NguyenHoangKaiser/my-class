@@ -1,8 +1,13 @@
 import { signIn } from "next-auth/react";
-import { Logo, LoggedInSection, LoggedOutSection } from "./components";
+import {
+  Logo,
+  LoggedInSection,
+  LoggedOutSection,
+  LoggedInLinks,
+} from "./components";
 import { useSession } from "src/hooks";
 
-function Header() {
+function Header({ home }: { home?: boolean }) {
   const session = useSession();
   const isLoggedIn = !!session.data;
   const userMetadata = session.data?.user;
@@ -14,16 +19,18 @@ function Header() {
           <MobileMenuButton setIsMobileMenuOpen={setIsMobileMenuOpen} />
         </div> */}
         <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-          <div className="flex flex-shrink-0 items-center">
-            <Logo />
+          <div className="ml-5 flex flex-shrink-0 items-center">
+            {home && <Logo />}
           </div>
-          {/* <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <nav className="flex space-x-4">
-              {isLoggedIn && userMetadata?.role && (
-                <LoggedInLinks role={userMetadata?.role} />
-              )}
-            </nav>
-          </div> */}
+          {home && (
+            <div className="hidden sm:ml-6 sm:flex sm:items-center">
+              <nav className="flex space-x-4">
+                {isLoggedIn && userMetadata?.role && (
+                  <LoggedInLinks role={userMetadata?.role} />
+                )}
+              </nav>
+            </div>
+          )}
         </div>
         <div className="flex items-center pr-2 sm:ml-6 sm:pr-0">
           {isLoggedIn ? (

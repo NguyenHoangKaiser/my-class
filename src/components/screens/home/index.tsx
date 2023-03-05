@@ -11,7 +11,7 @@ function HomeScreen() {
   return (
     <Layout>
       <Header style={{ padding: 0, backgroundColor: colorPrimaryBg }}>
-        <MyHeader />
+        <MyHeader home />
       </Header>
       <Content>
         <HeroSection />

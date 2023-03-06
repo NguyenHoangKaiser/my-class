@@ -37,6 +37,8 @@ Table User {
   email String [unique]
   emailVerified DateTime
   image String
+  bio String
+  location String
   age Int
   gender String
   role String
@@ -67,17 +69,21 @@ Table Classroom {
   userId String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  language String [not null, default: 'en']
   students User [not null]
   ratings Rating [not null]
   assignments Assignment [not null]
   subjects Subject [not null]
   description String [not null, default: 'No description provided']
   status String [not null, default: 'active']
+  modifier String [not null, default: 'public']
+  password String
+  requirements String [not null, default: 'No requirements provided']
 }
 
 Table Subject {
   id String [pk]
-  name String [not null]
+  name String [unique, not null]
   description String [not null]
   classrooms Classroom [not null]
 }

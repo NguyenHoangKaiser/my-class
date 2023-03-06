@@ -157,7 +157,9 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
             top: 0,
             zIndex: 1,
             padding: 0,
-            backgroundColor: token.colorPrimaryBg,
+            borderBottomWidth: 1,
+            borderColor: token.colorBorder,
+            backgroundColor: token.colorBgContainer,
           }}
         >
           {React.createElement(
@@ -177,7 +179,7 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           )}
           <MyHeader />
         </Header>
-        <Content className="bg-gray-50 dark:bg-gray-800">
+        <Content>
           {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>

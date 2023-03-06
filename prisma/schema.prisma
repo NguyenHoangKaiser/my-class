@@ -52,6 +52,8 @@ model User {
   email         String?      @unique
   emailVerified DateTime?
   image         String?
+  bio           String?
+  location      String?
   age           Int?
   gender        String?
   role          String?
@@ -74,23 +76,27 @@ model VerificationToken {
 }
 
 model Classroom {
-  id          String       @id @default(cuid())
-  name        String
-  teacher     User         @relation("Classroom", fields: [userId], references: [id])
-  userId      String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  students    User[]       @relation("EnrolledIn")
-  ratings     Rating[]
-  assignments Assignment[]
-  subjects    Subject[]    @relation("SubjectOfClassroom")
-  description String       @default("No description provided")
-  status      String       @default("active") // active, inactive, archived 
+  id           String       @id @default(cuid())
+  name         String
+  teacher      User         @relation("Classroom", fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  language     String       @default("en") // en, vi
+  students     User[]       @relation("EnrolledIn") //limit to 30 students
+  ratings      Rating[]
+  assignments  Assignment[]
+  subjects     Subject[]    @relation("SubjectOfClassroom")
+  description  String       @default("No description provided")
+  status       String       @default("active") // active, inactive, archived 
+  modifier     String       @default("public") // public, private
+  password     String?
+  requirements String       @default("No requirements provided")
 }
 
 model Subject {
   id          String      @id @default(cuid())
-  name        String
+  name        String      @unique
   description String
   classrooms  Classroom[] @relation("SubjectOfClassroom")
 }

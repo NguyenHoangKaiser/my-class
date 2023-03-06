@@ -27,7 +27,7 @@ function CreateClassroomModal({
   const createClassroom = trpc.classroom.createClassroom.useMutation();
 
   const onSubmit = handleSubmit(async (data) => {
-    await createClassroom.mutateAsync({ name: data.name });
+    // await createClassroom.mutateAsync({ name: data.name });
     reset();
     onComplete();
   });

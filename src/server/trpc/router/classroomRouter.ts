@@ -43,7 +43,19 @@ export const classroomRouter = router({
       return classrooms;
     }),
   createClassroom: protectedProcedure
-    .input(z.object({ name: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string().nullable(),
+        language: z.string().nullable(),
+        password: z.string().nullable(),
+        requirements: z.string().nullable(),
+        modifier: z.string().nullable(),
+        subject: z.array(
+          z.object({ name: z.string(), description: z.string() })
+        ),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       assertIsTeacher(ctx); // Verify that the user is a teacher
       const classroom = await ctx.prisma.classroom.create({
@@ -210,4 +222,25 @@ export const classroomRouter = router({
       });
       return classroom;
     }),
+  addSubject: protectedProcedure
+    .input(
+      z.array(
+        z.object({
+          name: z.string(),
+          description: z.string(),
+        })
+      )
+    )
+    .mutation(async ({ ctx, input }) => {
+      assertIsTeacher(ctx);
+      const subject = await ctx.prisma.subject.createMany({
+        data: input,
+        skipDuplicates: true,
+      });
+      return subject;
+    }),
+  getSubjects: protectedProcedure.query(async ({ ctx }) => {
+    const subjects = await ctx.prisma.subject.findMany();
+    return subjects;
+  }),
 });

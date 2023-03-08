@@ -88,7 +88,7 @@ const itemsStudent: MenuItem[] = [
 ];
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const { token } = theme.useToken();
   const session = useSession();
   const isLoggedIn = !!session.data;

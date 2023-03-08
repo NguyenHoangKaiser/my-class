@@ -111,7 +111,6 @@ model Attachment {
 
 model Assignment {
   id          String       @id @default(cuid())
-  number      Int          @default(autoincrement())
   name        String
   description String
   attachments Attachment[]
@@ -137,14 +136,15 @@ model Submission {
   assignmentId String
   grade        Float?
   Comment      Comment[]
+  status       String     @default("pending") // pending, viewed, graded, late
 }
 
 model Comment {
   id           String      @id @default(cuid())
   createdAt    DateTime    @default(now())
   content      String
-  studentId    String
-  user         User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   assignmentId String?
   assignment   Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   submissionId String? // one comment can be on a submission or an assignment

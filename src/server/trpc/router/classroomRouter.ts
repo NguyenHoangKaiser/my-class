@@ -46,11 +46,11 @@ export const classroomRouter = router({
     .input(
       z.object({
         name: z.string(),
-        description: z.string().nullable(),
-        language: z.string().nullable(),
+        description: z.string(),
+        language: z.string(),
         password: z.string().nullable(),
-        requirements: z.string().nullable(),
-        modifier: z.string().nullable(),
+        requirements: z.string(),
+        modifier: z.string(),
         subject: z.array(
           z.object({ name: z.string(), description: z.string() })
         ),
@@ -59,10 +59,30 @@ export const classroomRouter = router({
     .mutation(async ({ ctx, input }) => {
       assertIsTeacher(ctx); // Verify that the user is a teacher
       const classroom = await ctx.prisma.classroom.create({
-        data: {
-          name: input.name,
-          userId: ctx.session.user.id as string, // We know that the user is a teacher because of the assertIsTeacher call above
+        include: {
+          subjects: true,
         },
+        data: {
+          userId: ctx.session.user.id as string, // We know that the user is a teacher because of the assertIsTeacher call above
+          name: input.name,
+          description: input.description,
+          language: input.language,
+          password: input.password,
+          requirements: input.requirements,
+          modifier: input.modifier,
+          subjects: {
+            connectOrCreate: input.subject.map((subject) => ({
+              where: {
+                name: subject.name,
+              },
+              create: {
+                name: subject.name,
+                description: subject.description,
+              },
+            })),
+          },
+        },
+        // use connectOrCreate to create the subject if it doesn't exist yet, otherwise connect to it
       });
       return classroom;
     }),
@@ -222,23 +242,23 @@ export const classroomRouter = router({
       });
       return classroom;
     }),
-  addSubject: protectedProcedure
-    .input(
-      z.array(
-        z.object({
-          name: z.string(),
-          description: z.string(),
-        })
-      )
-    )
-    .mutation(async ({ ctx, input }) => {
-      assertIsTeacher(ctx);
-      const subject = await ctx.prisma.subject.createMany({
-        data: input,
-        skipDuplicates: true,
-      });
-      return subject;
-    }),
+  // addSubject: protectedProcedure
+  //   .input(
+  //     z.array(
+  //       z.object({
+  //         name: z.string(),
+  //         description: z.string(),
+  //       })
+  //     )
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     assertIsTeacher(ctx);
+  //     const subject = await ctx.prisma.subject.createMany({
+  //       data: input,
+  //       skipDuplicates: true,
+  //     });
+  //     return subject;
+  //   }),
   getSubjects: protectedProcedure.query(async ({ ctx }) => {
     const subjects = await ctx.prisma.subject.findMany();
     return subjects;

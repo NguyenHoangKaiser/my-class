@@ -98,7 +98,6 @@ Table Attachment {
 
 Table Assignment {
   id String [pk]
-  number Int [increment, not null]
   name String [not null]
   description String [not null]
   attachments Attachment [not null]
@@ -124,13 +123,14 @@ Table Submission {
   assignmentId String [not null]
   grade Float
   Comment Comment [not null]
+  status String [not null, default: 'pending']
 }
 
 Table Comment {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   content String [not null]
-  studentId String [not null]
+  userId String [not null]
   user User [not null]
   assignmentId String
   assignment Assignment
@@ -164,7 +164,7 @@ Ref: Submission.studentId > User.id [delete: Cascade]
 
 Ref: Submission.assignmentId > Assignment.id [delete: Cascade]
 
-Ref: Comment.studentId > User.id [delete: Cascade]
+Ref: Comment.userId > User.id [delete: Cascade]
 
 Ref: Comment.assignmentId > Assignment.id [delete: Cascade]
 

@@ -8,7 +8,7 @@ function EmptyStateWrapper({
   EmptyComponent,
   NonEmptyComponent,
 }: {
-  isLoading: boolean;
+  isLoading?: boolean;
   data: unknown;
   EmptyComponent: ReactNode;
   NonEmptyComponent: ReactNode;

@@ -11,9 +11,9 @@ function MainHeading({
 }) {
   return (
     <>
-      <section className="mb-8 flex items-end justify-between gap-8 px-5">
+      <section className="mb-8 flex flex-col gap-8 px-5 md:flex-row md:items-end md:justify-between">
         <div className="flex-col">
-          <h1 className="mt-8 ml-10 text-4xl">{title}</h1>
+          <h1 className="mt-8 text-4xl md:ml-10">{title}</h1>
           {subTitle && <h2 className="mt-4 text-2xl">{subTitle}</h2>}
         </div>
 

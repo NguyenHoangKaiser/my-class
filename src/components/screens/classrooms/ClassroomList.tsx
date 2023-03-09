@@ -1,22 +1,45 @@
-import type { Classroom } from "@prisma/client";
-import { Card, List } from "antd";
+import {
+  EditOutlined,
+  EllipsisOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import type { Classroom, Subject } from "@prisma/client";
+import { Avatar, Badge, Card, List, Space, Tag, Typography } from "antd";
+import Image from "next/image";
 import ClassroomCard from "./ClassroomCard";
+import student from "src/assets/student.jpeg";
+import { useRouter } from "next/router";
+import React from "react";
 
-function ClassroomsList({ classrooms }: { classrooms: Classroom[] }) {
+function ClassroomsList({
+  classrooms,
+}: {
+  classrooms:
+    | (Classroom & {
+        subjects: Subject[];
+      })[]
+    | undefined;
+}) {
+  const router = useRouter();
+  // make the get color function only run once when the subject name changes
+  const getTagColor = React.useCallback((name: string) => {
+    const length = name.length;
+    if (length > 8) {
+      return "purple";
+    } else if (length > 5) {
+      return "cyan";
+    } else {
+      return "blue";
+    }
+  }, []);
+
   return (
-    // <div className="flex flex-col gap-4">
-    //   <ul className="grid grid-cols-2 gap-4 px-5 md:grid-cols-3">
-    //     {classrooms.map((classroom) => (
-    //       <ClassroomCard key={classroom.id} classroom={classroom} />
-    //     ))}
-    //   </ul>
-    // </div>
     <List
       style={{
-        padding: 16,
+        padding: 32,
       }}
       grid={{
-        gutter: 16,
+        gutter: 32,
         xs: 1,
         sm: 1,
         md: 2,
@@ -25,9 +48,79 @@ function ClassroomsList({ classrooms }: { classrooms: Classroom[] }) {
         xxl: 4,
       }}
       dataSource={classrooms}
+      loading={classrooms === undefined}
       renderItem={(item) => (
         <List.Item>
-          <Card title={item.name}>Card content</Card>
+          <Badge.Ribbon
+            text={item.modifier.toLocaleUpperCase()}
+            color={
+              item.status === "active"
+                ? "green"
+                : item.status === "archived"
+                ? "red"
+                : "orange"
+            }
+          >
+            <Card
+              onClick={() => router.push(`/classrooms/${item.id}`)}
+              // style={{ width: 400 }}
+              hoverable
+              bordered={false}
+              cover={
+                <Image
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    objectFit: "cover",
+                    borderTopLeftRadius: 8,
+                    borderTopRightRadius: 8,
+                  }}
+                  src={student}
+                  alt="a student"
+                />
+              }
+              // actions={[
+              //   <EditOutlined key="edit" />,
+              //   <EllipsisOutlined key="ellipsis" />,
+              // ]}
+            >
+              <Card.Meta
+                // avatar={<Avatar src="https://joesch.moe/api/v1/random" />}
+                title={
+                  // <div className="flex gap-1">
+                  <Typography.Title level={4}>{item.name}</Typography.Title>
+                  //   <Badge
+                  //     status={item.status === "active" ? "success" : "error"}
+                  //   />
+                  // </div>
+                }
+                description={
+                  item.description !== "No description provided" ? (
+                    item.description
+                  ) : (
+                    <Tag color="red">No description provided</Tag>
+                  )
+                }
+              />
+              <Space style={{ marginTop: 12 }} wrap>
+                {item.subjects.length > 0 ? (
+                  item.subjects.map((subject) => (
+                    <Tag
+                      key={subject.id}
+                      color={getTagColor(subject.name)}
+                      style={{ fontSize: 12 }}
+                    >
+                      {subject.name}
+                    </Tag>
+                  ))
+                ) : (
+                  <Tag color="red" style={{ fontSize: 12 }}>
+                    No subject provided
+                  </Tag>
+                )}
+              </Space>
+            </Card>
+          </Badge.Ribbon>
         </List.Item>
       )}
     />

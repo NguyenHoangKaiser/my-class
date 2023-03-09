@@ -125,7 +125,7 @@ export const EditAssignmentScreen = ({
 
   return (
     <>
-      <MainHeading title={`Edit Assignment #${assignment?.number}`}>
+      <MainHeading title={`Edit Assignment`}>
         <Badge variant={BadgeVariant.Error} className="flex items-center gap-4">
           Due on {formattedDueDate}
           <LinkButton

@@ -118,6 +118,7 @@ model Assignment {
   updatedAt   DateTime     @updatedAt
   dueDate     String       @default("2023-09-30T00:00:00Z")
   classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  subject     String
   classroomId String
   submissions Submission[]
   submitRatio Float        @default(0)

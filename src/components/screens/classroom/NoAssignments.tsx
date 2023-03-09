@@ -1,6 +1,6 @@
+import { Button } from "antd";
 import Image from "next/image";
 import assignmentsImage from "src/assets/assignments.svg";
-import Button, { Variant } from "src/components/common/Button";
 import { useSession } from "src/hooks";
 
 function NoAssignments({
@@ -24,7 +24,7 @@ function NoAssignments({
       </div>
       {session.data?.user?.role === "teacher" && (
         <div className="self-center">
-          <Button onClick={openAssignmentModal} variant={Variant.Primary}>
+          <Button size="large" type="primary" onClick={openAssignmentModal}>
             Create An Assignment
           </Button>
         </div>

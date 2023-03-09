@@ -86,14 +86,42 @@ export const classroomRouter = router({
       });
       return classroom;
     }),
-  getClassroomsForTeacher: protectedProcedure.query(async ({ ctx }) => {
-    const classrooms = await ctx.prisma.classroom.findMany({
-      where: {
-        userId: ctx.session.user.id,
-      },
-    });
-    return classrooms;
-  }),
+  getClassroomsForTeacher: protectedProcedure
+    .input(
+      z
+        .object({
+          modifier: z.string().optional(),
+          language: z.string().optional(),
+          // name: z.string().nullable(),
+        })
+        .nullish()
+    )
+    .query(async ({ ctx, input }) => {
+      if (input && input.modifier !== "all" && input.language !== "all") {
+        const classrooms = await ctx.prisma.classroom.findMany({
+          where: {
+            userId: ctx.session.user.id as string,
+            modifier: input.modifier ? input.modifier : undefined,
+            language: input.language ? input.language : undefined,
+            // name: input.name ? input.name : undefined,
+          },
+          include: {
+            subjects: true,
+          },
+        });
+        return classrooms;
+      } else {
+        const classrooms = await ctx.prisma.classroom.findMany({
+          where: {
+            userId: ctx.session.user.id as string,
+          },
+          include: {
+            subjects: true,
+          },
+        });
+        return classrooms;
+      }
+    }),
   getClassroom: protectedProcedure
     .input(z.object({ classroomId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -101,15 +129,27 @@ export const classroomRouter = router({
         where: {
           id: input.classroomId,
         },
+        include: {
+          subjects: true,
+          students: true,
+        },
       });
       return classroom;
     }),
   editClassroom: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
         classroomId: z.string(),
+        name: z.string(),
         description: z.string(),
+        language: z.string(),
+        password: z.string().nullable(),
+        requirements: z.string(),
+        modifier: z.string(),
+        status: z.string(),
+        subject: z.array(
+          z.object({ name: z.string(), description: z.string() })
+        ),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -118,9 +158,28 @@ export const classroomRouter = router({
         where: {
           id: input.classroomId,
         },
+        include: {
+          subjects: true,
+        },
         data: {
           name: input.name,
           description: input.description,
+          language: input.language,
+          password: input.password,
+          requirements: input.requirements,
+          modifier: input.modifier,
+          status: input.status,
+          subjects: {
+            connectOrCreate: input.subject.map((subject) => ({
+              where: {
+                name: subject.name,
+              },
+              create: {
+                name: subject.name,
+                description: subject.description,
+              },
+            })),
+          },
         },
       });
       return updatedClassroom;
@@ -131,6 +190,8 @@ export const classroomRouter = router({
         name: z.string(),
         dueDate: z.string(),
         classroomId: z.string(),
+        description: z.string(),
+        subject: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -139,8 +200,9 @@ export const classroomRouter = router({
         data: {
           name: input.name,
           dueDate: input.dueDate,
-          description: "This is a default assignment description",
           classroomId: input.classroomId,
+          description: input.description,
+          subject: input.subject,
         },
       });
       return assignment;

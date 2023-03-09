@@ -105,6 +105,7 @@ Table Assignment {
   updatedAt DateTime [not null]
   dueDate String [not null, default: '2023-09-30T00:00:00Z']
   classroom Classroom [not null]
+  subject String [not null]
   classroomId String [not null]
   submissions Submission [not null]
   submitRatio Float [not null, default: 0]

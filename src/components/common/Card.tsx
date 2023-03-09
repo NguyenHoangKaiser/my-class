@@ -16,7 +16,7 @@ function Card({
   const TitleAs = titleAs ? titleAs : "div";
 
   return (
-    <li className="flex max-w-sm cursor-default flex-col gap-4 overflow-hidden rounded bg-gray-50 shadow-lg dark:bg-gray-50 dark:text-black">
+    <li className="flex max-w-sm cursor-default flex-col gap-4 overflow-hidden rounded bg-gray-50 bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg dark:bg-gray-50 dark:text-black">
       <Image
         height={140}
         width={400}

@@ -1,96 +1,166 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import { InboxOutlined } from "@ant-design/icons";
+import type { Classroom, Subject, User } from "@prisma/client";
+import type { DatePickerProps } from "antd";
+import { DatePicker, message, Select } from "antd";
+import { Form, Input, Modal } from "antd";
 import { trpc } from "src/utils/trpc";
-import { DateTime, Duration } from "luxon";
-import Modal, { ModalActions, ModalForm } from "src/components/common/Modal";
-import FormGroup from "src/components/common/Form/FormGroup";
-import Button, { Variant } from "src/components/common/Button";
+import dayjs from "dayjs";
 
-type CreateAssignmentForm = {
+type CreateAssignmentFormData = {
   name: string;
   description: string;
-  dueDate: string;
+  subject: string;
+  dueDate: DatePickerProps["value"];
 };
-
-function CreateAssignmentModal({
-  onCancel,
-  onComplete,
-  isOpen,
-  classroomId,
-}: {
+interface CreateAssignmentModalProp {
+  open: boolean;
   onCancel: () => void;
-  onComplete: (assignmentId: string) => void;
-  isOpen: boolean;
-  classroomId: string;
-}) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<CreateAssignmentForm>();
+  refetch: () => void;
+  classroom:
+    | (Classroom & {
+        students: User[];
+        subjects: Subject[];
+      })
+    | null
+    | undefined;
+}
 
+const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
+  open,
+  onCancel,
+  refetch,
+  classroom,
+}) => {
+  const [form] = Form.useForm<CreateAssignmentFormData>();
   const createAssignment = trpc.classroom.createAssignment.useMutation();
 
-  const onSubmit = handleSubmit(async (data) => {
-    const dur = Duration.fromObject({ day: 1, seconds: -1 }); // TODO: this seems like backend business logic
-    const assignment = await createAssignment.mutateAsync({
-      name: data.name,
-      classroomId,
-      dueDate: DateTime.fromISO(data.dueDate).plus(dur).toISO(),
-    });
-    reset();
-    onComplete(assignment.id);
-  });
+  const onFinish = async (
+    values: CreateAssignmentFormData,
+    resetFields: () => void
+  ) => {
+    console.log("Received values of form: ", values);
 
-  const handleCancel = () => {
-    reset();
-    onCancel();
+    await createAssignment.mutateAsync(
+      {
+        classroomId: classroom?.id as string,
+        name: values.name,
+        description: values.description,
+        subject: values.subject,
+        dueDate: values["dueDate"]?.toISOString() as string,
+      },
+      {
+        onSuccess: () => {
+          message.success("Assignment created");
+          refetch();
+          resetFields();
+          onCancel();
+        },
+        onError: () => {
+          message.error("Create assignment unsuccessful");
+        },
+      }
+    );
+  };
+
+  // eslint-disable-next-line arrow-body-style
+  const disabledDate: DatePickerProps["disabledDate"] = (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs().add(1, "day");
   };
 
   return (
     <Modal
-      isOpen={isOpen}
-      handleCancel={handleCancel}
-      title="Create Assignment"
-      description="Enter the information for your new assignment."
+      open={open}
+      title="Create a new assignment"
+      okText="Create"
+      cancelText="Cancel"
+      onCancel={onCancel}
+      onOk={() => {
+        form.validateFields().then((values) => {
+          onFinish(values, form.resetFields);
+        });
+        // .catch((info) => {
+        //   console.log("Validate Failed:", info);
+        // });
+      }}
     >
-      <ModalForm onSubmit={onSubmit}>
-        <FormGroup
-          label="Name"
-          error={errors.name && "Name is required"}
+      <Form form={form} layout="vertical" name="create-assignment">
+        <Form.Item
           name="name"
+          label="Assignment name"
+          rules={[
+            {
+              required: true,
+              message: "Please input the name of the assignment!",
+            },
+          ]}
         >
-          <input id="name" {...register("name", { required: true })} />
-        </FormGroup>
-
-        <FormGroup
-          label="Due Date"
-          error={errors.dueDate && "Due date is required"}
-          name="dueDate"
+          <Input placeholder="Assignment name" />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[
+            {
+              required: true,
+              message: "Please input the description of the assignment!",
+            },
+          ]}
         >
-          <input
-            type="date"
-            id="dueDate"
-            {...register("dueDate", { required: true })}
+          <Input.TextArea placeholder="Description" showCount maxLength={200} />
+        </Form.Item>
+        <Form.Item
+          label="Subjects"
+          name="subject"
+          tooltip="The subject of this assignment"
+          rules={[
+            {
+              required: true,
+              message: "Please select a subject!",
+            },
+          ]}
+        >
+          <Select
+            options={classroom?.subjects.map((subject) => ({
+              label: subject.name,
+              value: subject.name,
+            }))}
+            notFoundContent={
+              <div className="flex flex-col items-center justify-center">
+                <InboxOutlined
+                  style={{
+                    fontSize: 30,
+                  }}
+                />{" "}
+                This classroom has no subjects yet. Please add one first.
+              </div>
+            }
+            placeholder="Please select assignment's subject"
           />
-        </FormGroup>
-
-        <ModalActions>
-          <Button
-            variant={Variant.Secondary}
-            onClick={handleCancel}
-            type="button"
-          >
-            Cancel
-          </Button>
-          <Button onClick={onSubmit} variant={Variant.Primary} type="submit">
-            Create
-          </Button>
-        </ModalActions>
-      </ModalForm>
+        </Form.Item>
+        <Form.Item
+          style={{ marginBottom: 40 }}
+          name="dueDate"
+          label="Due date"
+          rules={[
+            {
+              required: true,
+              message: "Please input the due date of the assignment!",
+            },
+          ]}
+        >
+          <DatePicker
+            style={{
+              width: "100%",
+            }}
+            showTime
+            disabledDate={disabledDate}
+            format="DD-MM-YYYY HH:mm:ss"
+          />
+        </Form.Item>
+      </Form>
     </Modal>
   );
-}
+};
 
 export default CreateAssignmentModal;

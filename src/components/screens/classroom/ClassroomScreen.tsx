@@ -8,8 +8,7 @@ import Button, { Variant } from "src/components/common/Button";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
 import { useCreateAssignment } from "./hooks/useCreateAssignment";
-import { useEditClassroom } from "./hooks/useEditClassroom";
-import SideNavigation, { TabName, tabAtom } from "./SideNavigation";
+import SideNavigation, { tabAtom } from "./SideNavigation";
 import NoAssignments from "./NoAssignments";
 import TeacherAssignments from "./TeacherAssignments";
 import StudentAssignments from "./StudentAssignments";
@@ -36,24 +35,19 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
 
   const deleteClassroom = trpc.classroom.deleteClassroom.useMutation();
 
-  const {
-    openEditClassroomModal,
-    closeEditModal,
-    handleEditClassroomComplete,
-    showEditClassroomModal,
-  } = useEditClassroom({
-    refreshClassroom: classroomQuery.refetch,
-    classroomId,
-  });
+  const deleteAssignment = trpc.assignment.deleteAssignment.useMutation();
 
-  const {
-    showCreateAssignmentModal,
-    closeAssignmentModal,
-    openAssignmentModal,
-    handleAssignmentModalComplete,
-  } = useCreateAssignment({
-    classroomId,
-  });
+  const handleDeleteAssignment = async (assignmentId: string) => {
+    if (!confirm("Confirm delete assignment?")) return;
+    await deleteAssignment.mutateAsync({ assignmentId });
+    assignmentsQuery.refetch();
+  };
+
+  const [showEditClassroomModal, setShowEditClassroomModal] =
+    React.useState<boolean>(false);
+
+  const [showCreateAssignmentModal, setShowCreateAssignmentModal] =
+    React.useState<boolean>(false);
 
   const session = useSession();
   const router = useRouter();
@@ -78,12 +72,19 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
     router.push("/classrooms");
   };
 
+  const openAssignmentModal = () => {
+    setShowCreateAssignmentModal(true);
+  };
+
   return (
     <>
       <MainHeading title={classroom?.name ?? "loading..."}>
         {hasAdminAccess && (
           <div className="flex gap-3">
-            <LinkButton className="text-base" onClick={openEditClassroomModal}>
+            <LinkButton
+              className="text-base"
+              onClick={() => setShowEditClassroomModal(true)}
+            >
               <PencilSquare /> Edit
             </LinkButton>
             <LinkButton
@@ -103,11 +104,11 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
         )}
       </MainHeading>
 
-      <div className="mb-12 flex">
+      <div className="mb-12 mr-6 flex">
         <SideNavigation />
 
         <section className="grow">
-          {selectedTab === TabName.Assignment && (
+          {selectedTab === "assignments" && (
             <EmptyStateWrapper
               isLoading={isLoadingAssignments}
               data={assignments}
@@ -117,7 +118,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
               NonEmptyComponent={
                 session.data?.user?.role === Roles.Teacher ? (
                   <TeacherAssignments
-                    classroomId={classroomId}
+                    handleDeleteAssignment={handleDeleteAssignment}
                     assignments={assignments ?? []}
                     openAssignmentModal={openAssignmentModal}
                   />
@@ -131,28 +132,28 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
             />
           )}
 
-          {selectedTab === TabName.Students && (
+          {selectedTab === "students" && (
             <StudentsSection classroomId={classroomId} />
           )}
 
-          {selectedTab === TabName.Submissions && (
+          {selectedTab === "submissions" && (
             <SubmissionsSection classroomId={classroomId} />
           )}
         </section>
       </div>
 
       <CreateAssignmentModal
-        onCancel={closeAssignmentModal}
-        onComplete={handleAssignmentModalComplete}
-        isOpen={showCreateAssignmentModal}
-        classroomId={classroomId}
+        open={showCreateAssignmentModal}
+        refetch={assignmentsQuery.refetch}
+        onCancel={() => setShowCreateAssignmentModal(false)}
+        classroom={classroom}
       />
 
       {classroom && (
         <EditClassroomModal
-          onCancel={closeEditModal}
-          onComplete={handleEditClassroomComplete}
-          isOpen={showEditClassroomModal}
+          onCancel={() => setShowEditClassroomModal(false)}
+          refetch={classroomQuery.refetch}
+          open={showEditClassroomModal}
           classroom={classroom}
         />
       )}

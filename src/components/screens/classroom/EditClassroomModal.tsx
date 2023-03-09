@@ -1,90 +1,319 @@
-import type { Classroom } from "@prisma/client";
-import React from "react";
-import { useForm } from "react-hook-form";
-import Button, { Variant } from "src/components/common/Button";
-import Modal, { ModalActions, ModalForm } from "src/components/common/Modal";
+import { MinusCircleOutlined } from "@ant-design/icons";
+import type { Classroom, Subject, User } from "@prisma/client";
+import { Button, Checkbox, Col, message, Select } from "antd";
+import { Form, Input, Modal, Radio } from "antd";
+import { trpc } from "src/utils/trpc";
 
-type EditClassroomForm = {
+type FormSubject = {
   name: string;
   description: string;
 };
 
-function EditClassroomModal({
-  onCancel,
-  onComplete,
-  isOpen,
-  classroom,
-}: {
+type CreateClassroomFormData = {
+  name: string;
+  description?: string;
+  language?: {
+    label: string;
+    value: string;
+  };
+  subject: [];
+  addSubjectCheck?: boolean;
+  addSubject?: FormSubject[];
+  password?: string;
+  requirements?: string;
+  modifier: "public" | "private";
+  status: "active" | "inactive" | "archived";
+};
+
+interface EditClassroomModalProp {
+  open: boolean;
   onCancel: () => void;
-  onComplete: (formData: EditClassroomForm) => void;
-  isOpen: boolean;
-  classroom: Classroom;
-}) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<EditClassroomForm>({
-    defaultValues: classroom,
-  });
+  refetch: () => void;
+  classroom:
+    | (Classroom & {
+        students: User[];
+        subjects: Subject[];
+      })
+    | null
+    | undefined;
+}
 
-  const onSubmit = handleSubmit(async (data) => {
-    onComplete(data);
-    reset();
-  });
+const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
+  open,
+  onCancel,
+  refetch,
+  classroom,
+}) => {
+  const [form] = Form.useForm<CreateClassroomFormData>();
+  const { data: subjectData } = trpc.classroom.getSubjects.useQuery();
+  const editClassroom = trpc.classroom.editClassroom.useMutation();
+  const addSubjectCheckValue = Form.useWatch("addSubjectCheck", form);
+  const modifierValue = Form.useWatch("modifier", form);
+  let disabled = false;
+  if (classroom && classroom.students.length > 0) {
+    disabled = true;
+  }
 
-  const handleCancel = () => {
-    reset();
-    onCancel();
+  const onFinish = async (
+    values: CreateClassroomFormData,
+    resetFields: () => void
+  ) => {
+    console.log("Received values of form: ", values);
+    let subjectArr: any[] = [];
+    if (values.subject) {
+      subjectArr = values.subject.map((subjectId) => {
+        const arr = subjectData?.find((subject) => subject.id === subjectId);
+        return {
+          name: arr?.name,
+          description: arr?.description,
+        };
+      });
+    }
+    if (values.addSubjectCheck && values.addSubject) {
+      subjectArr = [...subjectArr, ...values.addSubject];
+    }
+
+    if (classroom && classroom.id) {
+      const formData = {
+        classroomId: classroom?.id,
+        name: values.name,
+        description: values.description ?? "No description provided",
+        language: values.language?.value ?? "en",
+        password: values.password ?? null,
+        requirements: values.requirements ?? "No requirements provided",
+        modifier: values.modifier,
+        subject: subjectArr,
+        status: values.status,
+      };
+
+      editClassroom.mutateAsync(formData, {
+        onSuccess: () => {
+          message.success("Classroom details updated successfully!");
+          resetFields();
+          refetch();
+          onCancel();
+        },
+        onError: () => {
+          message.error("Failed to update classroom details!");
+        },
+      });
+      console.log("Form", formData);
+    }
   };
 
   return (
     <Modal
-      title="Edit Classroom"
-      description="Type in the information needed for your classroom"
-      isOpen={isOpen}
-      handleCancel={handleCancel}
+      open={open}
+      title="Edit classroom details"
+      okText="Save"
+      cancelText="Cancel"
+      onCancel={onCancel}
+      onOk={() => {
+        form.validateFields().then((values) => {
+          onFinish(values, form.resetFields);
+        });
+        // .catch((info) => {
+        //   console.log("Validate Failed:", info);
+        // });
+      }}
     >
-      <ModalForm onSubmit={onSubmit}>
-        <div className="flex flex-col gap-4">
-          <label className="flex flex-col gap-2">
-            <div>Name</div>
-            <input
-              placeholder="name"
-              {...register("name", { required: true })}
-            />
-          </label>
-          {errors.name?.type === "required" && (
-            <div className="text-red-500">Name is required</div>
-          )}
-
-          <label className="flex flex-col gap-2">
-            <div>Description</div>
-            <textarea
-              {...register("description", { required: true })}
-              placeholder="description"
-            />
-            {errors.description?.type === "required" && (
-              <div className="text-red-500">Description is required</div>
-            )}
-          </label>
-        </div>
-        <ModalActions>
-          <Button
-            variant={Variant.Secondary}
-            onClick={handleCancel}
-            type="button"
+      <Form
+        form={form}
+        layout="vertical"
+        name="edit-class"
+        initialValues={{
+          name: classroom?.name,
+          description: classroom?.description,
+          language: {
+            label: classroom?.language === "en" ? "English" : "Vietnamese",
+            value: classroom?.language,
+          },
+          subject: classroom?.subjects.map((subject) => subject.id),
+          modifier: classroom?.modifier,
+          status: classroom?.status,
+          password: classroom?.password,
+          requirements: classroom?.requirements,
+        }}
+      >
+        <Form.Item
+          name="name"
+          label="Classroom name"
+          rules={[
+            {
+              required: true,
+              message: "Please input the name of the classroom!",
+            },
+          ]}
+        >
+          <Input placeholder="Classroom name" />
+        </Form.Item>
+        <Form.Item name="description" label="Description">
+          <Input.TextArea placeholder="Description" showCount maxLength={200} />
+        </Form.Item>
+        <Form.Item
+          name="modifier"
+          label="Modifier"
+          tooltip={
+            modifierValue === "private"
+              ? "Private classroom can only be seen and enrolled by students who have the password."
+              : "Public classroom can be seen and enrolled by any students."
+          }
+        >
+          <Radio.Group disabled={disabled}>
+            <Radio value="public">Public</Radio>
+            <Radio value="private">Private</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item name="status" label="Status">
+          <Radio.Group>
+            <Radio value="active">Active</Radio>
+            <Radio value="inactive">Inactive</Radio>
+            <Radio value="archived">Archived</Radio>
+          </Radio.Group>
+        </Form.Item>
+        {modifierValue === "private" && (
+          <Form.Item
+            tooltip="Only private classroom can have password"
+            name="password"
+            label="Password"
+            rules={[
+              {
+                required: true,
+                message: "Please input the password of the classroom!",
+              },
+              {
+                min: 6,
+                message: "Password must be at least 6 characters",
+              },
+            ]}
           >
-            Cancel
-          </Button>
-          <Button variant={Variant.Primary} type="submit">
-            Save
-          </Button>
-        </ModalActions>
-      </ModalForm>
+            <Input.Password type="password" placeholder="Password" />
+          </Form.Item>
+        )}
+        <Form.Item
+          // initialValue={{
+          //   label: "English",
+          //   value: "en",
+          // }}
+          name="language"
+          label="Language"
+        >
+          <Select
+            disabled={disabled}
+            options={[
+              {
+                label: "English",
+                value: "en",
+              },
+              {
+                label: "Vietnamese",
+                value: "vi",
+              },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Subjects"
+          name="subject"
+          tooltip="The main subject of your class"
+        >
+          <Select
+            disabled={disabled}
+            mode="multiple"
+            options={subjectData?.map((subject) => ({
+              label: subject.name,
+              value: subject.id,
+            }))}
+            placeholder="Please select classroom's subject"
+          />
+        </Form.Item>
+        <Form.Item name="addSubjectCheck" valuePropName="checked">
+          <Checkbox
+            disabled={disabled}
+            onChange={(value) => {
+              console.log(value);
+              form.setFieldsValue({
+                addSubject: [
+                  {
+                    name: "",
+                    description: "",
+                  },
+                ],
+              });
+            }}
+          >
+            Add new subject
+          </Checkbox>
+        </Form.Item>
+        {addSubjectCheckValue && (
+          <Form.List name="addSubject">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Col
+                    key={key}
+                    style={{
+                      display: "flex",
+                      marginBottom: 8,
+                      gap: 8,
+                    }}
+                  >
+                    <Form.Item
+                      {...restField}
+                      name={[name, "name"]}
+                      style={{ flex: 0.8 }}
+                      rules={[
+                        { required: true, message: "Missing subject name" },
+                      ]}
+                    >
+                      <Input style={{ flex: 1 }} placeholder="Subject Name" />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      style={{ flex: 1 }}
+                      name={[name, "description"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Missing subject description",
+                        },
+                      ]}
+                    >
+                      <Input.TextArea
+                        showCount
+                        maxLength={200}
+                        placeholder="Subject description"
+                      />
+                    </Form.Item>
+                    <MinusCircleOutlined
+                      onClick={() => {
+                        remove(name);
+                        form.setFieldsValue({
+                          addSubjectCheck: false,
+                        });
+                      }}
+                    />
+                  </Col>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block>
+                    Add new subjects
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        )}
+        <Form.Item
+          style={{ marginBottom: 40 }}
+          name="requirements"
+          label="Requirements"
+        >
+          <Input.TextArea showCount maxLength={200} />
+        </Form.Item>
+      </Form>
     </Modal>
   );
-}
+};
 
 export default EditClassroomModal;

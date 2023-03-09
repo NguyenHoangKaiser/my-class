@@ -8,24 +8,19 @@ import {
 } from "src/components/common/Icons";
 import Roles from "src/utils/constants";
 import { useSession } from "src/hooks";
+import { Tabs } from "antd";
 
-export enum TabName {
-  Assignment,
-  Students,
-  Submissions,
-}
-
-export const tabAtom = atom<TabName>(TabName.Assignment);
+export const tabAtom = atom("assignments");
 
 const studentLinks = [
   {
     name: "Assignments",
-    tab: TabName.Assignment,
+    tab: "assignments",
     icon: <PaperCheckIcon />,
   },
   {
     name: "Students",
-    tab: TabName.Students,
+    tab: "students",
     icon: <PeopleIcon />,
   },
 ];
@@ -33,17 +28,17 @@ const studentLinks = [
 const teacherLinks = [
   {
     name: "Assignments",
-    tab: TabName.Assignment,
+    tab: "assignments",
     icon: <PaperCheckIcon />,
   },
   {
     name: "Students",
-    tab: TabName.Students,
+    tab: "students",
     icon: <PeopleIcon />,
   },
   {
     name: "Submissions",
-    tab: TabName.Submissions,
+    tab: "submissions",
     icon: <PencilSquare />,
   },
 ];
@@ -58,26 +53,22 @@ function SideNavigation() {
     session.data.user?.role === Roles.Teacher ? teacherLinks : studentLinks;
 
   return (
-    <aside className="w-64 flex-none" aria-label="Sidebar">
+    <aside className="w-52 flex-none" aria-label="Sidebar">
       <div className="overflow-y-auto py-4 px-3">
-        <ul className="space-y-2 rounded-xl bg-gray-100 dark:bg-gray-700">
-          {links.map((link) => (
-            <li key={link.name} onClick={() => setSelectedTab(link.tab)}>
-              <a
-                href="#"
-                className={classNames(
-                  "flex items-center rounded-lg p-2 text-base font-normal ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2",
-                  link.tab === selectedTab
-                    ? "bg-primary-200 text-primary-700 shadow "
-                    : "text-blue-400 hover:bg-white/[0.12] hover:text-primary-600 dark:hover:text-blue-400"
-                )}
-              >
+        <Tabs
+          tabPosition="left"
+          activeKey={selectedTab}
+          onChange={(key) => setSelectedTab(key)}
+          items={links.map((link) => ({
+            key: link.tab,
+            label: (
+              <div className="flex items-center gap-1">
                 {link.icon}
                 <span className="ml-3">{link.name}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+              </div>
+            ),
+          }))}
+        />
       </div>
     </aside>
   );

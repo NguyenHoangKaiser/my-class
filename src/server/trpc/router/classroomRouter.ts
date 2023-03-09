@@ -216,6 +216,7 @@ export const classroomRouter = router({
         },
         include: {
           attachments: true,
+          submissions: true,
         },
       });
       return assignments;

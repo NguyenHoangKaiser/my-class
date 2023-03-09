@@ -1,80 +1,42 @@
-import type { Assignment, Attachment } from "@prisma/client";
+import type {
+  Assignment,
+  Attachment,
+  Classroom,
+  Subject,
+  Submission,
+  User,
+} from "@prisma/client";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { DateTime } from "luxon";
-import { PencilSquare } from "src/components/common/Icons";
-// import Table from "src/components/common/Table";
-import { Button, Table, Space, Tag } from "antd";
-import { ColumnsType } from "antd/es/table";
+import { PencilSquare, TrashIcon } from "src/components/common/Icons";
+import { Button, Table, Space, Tag, Popconfirm, Typography } from "antd";
 import dayjs from "dayjs";
+import React from "react";
 
 type DataType = Assignment & {
   attachments: Attachment[];
+  submissions: Submission[];
 };
-
-const columns: ColumnsType<DataType> = [
-  {
-    title: "#",
-    key: "index",
-    render: (_text, _record, index) => <span>{index + 1}</span>,
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: "Due Date",
-    dataIndex: "dueDate",
-    key: "dueDate",
-    render: (_, { dueDate }) => (
-      <span className="whitespace-nowrap">
-        {dayjs(dueDate).format("DD-MM-YYYY hh:mm A")}
-      </span>
-    ),
-  },
-  {
-    title: "Subject",
-    dataIndex: "subject",
-    key: "subject",
-    render: (_, { subject }) => {
-      const color =
-        subject.length > 8 ? "purple" : subject.length > 5 ? "cyan" : "blue";
-      return <Tag color={color}>{subject}</Tag>;
-    },
-  },
-  {
-    title: "Attachments",
-    key: "attachments",
-    render: (_, { attachments }) => attachments.length,
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <Link
-          className="flex items-center gap-1"
-          href={`/classrooms/${record.classroomId}/assignments/${record.id}/edit`}
-        >
-          <PencilSquare /> Edit
-        </Link>
-      </Space>
-    ),
-  },
-];
+const { Column } = Table;
 
 function TeacherAssignments({
   assignments,
   openAssignmentModal,
   handleDeleteAssignment,
+  classroom,
 }: {
   assignments: (Assignment & {
+    submissions: Submission[];
     attachments: Attachment[];
   })[];
   openAssignmentModal: () => void;
   handleDeleteAssignment: (id: string) => Promise<void>;
+  classroom:
+    | (Classroom & {
+        students: User[];
+        subjects: Subject[];
+      })
+    | null
+    | undefined;
 }) {
   const totalAssignments = assignments.length;
 
@@ -89,30 +51,135 @@ function TeacherAssignments({
         </Button>
       </div>
       <div className="overflow-x-auto">
-        <Table columns={columns} dataSource={assignments} />
-        {/* <Table
-          headers={["Number", "Name", "Due Date", "Attachments", "Action"]}
-          rows={assignments.map((assignment, idx) => [
-            idx,
-            assignment.name,
-            <span key={idx} className="whitespace-nowrap">
-              {DateTime.fromISO(assignment.dueDate).toLocaleString(
-                DateTime.DATE_MED
-              )}
-            </span>,
-            assignment.attachments.length,
-            (
-              <span className="flex gap-4">
+        <Table dataSource={assignments}>
+          <Column<DataType>
+            title="#"
+            key="index"
+            render={(_text, _record, index) => <span>{index + 1}</span>}
+          />
+          <Column<DataType>
+            title="Name"
+            dataIndex="name"
+            key="name"
+            sorter={(a, b) => a.name.localeCompare(b.name)}
+            sortDirections={["descend", "ascend"]}
+          />
+          <Column<DataType>
+            title="Due date"
+            dataIndex="dueDate"
+            key="dueDate"
+            render={(dueDate) => (
+              <Typography.Text
+                type={dayjs(dueDate).isBefore(dayjs()) ? "danger" : "success"}
+              >
+                {dayjs(dueDate).format("DD-MM-YYYY hh:mm A")}
+              </Typography.Text>
+            )}
+            sorter={(a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate))}
+            sortDirections={["descend", "ascend"]}
+          />
+          <Column<DataType>
+            title="Subject"
+            dataIndex="subject"
+            key="subject"
+            render={(subject) => {
+              const color =
+                subject.length > 8
+                  ? "purple"
+                  : subject.length > 5
+                  ? "cyan"
+                  : "blue";
+              return <Tag color={color}>{subject}</Tag>;
+            }}
+            filters={classroom?.subjects.map((subject) => ({
+              text: subject.name,
+              value: subject.name,
+            }))}
+            //@ts-expect-error - this is the filter
+            onFilter={(value, record) => record.subject.indexOf(value) === 0}
+          />
+          <Column<DataType>
+            title="Attachment"
+            dataIndex="attachments"
+            key="attachments"
+            render={(attachments) => attachments.length}
+            sorter={(a, b) => a.attachments.length - b.attachments.length}
+            sortDirections={["descend", "ascend"]}
+          />
+          <Column<DataType>
+            title="Submission"
+            dataIndex="submissions"
+            key="submissions"
+            sorter={(a, b) => a.submissions.length - b.submissions.length}
+            sortDirections={["descend", "ascend"]}
+            render={(submission) => submission.length}
+          />
+          <Column<DataType>
+            title="Status"
+            dataIndex="status"
+            key="status"
+            render={(status) => (
+              <Tag
+                color={
+                  status === "open"
+                    ? "green"
+                    : status === "closed"
+                    ? "red"
+                    : "orange"
+                }
+              >
+                {status}
+              </Tag>
+            )}
+            filters={[
+              {
+                text: "Open",
+                value: "open",
+              },
+              {
+                text: "Closed",
+                value: "closed",
+              },
+              {
+                text: "Pending",
+                value: "pending",
+              },
+            ]}
+            //@ts-expect-error - this is the filter
+            onFilter={(value, record) => record.status.indexOf(value) === 0}
+          />
+          <Column<DataType>
+            title="Action"
+            key="action"
+            render={(_, record) => (
+              <Space size="middle">
                 <Link
-                  href={`/classrooms/${classroomId}/assignments/${assignment.id}/edit`}
-                  className="link flex items-center gap-1"
+                  className="flex items-center gap-1 text-blue-400"
+                  href={`/classrooms/${record.classroomId}/assignments/${record.id}/edit`}
                 >
                   <PencilSquare /> Edit
                 </Link>
-              </span>
-            ) as ReactNode,
-          ])}
-        /> */}
+                <Popconfirm
+                  title="Delete assignment"
+                  description="Are you sure to delete this assignment?"
+                  onConfirm={() => {
+                    handleDeleteAssignment(record.id);
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Typography.Link
+                    href="#"
+                    type="danger"
+                    className="flex items-center gap-1"
+                  >
+                    <TrashIcon /> Delete
+                  </Typography.Link>
+                </Popconfirm>
+              </Space>
+            )}
+          />
+        </Table>
       </div>
     </div>
   );

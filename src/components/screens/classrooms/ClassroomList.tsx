@@ -1,12 +1,6 @@
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
 import type { Classroom, Subject } from "@prisma/client";
-import { Avatar, Badge, Card, List, Space, Tag, Typography } from "antd";
+import { Badge, Card, List, Space, Tag, Typography } from "antd";
 import Image from "next/image";
-import ClassroomCard from "./ClassroomCard";
 import student from "src/assets/student.jpeg";
 import { useRouter } from "next/router";
 import React from "react";
@@ -50,7 +44,12 @@ function ClassroomsList({
       dataSource={classrooms}
       loading={classrooms === undefined}
       renderItem={(item) => (
-        <List.Item>
+        <List.Item
+          style={{
+            width: 400,
+            marginBottom: 32,
+          }}
+        >
           <Badge.Ribbon
             text={item.modifier.toLocaleUpperCase()}
             color={
@@ -69,8 +68,8 @@ function ClassroomsList({
               cover={
                 <Image
                   style={{
-                    width: "auto",
-                    height: "auto",
+                    // width: "auto",
+                    // height: "auto",
                     objectFit: "cover",
                     borderTopLeftRadius: 8,
                     borderTopRightRadius: 8,

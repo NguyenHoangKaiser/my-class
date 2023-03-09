@@ -19,6 +19,7 @@ import SubmissionsSection from "./SubmissionsSection";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
+import { message } from "antd";
 
 function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
@@ -38,8 +39,8 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const deleteAssignment = trpc.assignment.deleteAssignment.useMutation();
 
   const handleDeleteAssignment = async (assignmentId: string) => {
-    if (!confirm("Confirm delete assignment?")) return;
     await deleteAssignment.mutateAsync({ assignmentId });
+    message.success("Assignment deleted successfully!");
     assignmentsQuery.refetch();
   };
 
@@ -104,7 +105,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
         )}
       </MainHeading>
 
-      <div className="mb-12 mr-6 flex">
+      <div className="mb-12 mr-7 flex">
         <SideNavigation />
 
         <section className="grow">
@@ -121,6 +122,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
                     handleDeleteAssignment={handleDeleteAssignment}
                     assignments={assignments ?? []}
                     openAssignmentModal={openAssignmentModal}
+                    classroom={classroom}
                   />
                 ) : (
                   <StudentAssignments

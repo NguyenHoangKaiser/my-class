@@ -1,92 +1,106 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import type { Assignment } from "@prisma/client";
+import type { DatePickerProps } from "antd";
+import { DatePicker, message } from "antd";
+import { Form, Modal } from "antd";
 import { trpc } from "src/utils/trpc";
-import { DateTime, Duration } from "luxon";
-import { Modal } from "src/components/common";
-import { ModalActions, ModalForm } from "src/components/common/Modal";
-import FormGroup from "src/components/common/Form/FormGroup";
-import Button, { Variant } from "src/components/common/Button";
+import dayjs from "dayjs";
 
-type EditDateForm = {
-  dueDate: string;
+type EditAssignmentFormData = {
+  dueDate: DatePickerProps["value"];
 };
 
-function EditDateModal({
-  onCancel,
-  initialDueDate,
-  onComplete,
-  isOpen,
-  assignmentId,
-}: {
-  initialDueDate: string;
+interface EditDateModalProp {
+  open: boolean;
   onCancel: () => void;
-  onComplete: () => void;
-  isOpen: boolean;
-  assignmentId: string;
-}) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<EditDateForm>();
+  refetch: () => void;
+  assignment: Assignment | null | undefined;
+}
 
-  useEffect(() => {
-    reset({
-      dueDate: DateTime.fromISO(initialDueDate).toFormat("yyyy-MM-dd"),
-    });
-  }, [initialDueDate, reset]);
+const EditDateModal: React.FC<EditDateModalProp> = ({
+  open,
+  onCancel,
+  refetch,
+  assignment,
+}) => {
+  const [form] = Form.useForm<EditAssignmentFormData>();
+  const extendDueDate = trpc.assignment.updateDueDate.useMutation();
 
-  const updateDueDate = trpc.assignment.updateDueDate.useMutation();
+  const onFinish = async (
+    values: EditAssignmentFormData,
+    resetFields: () => void
+  ) => {
+    await extendDueDate.mutateAsync(
+      {
+        assignmentId: assignment?.id as string,
+        dueDate: values["dueDate"]?.toISOString() as string,
+      },
+      {
+        onSuccess: () => {
+          message.success("Assignment extended successfully!");
+          refetch();
+          resetFields();
+          onCancel();
+        },
+        onError: () => {
+          message.error("Failed to extend assignment");
+        },
+      }
+    );
+  };
 
-  const onSubmit = handleSubmit(async (data) => {
-    const dur = Duration.fromObject({ day: 1, seconds: -1 }); // TODO: this seems like backend business logic
-    await updateDueDate.mutateAsync({
-      assignmentId,
-      dueDate: DateTime.fromISO(data.dueDate).plus(dur).toISO(),
-    });
-    onComplete();
-  });
+  const initialDueDate = dayjs(assignment?.dueDate);
 
-  const handleCancel = () => {
-    reset();
-    onCancel();
+  // eslint-disable-next-line arrow-body-style
+  const disabledDate: DatePickerProps["disabledDate"] = (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs(assignment?.dueDate).add(1, "day");
   };
 
   return (
     <Modal
-      isOpen={isOpen}
-      handleCancel={handleCancel}
-      title="Create Assignment"
-      description="Enter the information for your new assignment."
+      open={open}
+      title="Extend the due date of the assignment"
+      okText="Save"
+      cancelText="Cancel"
+      onCancel={onCancel}
+      onOk={() => {
+        form.validateFields().then((values) => {
+          onFinish(values, form.resetFields);
+        });
+      }}
     >
-      <ModalForm onSubmit={onSubmit}>
-        <FormGroup
-          label="Due Date"
-          error={errors.dueDate && "Due date is required"}
+      <Form
+        form={form}
+        layout="vertical"
+        name="extend-dueDate"
+        initialValues={{
+          dueDate: initialDueDate,
+        }}
+      >
+        <Form.Item
+          style={{ marginBottom: 40 }}
           name="dueDate"
+          label="Due date"
+          tooltip="You can only extend forward the due date of the assignment."
+          rules={[
+            {
+              required: true,
+              message: "Please input the due date of the assignment!",
+            },
+          ]}
         >
-          <input
-            type="date"
-            id="dueDate"
-            {...register("dueDate", { required: true })}
+          <DatePicker
+            style={{
+              width: "100%",
+            }}
+            showTime
+            disabledDate={disabledDate}
+            format="DD-MM-YYYY HH:mm:ss"
           />
-        </FormGroup>
-
-        <ModalActions>
-          <Button
-            variant={Variant.Secondary}
-            onClick={handleCancel}
-            type="button"
-          >
-            Cancel
-          </Button>
-          <Button onClick={onSubmit} variant={Variant.Primary} type="submit">
-            Update
-          </Button>
-        </ModalActions>
-      </ModalForm>
+        </Form.Item>
+      </Form>
     </Modal>
   );
-}
+};
+
 export default EditDateModal;

@@ -1,19 +1,24 @@
-import type { ReactNode } from "react";
+import classNames from "classnames";
+import type { HTMLAttributes, ReactNode } from "react";
 
 function MainHeading({
   title,
   subTitle,
   children,
+  titleStyle,
 }: {
   title: string;
   subTitle?: string;
   children?: ReactNode;
+  titleStyle?: HTMLAttributes<HTMLHeadingElement>["className"];
 }) {
   return (
     <>
       <section className="mb-8 flex flex-col gap-8 px-5 md:flex-row md:items-end md:justify-between">
         <div className="flex-col">
-          <h1 className="mt-8 text-4xl md:ml-10">{title}</h1>
+          <h1 className={classNames("mt-8 text-4xl md:ml-10", titleStyle)}>
+            {title}
+          </h1>
           {subTitle && <h2 className="mt-4 text-2xl">{subTitle}</h2>}
         </div>
 

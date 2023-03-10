@@ -121,28 +121,28 @@ function TeacherAssignments({
             render={(status) => (
               <Tag
                 color={
-                  status === "open"
+                  status === "progressing"
                     ? "green"
-                    : status === "closed"
+                    : status === "completed"
                     ? "red"
                     : "orange"
                 }
               >
-                {status}
+                {status.toUpperCase()}
               </Tag>
             )}
             filters={[
               {
-                text: "Open",
-                value: "open",
+                text: "Progressing",
+                value: "progressing",
               },
               {
-                text: "Closed",
-                value: "closed",
+                text: "Completed",
+                value: "completed",
               },
               {
-                text: "Pending",
-                value: "pending",
+                text: "Suspended",
+                value: "suspended",
               },
             ]}
             //@ts-expect-error - this is the filter

@@ -9,6 +9,32 @@ import { TRPCError } from "@trpc/server";
 export const BucketName = "files";
 
 export const assignmentRouter = router({
+  updateAssignment: protectedProcedure
+    .input(
+      z.object({
+        assignmentId: z.string(),
+        name: z.string(),
+        description: z.string(),
+        dueDate: z.string(),
+        subject: z.string(),
+        status: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      assertIsAssignmentAdmin(ctx, input.assignmentId);
+      await ctx.prisma.assignment.update({
+        where: {
+          id: input.assignmentId,
+        },
+        data: {
+          name: input.name,
+          description: input.description,
+          subject: input.subject,
+          dueDate: input.dueDate,
+          status: input.status,
+        },
+      });
+    }),
   updateDescription: protectedProcedure
     .input(
       z.object({

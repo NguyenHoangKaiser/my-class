@@ -132,6 +132,7 @@ export const classroomRouter = router({
         include: {
           subjects: true,
           students: true,
+          // assignments: true,
         },
       });
       return classroom;

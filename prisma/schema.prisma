@@ -122,7 +122,7 @@ model Assignment {
   classroomId String
   submissions Submission[]
   submitRatio Float        @default(0)
-  status      String       @default("open") // open, closed
+  status      String       @default("progressing") // progressing, completed, suspended
   Comment     Comment[]
 }
 

@@ -109,7 +109,7 @@ Table Assignment {
   classroomId String [not null]
   submissions Submission [not null]
   submitRatio Float [not null, default: 0]
-  status String [not null, default: 'open']
+  status String [not null, default: 'progressing']
   Comment Comment [not null]
 }
 

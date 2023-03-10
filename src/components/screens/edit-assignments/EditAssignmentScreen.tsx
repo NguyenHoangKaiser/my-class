@@ -1,34 +1,24 @@
-import { DateTime } from "luxon";
+import { EditOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import { message, Tag, Typography, Upload, UploadProps, Button } from "antd";
+import { RcFile, UploadFile } from "antd/es/upload";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useToggle } from "react-use";
 import { Badge, EmptyStateWrapper, MainHeading } from "src/components/common";
 import { BadgeVariant } from "src/components/common/Badge";
-import Button, { Variant } from "src/components/common/Button";
+// import Button, { Variant } from "src/components/common/Button";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
-import FormGroup from "src/components/common/Form/FormGroup";
-import {
-  PencilSquare,
-  TrashIcon,
-  UploadIcon,
-} from "src/components/common/Icons";
+import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import { useFileUpload, useIsClassroomAdmin } from "src/hooks";
 import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "./AttachmentsTable";
+import EditAssignmentModal from "./EditAssignmentModal";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
-import { supabaseDeleteFile } from "src/utils/helper";
-
-type UpdateDescriptionForm = {
-  description: string;
-};
-
-type UpdateTitleForm = {
-  title: string;
-};
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -37,16 +27,13 @@ export const EditAssignmentScreen = ({
   classroomId: string;
   assignmentId: string;
 }) => {
-  const [isEditingDescription, toggleIsEditingDescription] = useToggle(false);
-  const [isEditingTitle, toggleIsEditingTitle] = useToggle(false);
+  const [showEditAssignmentModal, setShowEditAssignmentModal] =
+    React.useState<boolean>(false);
   const [isEditDueDateModalOpen, toggleIsEditDueDateModalOpen] =
     useToggle(false);
-  const { register, handleSubmit, setValue } = useForm<UpdateDescriptionForm>();
-  const {
-    register: registerTitle,
-    handleSubmit: handleSubmitTitle,
-    setValue: setValueTitle,
-  } = useForm<UpdateTitleForm>();
+
+  const classroomQuery = trpc.classroom.getClassroom.useQuery({ classroomId });
+
   const router = useRouter();
 
   useIsClassroomAdmin(classroomId);
@@ -65,44 +52,13 @@ export const EditAssignmentScreen = ({
 
   const deleteAssignment = trpc.assignment.deleteAssignment.useMutation();
 
-  const updateDescription = trpc.assignment.updateDescription.useMutation();
-
-  const updateTitle = trpc.assignment.updateTitle.useMutation();
-
   const attachmentsQuery = trpc.assignment.getAttachments.useQuery({
     assignmentId,
   });
 
-  const assignmentQuery = trpc.classroom.getAssignment.useQuery(
-    {
-      assignmentId,
-    },
-    {
-      refetchOnWindowFocus: false,
-      onSuccess(data) {
-        setValue("description", data?.description ?? "");
-        setValueTitle("title", data?.name ?? "");
-      },
-    }
-  );
-
-  const handleSaveEditDescription = async (formData: UpdateDescriptionForm) => {
-    await updateDescription.mutateAsync({
-      description: formData.description,
-      assignmentId,
-    });
-    assignmentQuery.refetch();
-    toggleIsEditingDescription();
-  };
-
-  const handleSaveEditTitle = async (formData: UpdateTitleForm) => {
-    await updateTitle.mutateAsync({
-      title: formData.title,
-      assignmentId,
-    });
-    assignmentQuery.refetch();
-    toggleIsEditingTitle();
-  };
+  const assignmentQuery = trpc.classroom.getAssignment.useQuery({
+    assignmentId,
+  });
 
   const handleDeleteAssignment = async () => {
     if (!confirm("Confirm delete assignment?")) return;
@@ -116,147 +72,231 @@ export const EditAssignmentScreen = ({
   };
 
   const formattedDueDate = assignmentQuery.data?.dueDate
-    ? DateTime.fromISO(assignmentQuery.data?.dueDate).toLocaleString(
-        DateTime.DATE_MED
-      )
+    ? dayjs(assignmentQuery.data?.dueDate).format("DD-MM-YYYY hh:mm A")
     : "N/A";
+
+  const isNotDue = assignmentQuery.data?.dueDate
+    ? dayjs().isBefore(assignmentQuery.data?.dueDate)
+    : false;
 
   const assignment = assignmentQuery.data;
 
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = () => {
+    const formData = new FormData();
+    fileList.forEach((file) => {
+      formData.append("files[]", file as RcFile);
+    });
+    setUploading(true);
+    console.log("fileList", fileList);
+
+    // You can use any AJAX library you like
+    // fetch("https://www.mocky.io/v2/5cc8019d300000980a055e76", {
+    //   method: "POST",
+    //   body: formData,
+    // })
+    //   .then((res) => res.json())
+    //   .then(() => {
+    //     setFileList([]);
+    //     message.success("upload successfully.");
+    //   })
+    //   .catch(() => {
+    //     message.error("upload failed.");
+    //   })
+    //   .finally(() => {
+    //     setUploading(false);
+    //   });
+  };
+
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+
+      return false;
+    },
+    fileList,
+  };
+
   return (
     <>
-      <MainHeading title={`Edit Assignment`}>
-        <Badge variant={BadgeVariant.Error} className="flex items-center gap-4">
-          Due on {formattedDueDate}
-          <LinkButton
-            onClick={toggleIsEditDueDateModalOpen}
-            variant={LinkButtonVariant.Secondary}
+      <MainHeading
+        titleStyle="text-primary-700 dark:text-primary-500"
+        title="Assignment details"
+      >
+        <div className="flex gap-4">
+          {assignment?.status !== "completed" ? (
+            <Tag
+              color={isNotDue ? "green" : "red"}
+              className="cursor-pointer"
+              onClick={() => toggleIsEditDueDateModalOpen()}
+              icon={<EditOutlined />}
+              style={{
+                display: "flex",
+                fontSize: 16,
+                height: 40,
+                alignItems: "center",
+                gap: 10,
+                justifyContent: "space-between",
+              }}
+            >
+              Due on {formattedDueDate}
+            </Tag>
+          ) : (
+            <Tag
+              color={isNotDue ? "green" : "red"}
+              style={{
+                display: "flex",
+                fontSize: 16,
+                height: 40,
+                alignItems: "center",
+                gap: 10,
+                justifyContent: "space-between",
+              }}
+            >
+              Due on {formattedDueDate}
+            </Tag>
+          )}
+          <Tag
+            color={
+              assignment?.status === "progressing"
+                ? "green"
+                : assignment?.status === "suspended"
+                ? "orange"
+                : "red"
+            }
+            style={{
+              display: "flex",
+              fontSize: 16,
+              height: 40,
+              alignItems: "center",
+              gap: 10,
+              justifyContent: "space-between",
+            }}
           >
+            {assignment?.status.toUpperCase()}
+          </Tag>
+        </div>
+
+        <div className="flex gap-3">
+          <LinkButton onClick={() => setShowEditAssignmentModal(true)}>
             <PencilSquare /> Edit
           </LinkButton>
-        </Badge>
-
-        <LinkButton
-          variant={LinkButtonVariant.Danger}
-          onClick={handleDeleteAssignment}
-        >
-          <TrashIcon /> Delete
-        </LinkButton>
+          <LinkButton
+            variant={LinkButtonVariant.Danger}
+            onClick={handleDeleteAssignment}
+          >
+            <TrashIcon /> Delete
+          </LinkButton>
+        </div>
       </MainHeading>
 
-      <section className="px-5">
-        <h2 className="mb-4 flex items-center gap-4 text-4xl">
-          Title
-          <LinkButton onClick={toggleIsEditingTitle}>
-            <PencilSquare /> Edit
-          </LinkButton>
-        </h2>
-        {isEditingTitle ? (
-          <form
-            className="mb-12 flex w-2/3 flex-col"
-            onSubmit={handleSubmitTitle(handleSaveEditTitle)}
-          >
-            <FormGroup label="Title" name="title">
-              <input className="mb-4" {...registerTitle("title")}></input>
-            </FormGroup>
-
-            <div className="flex justify-end">
-              <Button className="w-fit">
-                <UploadIcon size="md" /> Save
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <p className="text-md mb-12 flex items-center gap-4">
-            {assignmentQuery.data?.name}
-          </p>
-        )}
-      </section>
-
-      <section className="px-5">
-        <h2 className="mb-4 flex text-3xl">
-          Description
-          <LinkButton onClick={toggleIsEditingDescription}>
-            <PencilSquare /> Edit
-          </LinkButton>
-        </h2>
-
-        {isEditingDescription ? (
-          <form
-            className="mb-12 flex w-2/3 flex-col"
-            onSubmit={handleSubmit(handleSaveEditDescription)}
-          >
-            <FormGroup label="Description" name="description">
-              <textarea
-                className="mb-4 h-56"
-                {...register("description")}
-              ></textarea>
-            </FormGroup>
-
-            <div className="flex justify-end">
-              <Button className="w-fit">
-                <UploadIcon size="md" /> Save
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <div className="markdown mb-12">
-            <ReactMarkdown>{assignment?.description ?? ""}</ReactMarkdown>
+      <div className="mx-10">
+        <section className="px-5">
+          <h2 className="mb-4 text-3xl">Title</h2>
+          <div className="markdown mb-5">
+            <Typography.Title level={4}>{assignment?.name}</Typography.Title>
           </div>
-        )}
-
-        <h2 className="mb-4 text-3xl">Attachments</h2>
-
-        <div className="mb-8">
-          <EmptyStateWrapper
-            EmptyComponent={<EmptyStateAttachments />}
-            NonEmptyComponent={
-              <AttachmentsTable
-                data={attachmentsQuery.data ?? []}
-                onFilesDeleted={handleOnAttachmentDelete}
-              />
-            }
-            isLoading={attachmentsQuery.isLoading}
-            data={attachmentsQuery.data}
-          />
-        </div>
-
-        <div className="mb-6 flex justify-start">
-          <form className="text-white" onSubmit={uploadFile}>
-            <label
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              htmlFor="file-upload"
-            >
-              Upload Attachment
-            </label>
-            <input
-              ref={fileRef}
-              id="file-upload"
-              className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-              onChange={handleFileChange}
-              type="file"
+        </section>
+        <section className="px-5">
+          <h2 className="mb-4 text-3xl">Description</h2>
+          <div className="markdown mb-5 text-lg">
+            <ReactMarkdown>{`${assignment?.description}`}</ReactMarkdown>
+          </div>
+          <div className="mb-5">
+            <Typography.Title level={5}>
+              Created at:{" "}
+              <Typography.Text type="secondary">
+                {dayjs(assignment?.createdAt).format("DD-MM-YYYY hh:mm A")}
+              </Typography.Text>
+            </Typography.Title>
+          </div>
+          <div className="mb-5">
+            <Typography.Title level={5}>
+              Last updated at:{" "}
+              <Typography.Text type="success">
+                {dayjs(assignment?.updatedAt).format("DD-MM-YYYY hh:mm A")}
+              </Typography.Text>
+            </Typography.Title>
+          </div>
+          <h2 className="mb-5 text-3xl">Attachments</h2>
+          <div className="mb-5">
+            <EmptyStateWrapper
+              EmptyComponent={<EmptyStateAttachments />}
+              NonEmptyComponent={
+                <AttachmentsTable
+                  data={attachmentsQuery.data ?? []}
+                  onFilesDeleted={handleOnAttachmentDelete}
+                />
+              }
+              isLoading={attachmentsQuery.isLoading}
+              data={attachmentsQuery.data}
             />
-            {file && (
-              <Button className="mt-4" type="submit" variant={Variant.Primary}>
-                Upload
-              </Button>
-            )}
-          </form>
-        </div>
-      </section>
+          </div>
+          <div className="mb-14 flex justify-start">
+            {/* <form className="text-white" onSubmit={uploadFile}>
+              <label
+                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="file-upload"
+              >
+                Upload Attachment
+              </label>
+              <input
+                ref={fileRef}
+                id="file-upload"
+                className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+                onChange={handleFileChange}
+                type="file"
+              />
+              {file && (
+                <Button
+                  className="mt-4"
+                  type="submit"
+                  variant={Variant.Primary}
+                >
+                  Upload
+                </Button>
+              )}
+            </form> */}
+            <Upload {...props}>
+              <Button icon={<UploadOutlined />}>Select File</Button>
+            </Upload>
+            <Button
+              type="primary"
+              onClick={handleUpload}
+              disabled={fileList.length === 0}
+              loading={uploading}
+              style={{ marginTop: 16 }}
+            >
+              {uploading ? "Uploading" : "Start Upload"}
+            </Button>
+          </div>
+        </section>
+      </div>
 
       {assignmentQuery.data?.dueDate && (
         <EditDateModal
-          initialDueDate={assignmentQuery.data.dueDate}
-          assignmentId={assignmentId}
-          isOpen={isEditDueDateModalOpen}
-          onCancel={toggleIsEditDueDateModalOpen}
-          onComplete={() => {
-            toggleIsEditDueDateModalOpen();
-            assignmentQuery.refetch();
-          }}
+          open={isEditDueDateModalOpen}
+          refetch={assignmentQuery.refetch}
+          onCancel={() => toggleIsEditDueDateModalOpen(false)}
+          assignment={assignment}
         />
       )}
+
+      <EditAssignmentModal
+        open={showEditAssignmentModal}
+        refetch={assignmentQuery.refetch}
+        classroom={classroomQuery.data}
+        onCancel={() => setShowEditAssignmentModal(false)}
+        assignment={assignment}
+      />
     </>
   );
 };

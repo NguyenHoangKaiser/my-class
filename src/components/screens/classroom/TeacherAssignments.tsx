@@ -10,7 +10,8 @@ import Link from "next/link";
 import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import { Button, Table, Space, Tag, Popconfirm, Typography } from "antd";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 
 type DataType = Assignment & {
   attachments: Attachment[];
@@ -39,6 +40,30 @@ function TeacherAssignments({
     | undefined;
 }) {
   const totalAssignments = assignments.length;
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const deleteSelection = () => {
+    setLoading(true);
+
+    Promise.all(
+      selectedRowKeys.map((id) => handleDeleteAssignment(id.toString()))
+    ).then(() => {
+      setLoading(false);
+      setSelectedRowKeys([]);
+    });
+  };
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,13 +74,47 @@ function TeacherAssignments({
         <Button type="primary" size="large" onClick={openAssignmentModal}>
           Create an Assignment
         </Button>
+        {hasSelected && (
+          <Popconfirm
+            title="Delete assignment"
+            description="Are you sure to delete selected assignments?"
+            onConfirm={deleteSelection}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary" danger loading={loading}>
+              Delete selected
+            </Button>
+          </Popconfirm>
+        )}
       </div>
-      <div className="overflow-x-auto">
-        <Table dataSource={assignments}>
+      <div className="mr-2">
+        <Table
+          onRow={(record) => {
+            return {
+              onClick: () => {
+                router.push(
+                  `/classrooms/${record.classroomId}/assignments/${record.id}/edit`
+                );
+              },
+            };
+          }}
+          dataSource={assignments}
+          bordered
+          rowSelection={rowSelection}
+          rowKey={(record) => record.id}
+          pagination={{
+            pageSize: 5,
+            hideOnSinglePage: true,
+          }}
+          // scroll={{ x: 100, y: 500 }}
+        >
           <Column<DataType>
             title="#"
             key="index"
             render={(_text, _record, index) => <span>{index + 1}</span>}
+            // fixed="left"
+            // width={50}
           />
           <Column<DataType>
             title="Name"
@@ -63,6 +122,7 @@ function TeacherAssignments({
             key="name"
             sorter={(a, b) => a.name.localeCompare(b.name)}
             sortDirections={["descend", "ascend"]}
+            // width={150}
           />
           <Column<DataType>
             title="Due date"
@@ -77,6 +137,7 @@ function TeacherAssignments({
             )}
             sorter={(a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate))}
             sortDirections={["descend", "ascend"]}
+            // width={200}
           />
           <Column<DataType>
             title="Subject"
@@ -97,6 +158,7 @@ function TeacherAssignments({
             }))}
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.subject.indexOf(value) === 0}
+            // width={110}
           />
           <Column<DataType>
             title="Attachment"
@@ -105,6 +167,7 @@ function TeacherAssignments({
             render={(attachments) => attachments.length}
             sorter={(a, b) => a.attachments.length - b.attachments.length}
             sortDirections={["descend", "ascend"]}
+            // width={120}
           />
           <Column<DataType>
             title="Submission"
@@ -113,6 +176,7 @@ function TeacherAssignments({
             sorter={(a, b) => a.submissions.length - b.submissions.length}
             sortDirections={["descend", "ascend"]}
             render={(submission) => submission.length}
+            // width={120}
           />
           <Column<DataType>
             title="Status"
@@ -147,10 +211,13 @@ function TeacherAssignments({
             ]}
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.status.indexOf(value) === 0}
+            // width={120}
           />
           <Column<DataType>
             title="Action"
             key="action"
+            // width={160}
+            // fixed="right"
             render={(_, record) => (
               <Space size="middle">
                 <Link

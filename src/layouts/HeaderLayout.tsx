@@ -5,6 +5,7 @@ import {
   FileOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  ProfileOutlined,
   ReadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -32,26 +33,26 @@ const itemsTeacher: MenuItem[] = [
     key: "/profile",
     icon: <UserOutlined />,
   },
-  {
-    label: "Team",
-    key: "sub2",
-    icon: <TeamOutlined />,
-    children: [
-      {
-        label: "Team 1",
-        key: "6",
-      },
-      {
-        label: "Team 2",
-        key: "8",
-      },
-    ],
-  },
-  {
-    label: "Files",
-    key: "9",
-    icon: <FileOutlined />,
-  },
+  // {
+  //   label: "Team",
+  //   key: "sub2",
+  //   icon: <TeamOutlined />,
+  //   children: [
+  //     {
+  //       label: "Team 1",
+  //       key: "6",
+  //     },
+  //     {
+  //       label: "Team 2",
+  //       key: "8",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Files",
+  //   key: "9",
+  //   icon: <FileOutlined />,
+  // },
 ];
 
 const itemsStudent: MenuItem[] = [
@@ -70,21 +71,21 @@ const itemsStudent: MenuItem[] = [
     key: "/profile",
     icon: <UserOutlined />,
   },
-  {
-    label: "Team",
-    key: "sub2",
-    icon: <TeamOutlined />,
-    children: [
-      {
-        label: "Team 1",
-        key: "6",
-      },
-      {
-        label: "Team 2",
-        key: "8",
-      },
-    ],
-  },
+  // {
+  //   label: "Team",
+  //   key: "sub2",
+  //   icon: <TeamOutlined />,
+  //   children: [
+  //     {
+  //       label: "Team 1",
+  //       key: "6",
+  //     },
+  //     {
+  //       label: "Team 2",
+  //       key: "8",
+  //     },
+  //   ],
+  // },
 ];
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {

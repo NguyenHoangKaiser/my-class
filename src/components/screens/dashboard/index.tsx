@@ -1,7 +1,7 @@
-import { EmptyStateWrapper, MainHeading } from "src/components/common";
+import { MainHeading } from "src/components/common";
 import EmptyStateDashboard from "./EmptyStateDashboard";
-import EnrolledList from "./EnrolledList";
 import { trpc } from "src/utils/trpc";
+import ClassroomsList from "../classrooms/ClassroomList";
 
 function DashboardScreen() {
   const enrolledClassroomsQuery = trpc.student.getClassrooms.useQuery();
@@ -12,11 +12,10 @@ function DashboardScreen() {
     <div>
       <MainHeading title="Your Classrooms" />
 
-      <EmptyStateWrapper
+      <ClassroomsList
+        emptyComponent={<EmptyStateDashboard />}
         isLoading={isLoading}
-        data={classrooms}
-        EmptyComponent={<EmptyStateDashboard />}
-        NonEmptyComponent={<EnrolledList classrooms={classrooms ?? []} />}
+        classrooms={classrooms ?? []}
       />
     </div>
   );

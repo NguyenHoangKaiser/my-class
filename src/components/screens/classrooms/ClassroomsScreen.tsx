@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { EmptyStateWrapper, MainHeading } from "src/components/common";
+import { MainHeading } from "src/components/common";
 import { trpc } from "src/utils/trpc";
-import EmptyStateClassrooms from "./EmptyStateClassrooms";
 import ClassroomsList from "./ClassroomList";
 import { Button, Select, Space } from "antd";
 import CreateClassroomModal from "./CreateClassroomModal";
+import EmptyStateClassrooms from "./EmptyStateClassrooms";
 
 function ClassroomsScreen() {
   const [open, setOpen] = useState(false);
@@ -13,8 +13,15 @@ function ClassroomsScreen() {
     language: "",
   });
 
-  const { data: classrooms, refetch: refetchClassrooms } =
-    trpc.classroom.getClassroomsForTeacher.useQuery(filter);
+  const {
+    data: classrooms,
+    refetch: refetchClassrooms,
+    isLoading,
+  } = trpc.classroom.getClassroomsForTeacher.useQuery(filter);
+
+  function openClassroomModal() {
+    setOpen(true);
+  }
 
   return (
     <>
@@ -65,15 +72,13 @@ function ClassroomsScreen() {
       </MainHeading>
 
       <div>
-        {/* <EmptyStateWrapper
-          // isLoading={isLoading}
-          data={classrooms}
-          EmptyComponent={
+        <ClassroomsList
+          emptyComponent={
             <EmptyStateClassrooms openClassroomModal={openClassroomModal} />
           }
-          NonEmptyComponent={<ClassroomsList classrooms={classrooms ?? []} />}
-        /> */}
-        <ClassroomsList classrooms={classrooms} />
+          isLoading={isLoading}
+          classrooms={classrooms}
+        />
       </div>
 
       <CreateClassroomModal

@@ -41,4 +41,13 @@ const getDownloadUrl = async (key: Key) => {
   }
 };
 
-export { getKeyUrl, supabaseDeleteFile, getDownloadUrl };
+const firstLetterToUpperCase = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export {
+  getKeyUrl,
+  supabaseDeleteFile,
+  getDownloadUrl,
+  firstLetterToUpperCase,
+};

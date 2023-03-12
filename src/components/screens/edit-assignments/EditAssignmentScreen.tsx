@@ -1,24 +1,20 @@
-import { EditOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
-import { message, Tag, Typography, Upload, UploadProps, Button } from "antd";
-import { RcFile, UploadFile } from "antd/es/upload";
+import { EditOutlined, UploadOutlined } from "@ant-design/icons";
+import { Tag, Typography, Upload, Button, Popconfirm, message } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useToggle } from "react-use";
-import { Badge, EmptyStateWrapper, MainHeading } from "src/components/common";
-import { BadgeVariant } from "src/components/common/Badge";
-// import Button, { Variant } from "src/components/common/Button";
-import LinkButton, {
-  LinkButtonVariant,
-} from "src/components/common/Button/LinkButton";
+import { EmptyStateWrapper, MainHeading } from "src/components/common";
+import LinkButton from "src/components/common/Button/LinkButton";
 import { PencilSquare, TrashIcon } from "src/components/common/Icons";
-import { useFileUpload, useIsClassroomAdmin } from "src/hooks";
+import { useIsClassroomAdmin } from "src/hooks";
 import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "./AttachmentsTable";
 import EditAssignmentModal from "./EditAssignmentModal";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
+import useAntUpload from "src/hooks/useAntUpload";
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -39,7 +35,7 @@ export const EditAssignmentScreen = ({
   useIsClassroomAdmin(classroomId);
   const createFileUrl = trpc.assignment.createFileUrl.useMutation();
 
-  const { file, fileRef, handleFileChange, uploadFile } = useFileUpload({
+  const { fileList, handleUpload, uploadProps, uploading } = useAntUpload({
     getUploadUrl: (fileToUpload: File) =>
       createFileUrl.mutateAsync({
         filename: fileToUpload.name,
@@ -61,9 +57,8 @@ export const EditAssignmentScreen = ({
   });
 
   const handleDeleteAssignment = async () => {
-    if (!confirm("Confirm delete assignment?")) return;
     await deleteAssignment.mutateAsync({ assignmentId });
-
+    message.success("Assignment deleted successfully!");
     router.push(`/classrooms/${classroomId}`);
   };
 
@@ -80,50 +75,6 @@ export const EditAssignmentScreen = ({
     : false;
 
   const assignment = assignmentQuery.data;
-
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [uploading, setUploading] = useState(false);
-
-  const handleUpload = () => {
-    const formData = new FormData();
-    fileList.forEach((file) => {
-      formData.append("files[]", file as RcFile);
-    });
-    setUploading(true);
-    console.log("fileList", fileList);
-
-    // You can use any AJAX library you like
-    // fetch("https://www.mocky.io/v2/5cc8019d300000980a055e76", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    //   .then((res) => res.json())
-    //   .then(() => {
-    //     setFileList([]);
-    //     message.success("upload successfully.");
-    //   })
-    //   .catch(() => {
-    //     message.error("upload failed.");
-    //   })
-    //   .finally(() => {
-    //     setUploading(false);
-    //   });
-  };
-
-  const props: UploadProps = {
-    onRemove: (file) => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      setFileList(newFileList);
-    },
-    beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-
-      return false;
-    },
-    fileList,
-  };
 
   return (
     <>
@@ -189,12 +140,24 @@ export const EditAssignmentScreen = ({
           <LinkButton onClick={() => setShowEditAssignmentModal(true)}>
             <PencilSquare /> Edit
           </LinkButton>
-          <LinkButton
-            variant={LinkButtonVariant.Danger}
-            onClick={handleDeleteAssignment}
+          <Popconfirm
+            title="Delete assignment"
+            placement="bottomRight"
+            description="Are you sure to delete this assignment?"
+            onConfirm={() => {
+              handleDeleteAssignment();
+            }}
+            okText="Yes"
+            cancelText="No"
           >
-            <TrashIcon /> Delete
-          </LinkButton>
+            <Typography.Link
+              href="#"
+              type="danger"
+              className="flex items-center gap-1"
+            >
+              <TrashIcon /> Delete
+            </Typography.Link>
+          </Popconfirm>
         </div>
       </MainHeading>
 
@@ -240,40 +203,21 @@ export const EditAssignmentScreen = ({
               data={attachmentsQuery.data}
             />
           </div>
-          <div className="mb-14 flex justify-start">
-            {/* <form className="text-white" onSubmit={uploadFile}>
-              <label
-                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                htmlFor="file-upload"
+          <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
+            <Upload {...uploadProps}>
+              <Button
+                style={{ alignItems: "center", display: "flex" }}
+                icon={<UploadOutlined />}
               >
-                Upload Attachment
-              </label>
-              <input
-                ref={fileRef}
-                id="file-upload"
-                className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-                onChange={handleFileChange}
-                type="file"
-              />
-              {file && (
-                <Button
-                  className="mt-4"
-                  type="submit"
-                  variant={Variant.Primary}
-                >
-                  Upload
-                </Button>
-              )}
-            </form> */}
-            <Upload {...props}>
-              <Button icon={<UploadOutlined />}>Select File</Button>
+                Select File
+              </Button>
             </Upload>
             <Button
               type="primary"
               onClick={handleUpload}
               disabled={fileList.length === 0}
               loading={uploading}
-              style={{ marginTop: 16 }}
+              // style={{ marginTop: 16 }}
             >
               {uploading ? "Uploading" : "Start Upload"}
             </Button>

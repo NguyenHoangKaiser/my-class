@@ -7,7 +7,6 @@ import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import Button, { Variant } from "src/components/common/Button";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
-import { useCreateAssignment } from "./hooks/useCreateAssignment";
 import SideNavigation, { tabAtom } from "./SideNavigation";
 import NoAssignments from "./NoAssignments";
 import TeacherAssignments from "./TeacherAssignments";

@@ -1,77 +1,31 @@
 import Image from "next/image";
-import studentImage from "src/assets/student.jpeg";
-import Link from "next/link";
 import { trpc } from "src/utils/trpc";
 import teacherImage from "src/assets/teacher.svg";
-import Button, { Variant } from "src/components/common/Button";
+import { Avatar, Badge, Card, List, Space, Tag, Typography } from "antd";
+import React from "react";
+import { EyeOutlined, StarOutlined, TeamOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 
 function BrowseClassroomsScreen() {
-  const findClassroom = trpc.classroom.findClassroom.useQuery();
-  const classrooms = trpc.student.getClassrooms.useQuery();
-  const teacherClass = trpc.classroom.getClassroomsForTeacher.useQuery();
+  const { data, isLoading } = trpc.classroom.browseClassroom.useQuery();
 
-  const isEnrolled = (classroomId: string) => {
-    return classrooms.data?.some(({ id }) => id === classroomId);
-  };
+  const router = useRouter();
 
-  const isTeacher = (classroomId: string) => {
-    return teacherClass.data?.some(({ id }) => id === classroomId);
-  };
-
-  const classroomNotTeacher = findClassroom.data?.filter(
-    (classroom) => !isTeacher(classroom.id)
-  );
+  const getTagColor = React.useCallback((name: string) => {
+    const length = name.length;
+    if (length > 8) {
+      return "purple";
+    } else if (length > 5) {
+      return "cyan";
+    } else {
+      return "blue";
+    }
+  }, []);
 
   return (
     <section className="px-5">
       <div className="my-8">Filters</div>
-      {classroomNotTeacher && classroomNotTeacher.length > 0 ? (
-        classroomNotTeacher?.map((classroom) => (
-          <div key={classroom.id}>
-            <article className="flex gap-8">
-              <figure>
-                <Image
-                  width="300"
-                  height="300"
-                  src={studentImage}
-                  className="transition duration-300 ease-in-out hover:scale-110"
-                  alt="default classroom image"
-                />
-              </figure>
-
-              <div>
-                <h3 className="font-bold">{classroom.name}</h3>
-                <h3 className="">{classroom.description}</h3>
-                <h3 className="">{classroom.teacher.name}</h3>
-              </div>
-
-              <div>
-                <Link
-                  href={
-                    isEnrolled(classroom.id)
-                      ? `/classrooms/${classroom.id}`
-                      : `/classrooms/${classroom.id}/overview`
-                  }
-                >
-                  <Button
-                    variant={
-                      isEnrolled(classroom.id)
-                        ? Variant.Secondary
-                        : Variant.Primary
-                    }
-                    color="primary"
-                  >
-                    {isEnrolled(classroom.id)
-                      ? "(Already Enrolled) View"
-                      : "View Classroom"}
-                  </Button>
-                </Link>
-              </div>
-            </article>
-            <hr className="my-8 border-gray-600" />
-          </div>
-        ))
-      ) : (
+      {!isLoading && data && data.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-8 px-5">
           <Image
             width="300"
@@ -81,6 +35,153 @@ function BrowseClassroomsScreen() {
           />
           <div className="text-2xl">Found no classroom!</div>
         </div>
+      ) : (
+        <List
+          style={{
+            padding: 32,
+          }}
+          grid={{
+            gutter: 32,
+            xs: 1,
+            sm: 1,
+            md: 2,
+            lg: 3,
+            xl: 3,
+            xxl: 4,
+          }}
+          dataSource={data}
+          loading={isLoading}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                width: 400,
+                marginBottom: 32,
+              }}
+            >
+              <Badge.Ribbon
+                text={item.modifier.toLocaleUpperCase()}
+                color={
+                  item.status === "active"
+                    ? "green"
+                    : item.status === "archived"
+                    ? "red"
+                    : "orange"
+                }
+              >
+                <Card
+                  // onClick={() => router.push(`/classrooms/${item.id}/overview`)}
+                  // style={{ width: 400 }}
+                  // hoverable
+                  bordered={true}
+                  // cover={
+                  //   <Image
+                  //     style={{
+                  //       // width: "auto",
+                  //       // height: "auto",
+                  //       objectFit: "cover",
+                  //       borderTopLeftRadius: 8,
+                  //       borderTopRightRadius: 8,
+                  //     }}
+                  //     src={studentImage}
+                  //     alt="a student"
+                  //   />
+                  // }
+                  actions={[
+                    <Space key="student">
+                      <TeamOutlined />
+                      {item.students.length ?? 0}
+                    </Space>,
+                    <Space key="rating">
+                      <StarOutlined />
+                      {item.ratings.length ?? 0}
+                    </Space>,
+                    <Space
+                      onClick={() =>
+                        router.push(`/classrooms/${item.id}/overview`)
+                      }
+                      key="view"
+                    >
+                      <EyeOutlined />
+                      View
+                    </Space>,
+                    // <IconText
+                    //   icon={MessageOutlined}
+                    //   text="2"
+                    //   key="list-vertical-message"
+                    // />,
+                  ]}
+                >
+                  <Card.Meta
+                    avatar={
+                      <Avatar
+                        shape="square"
+                        size={45}
+                        src={item.teacher.image}
+                      />
+                    }
+                    // title={item.teacher.displayName ?? item.teacher.name}
+                    // description={item.teacher.bio ?? "No bio"}
+                    title={
+                      <div className="mb-2 -mt-[6px] flex flex-col justify-center">
+                        <Typography.Title level={4}>
+                          {item.name}
+                        </Typography.Title>
+                        <div className="-mt-[6px] flex justify-between">
+                          <Typography.Text type="secondary">
+                            {item.teacher.displayName ?? item.teacher.name}
+                          </Typography.Text>
+                          <Space>
+                            <Tag>
+                              {item.language === "en"
+                                ? "English"
+                                : "Vietnamese"}
+                            </Tag>
+                          </Space>
+                        </div>
+                      </div>
+                    }
+                    // description={
+                    //   <Typography.Text type="secondary">
+                    //     {item.teacher.displayName ?? item.teacher.name}
+                    //   </Typography.Text>
+                    // }
+                  />
+                  <div className="flex flex-col justify-center gap-1">
+                    <Typography.Paragraph
+                      ellipsis={{
+                        rows: 2,
+                      }}
+                      type={
+                        item.description === "No description provided"
+                          ? "danger"
+                          : undefined
+                      }
+                    >
+                      {item.description}
+                    </Typography.Paragraph>
+                    <Space style={{ marginTop: 12 }} wrap>
+                      {item.subjects.length > 0 ? (
+                        item.subjects.map((subject) => (
+                          <Tag
+                            key={subject.id}
+                            color={getTagColor(subject.name)}
+                            style={{ fontSize: 12 }}
+                          >
+                            {subject.name}
+                          </Tag>
+                        ))
+                      ) : (
+                        <Tag color="red" style={{ fontSize: 12 }}>
+                          No subject provided
+                        </Tag>
+                      )}
+                    </Space>
+                  </div>
+                </Card>
+              </Badge.Ribbon>
+            </List.Item>
+          )}
+        />
       )}
     </section>
   );

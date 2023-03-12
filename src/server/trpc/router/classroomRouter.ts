@@ -38,6 +38,7 @@ export const classroomRouter = router({
         where: location,
         include: {
           teacher: true,
+          subjects: true,
         },
       });
       return classrooms;
@@ -132,7 +133,9 @@ export const classroomRouter = router({
         include: {
           subjects: true,
           students: true,
-          // assignments: true,
+          assignments: true,
+          teacher: true,
+          ratings: true,
         },
       });
       return classroom;
@@ -326,5 +329,23 @@ export const classroomRouter = router({
   getSubjects: protectedProcedure.query(async ({ ctx }) => {
     const subjects = await ctx.prisma.subject.findMany();
     return subjects;
+  }),
+  browseClassroom: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id as string;
+    const allClassrooms = await ctx.prisma.classroom.findMany({
+      include: {
+        subjects: true,
+        students: true,
+        teacher: true,
+        ratings: true,
+      },
+    });
+
+    const classroomsNotEnrolled = allClassrooms.filter(
+      (classroom) =>
+        classroom.students.findIndex((student) => student.id === userId) === -1
+    );
+
+    return classroomsNotEnrolled;
   }),
 });

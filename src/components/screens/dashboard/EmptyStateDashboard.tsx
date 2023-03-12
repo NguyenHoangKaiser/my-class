@@ -1,7 +1,7 @@
+import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import teacherImage from "src/assets/teacher.svg";
-import Button, { Variant } from "src/components/common/Button";
 
 function EmptyStateDashboard() {
   return (
@@ -14,7 +14,7 @@ function EmptyStateDashboard() {
       />
       <div className="text-2xl">You have no classrooms yet!</div>
       <Link href="/browse-classrooms" passHref>
-        <Button variant={Variant.Primary}>
+        <Button type="primary" size="large">
           Browse for Classrooms
         </Button>
       </Link>

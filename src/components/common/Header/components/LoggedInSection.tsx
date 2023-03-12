@@ -1,9 +1,11 @@
 import { trpc } from "src/utils/trpc";
 import type { MenuProps } from "antd";
-import { Avatar, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
+import profileImage from "src/assets/profile.jpeg";
 
 const items: MenuProps["items"] = [
   {
@@ -57,24 +59,12 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
               className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
             >
               <span className="sr-only">Open user menu</span>
-              <Avatar
+              <Image
                 alt="User Avatar"
-                style={{
-                  width: 40,
-                  height: 40,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                src={
-                  image ?? (
-                    <UserOutlined
-                      style={{
-                        fontSize: 20,
-                      }}
-                    />
-                  )
-                }
+                width={40}
+                height={40}
+                className="rounded-full"
+                src={image ?? profileImage}
               />
             </button>
           </Dropdown>

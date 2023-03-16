@@ -189,7 +189,6 @@ export const EditAssignmentScreen = ({
               </Typography.Text>
             </Typography.Title>
           </div>
-          <h2 className="mb-5 text-3xl">Attachments</h2>
           <div className="mb-5">
             <EmptyStateWrapper
               EmptyComponent={<EmptyStateAttachments />}

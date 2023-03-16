@@ -2,7 +2,6 @@ import { assertIsAssignmentAdmin } from "src/server/utils/assert";
 import { getKeyUrl } from "src/utils/helper";
 import z from "zod";
 import { protectedProcedure, router } from "../trpc";
-import { supabase } from "src/libs/supabaseClient";
 import { supabaseDeleteFile } from "src/utils/helper";
 import { TRPCError } from "@trpc/server";
 
@@ -195,5 +194,22 @@ export const assignmentRouter = router({
         filename: attachment.filename,
       });
       return url;
+    }),
+  markAnswerAttachment: protectedProcedure
+    .input(
+      z.object({
+        attachmentId: z.string(),
+        type: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.attachment.update({
+        where: {
+          id: input.attachmentId,
+        },
+        data: {
+          type: input.type,
+        },
+      });
     }),
 });

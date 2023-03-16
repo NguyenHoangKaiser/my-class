@@ -4,7 +4,6 @@ import { useAtom } from "jotai";
 import { useSession } from "src/hooks";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
 import { PencilSquare, TrashIcon } from "src/components/common/Icons";
-import Button, { Variant } from "src/components/common/Button";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
 import SideNavigation, { tabAtom } from "./SideNavigation";
@@ -18,7 +17,7 @@ import SubmissionsSection from "./SubmissionsSection";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
-import { message } from "antd";
+import { Button, message } from "antd";
 
 function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
@@ -98,7 +97,13 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
         )}
 
         {showUnenroll && (
-          <Button variant={Variant.Danger} onClick={handleUnenroll}>
+          <Button
+            className="mr-4"
+            size="large"
+            type="primary"
+            danger
+            onClick={handleUnenroll}
+          >
             Unenroll
           </Button>
         )}
@@ -125,7 +130,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
                   />
                 ) : (
                   <StudentAssignments
-                    classroomId={classroomId}
+                    classroom={classroom}
                     assignments={assignments ?? []}
                   />
                 )

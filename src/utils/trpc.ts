@@ -19,7 +19,7 @@ export const trpc = createTRPCNext<AppRouter>({
         defaultOptions: {
           queries: {
             // staleTime: 1000 * 60 * 1, // 1 minutes
-            refetchOnWindowFocus: false,
+            // refetchOnWindowFocus: false,
           },
           mutations: {
             onError(error, variables, context) {

@@ -12,6 +12,8 @@ import { Button, Table, Space, Tag, Popconfirm, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import { sizeAtom } from "src/pages/_app";
 
 type DataType = Assignment & {
   attachments: Attachment[];
@@ -44,6 +46,8 @@ function TeacherAssignments({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const [size] = useAtom(sizeAtom);
+
   const deleteSelection = () => {
     setLoading(true);
 
@@ -64,13 +68,16 @@ function TeacherAssignments({
     onChange: onSelectChange,
   };
   const hasSelected = selectedRowKeys.length > 0;
+  console.log("selectedRowKeys");
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-8">
-        <h2 className="text-2xl">
+        {/* <h2 className="text-2xl">
           Your Assignments ({totalAssignments} total)
-        </h2>
+        </h2> */}
+        {/* https://stackoverflow.com/a/72194245 */}
+        <p>Size: {size}</p>
         <Button type="primary" size="large" onClick={openAssignmentModal}>
           Create an Assignment
         </Button>
@@ -107,13 +114,21 @@ function TeacherAssignments({
             pageSize: 5,
             hideOnSinglePage: true,
           }}
-          // scroll={{ x: 100, y: 500 }}
+          style={{
+            // overflow: "auto",
+            // wordBreak: "break-word",
+            maxWidth: size - 323,
+            // scrollBehavior: "smooth",
+            // overflowX: "auto",
+          }}
+          scroll={{ x: true }}
         >
           <Column<DataType>
             title="#"
             key="index"
             render={(_text, _record, index) => <span>{index + 1}</span>}
             // fixed="left"
+            // ellipsis
             // width={50}
           />
           <Column<DataType>
@@ -121,8 +136,10 @@ function TeacherAssignments({
             dataIndex="name"
             key="name"
             sorter={(a, b) => a.name.localeCompare(b.name)}
-            sortDirections={["descend", "ascend"]}
+            sortDirections={["ascend", "descend"]}
             // width={150}
+            // fixed="left"
+            // ellipsis
           />
           <Column<DataType>
             title="Due date"
@@ -136,8 +153,10 @@ function TeacherAssignments({
               </Typography.Text>
             )}
             sorter={(a, b) => dayjs(a.dueDate).diff(dayjs(b.dueDate))}
-            sortDirections={["descend", "ascend"]}
+            sortDirections={["ascend", "descend"]}
             // width={200}
+            // ellipsis
+            responsive={["md"]}
           />
           <Column<DataType>
             title="Subject"
@@ -159,6 +178,7 @@ function TeacherAssignments({
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.subject.indexOf(value) === 0}
             // width={110}
+            // ellipsis
           />
           <Column<DataType>
             title="Attachment"
@@ -166,7 +186,7 @@ function TeacherAssignments({
             key="attachments"
             render={(attachments) => attachments.length}
             sorter={(a, b) => a.attachments.length - b.attachments.length}
-            sortDirections={["descend", "ascend"]}
+            sortDirections={["ascend", "descend"]}
             // width={120}
           />
           <Column<DataType>
@@ -174,9 +194,10 @@ function TeacherAssignments({
             dataIndex="submissions"
             key="submissions"
             sorter={(a, b) => a.submissions.length - b.submissions.length}
-            sortDirections={["descend", "ascend"]}
+            sortDirections={["ascend", "descend"]}
             render={(submission) => submission.length}
             // width={120}
+            // ellipsis
           />
           <Column<DataType>
             title="Status"
@@ -212,12 +233,13 @@ function TeacherAssignments({
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.status.indexOf(value) === 0}
             // width={120}
+            // ellipsis
           />
           <Column<DataType>
             title="Action"
             key="action"
-            // width={160}
-            // fixed="right"
+            width={160}
+            fixed="right"
             render={(_, record) => (
               <Space size="middle">
                 <Link

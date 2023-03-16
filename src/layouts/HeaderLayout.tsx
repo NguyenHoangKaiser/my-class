@@ -180,7 +180,13 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           )}
           <MyHeader />
         </Header>
-        <Content>
+        <Content
+          style={
+            {
+              // overflowX: "hidden",
+            }
+          }
+        >
           {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>

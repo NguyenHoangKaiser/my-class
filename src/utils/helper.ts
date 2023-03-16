@@ -1,3 +1,4 @@
+import { Attachment, Submission } from "@prisma/client";
 import { supabase } from "src/libs/supabaseClient";
 
 type AssignmentKey = {
@@ -45,9 +46,30 @@ const firstLetterToUpperCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+// function to check if the data is an array of submissions or attachments
+function assertIsSubmissionArray(
+  data: Attachment[] | Submission[]
+): asserts data is Submission[] {
+  if (data[0] && "studentId" in data[0]) {
+    return;
+  }
+  throw new Error("Data is not an array of submissions");
+}
+
+function assertIsAttachmentArray(
+  data: Attachment[] | Submission[]
+): asserts data is Attachment[] {
+  if (data[0] && "studentId" in data[0]) {
+    throw new Error("Data is not an array of attachments");
+  }
+  return;
+}
+
 export {
   getKeyUrl,
   supabaseDeleteFile,
   getDownloadUrl,
   firstLetterToUpperCase,
+  assertIsSubmissionArray,
+  assertIsAttachmentArray,
 };

@@ -100,6 +100,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
         <Form.Item
           name="description"
           label="Description"
+          tooltip="Markdown styling is supported."
           rules={[
             {
               required: true,
@@ -112,7 +113,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
         <Form.Item
           label="Subjects"
           name="subject"
-          tooltip="The subject of this assignment"
+          tooltip="You can only select subjects that are taught in this classroom."
           rules={[
             {
               required: true,

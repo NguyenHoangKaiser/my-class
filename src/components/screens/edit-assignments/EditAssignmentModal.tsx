@@ -85,8 +85,8 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Create a new assignment"
-      okText="Create"
+      title="Edit this assignment"
+      okText="Save"
       cancelText="Cancel"
       onCancel={onCancel}
       onOk={() => {
@@ -98,7 +98,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
       <Form
         form={form}
         layout="vertical"
-        name="create-assignment"
+        name="edit-assignment"
         initialValues={{
           name: assignment?.name,
           description: assignment?.description,
@@ -122,7 +122,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
         <Form.Item
           name="description"
           label="Description"
-          tooltip="You can use Markdown syntax here."
+          tooltip="Markdown styling is supported."
           rules={[
             {
               required: true,
@@ -135,7 +135,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
         <Form.Item
           label="Subjects"
           name="subject"
-          tooltip="You can only select subjects that are taught in this classroom"
+          tooltip="You can only select subjects that are taught in this classroom."
           rules={[
             {
               required: true,

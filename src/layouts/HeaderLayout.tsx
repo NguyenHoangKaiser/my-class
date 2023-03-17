@@ -120,12 +120,7 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
         }}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div
-          className="m-4 flex h-9 items-center justify-center"
-          // style={{
-          //   background: token.colorBgLayout,
-          // }}
-        >
+        <div className="m-4 flex h-9 items-center justify-center">
           {collapsed ? (
             <Link href="/">
               <Image src={logo} alt="Logo" width={32} height={32} />
@@ -147,7 +142,6 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           }
           style={{
             borderRight: 0,
-            // backgroundColor: token.colorPrimaryBg,
           }}
         />
       </Sider>
@@ -180,30 +174,7 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
           )}
           <MyHeader />
         </Header>
-        <Content
-          style={
-            {
-              // overflowX: "hidden",
-            }
-          }
-        >
-          {/* <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb> */}
-          {children}
-        </Content>
-        {/* <Footer
-          style={{
-            backgroundColor: colorPrimaryBg,
-            maxHeight: 48,
-            display: "flex",
-            justifyItems: "center",
-            alignItems: "center",
-          }}
-        >
-          <MyFooter />
-        </Footer> */}
+        <Content>{children}</Content>
       </Layout>
     </Layout>
   );

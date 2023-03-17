@@ -11,9 +11,7 @@ import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import { Button, Table, Space, Tag, Popconfirm, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useState } from "react";
-import { useRouter } from "next/router";
-import { useAtom } from "jotai";
-import { sizeAtom } from "src/pages/_app";
+import { useWindowSize } from "react-use";
 
 type DataType = Assignment & {
   attachments: Attachment[];
@@ -44,9 +42,8 @@ function TeacherAssignments({
   const totalAssignments = assignments.length;
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const [size] = useAtom(sizeAtom);
+  const { width } = useWindowSize();
 
   const deleteSelection = () => {
     setLoading(true);
@@ -68,16 +65,13 @@ function TeacherAssignments({
     onChange: onSelectChange,
   };
   const hasSelected = selectedRowKeys.length > 0;
-  console.log("selectedRowKeys");
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-8">
-        {/* <h2 className="text-2xl">
+        <h2 className="text-2xl">
           Your Assignments ({totalAssignments} total)
-        </h2> */}
-        {/* https://stackoverflow.com/a/72194245 */}
-        <p>Size: {size}</p>
+        </h2>
         <Button type="primary" size="large" onClick={openAssignmentModal}>
           Create an Assignment
         </Button>
@@ -97,15 +91,6 @@ function TeacherAssignments({
       </div>
       <div className="mr-2">
         <Table
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                router.push(
-                  `/classrooms/${record.classroomId}/assignments/${record.id}/edit`
-                );
-              },
-            };
-          }}
           dataSource={assignments}
           bordered
           rowSelection={rowSelection}
@@ -115,11 +100,7 @@ function TeacherAssignments({
             hideOnSinglePage: true,
           }}
           style={{
-            // overflow: "auto",
-            // wordBreak: "break-word",
-            maxWidth: size - 323,
-            // scrollBehavior: "smooth",
-            // overflowX: "auto",
+            maxWidth: width - 323,
           }}
           scroll={{ x: true }}
         >
@@ -127,9 +108,9 @@ function TeacherAssignments({
             title="#"
             key="index"
             render={(_text, _record, index) => <span>{index + 1}</span>}
-            // fixed="left"
+            fixed="left"
             // ellipsis
-            // width={50}
+            width={50}
           />
           <Column<DataType>
             title="Name"
@@ -137,9 +118,9 @@ function TeacherAssignments({
             key="name"
             sorter={(a, b) => a.name.localeCompare(b.name)}
             sortDirections={["ascend", "descend"]}
-            // width={150}
-            // fixed="left"
-            // ellipsis
+            width={150}
+            fixed="left"
+            ellipsis
           />
           <Column<DataType>
             title="Due date"
@@ -256,11 +237,17 @@ function TeacherAssignments({
                   }}
                   okText="Yes"
                   cancelText="No"
+                  placement="topRight"
                 >
                   <Typography.Link
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1px",
+                      wordBreak: "keep-all",
+                    }}
                     href="#"
                     type="danger"
-                    className="flex items-center gap-1"
                   >
                     <TrashIcon /> Delete
                   </Typography.Link>

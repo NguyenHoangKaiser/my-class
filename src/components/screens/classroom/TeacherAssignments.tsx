@@ -7,7 +7,7 @@ import type {
   User,
 } from "@prisma/client";
 import Link from "next/link";
-import { PencilSquare, TrashIcon } from "src/components/common/Icons";
+import { EyeIcon, TrashIcon } from "src/components/common/Icons";
 import { Button, Table, Space, Tag, Popconfirm, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useState } from "react";
@@ -227,7 +227,7 @@ function TeacherAssignments({
                   className="flex items-center gap-1 text-blue-400"
                   href={`/classrooms/${record.classroomId}/assignments/${record.id}/edit`}
                 >
-                  <PencilSquare /> Edit
+                  <EyeIcon /> View
                 </Link>
                 <Popconfirm
                   title="Delete assignment"

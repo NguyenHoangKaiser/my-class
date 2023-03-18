@@ -228,7 +228,7 @@ function AttachmentsTable({
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <>
-        <div className="mb-5 flex items-end gap-5 ">
+        <div className="mb-5 flex items-center gap-8 ">
           <h2 className="text-3xl">Attachments</h2>
           {hasSelected && (
             <Popconfirm
@@ -238,7 +238,7 @@ function AttachmentsTable({
               okText="Yes"
               cancelText="No"
             >
-              <Button size="small" type="primary" danger loading={loading}>
+              <Button type="primary" danger loading={loading}>
                 Delete selected
               </Button>
             </Popconfirm>
@@ -247,7 +247,7 @@ function AttachmentsTable({
         <div className="overflow-x-auto">
           <Table
             dataSource={data}
-            // bordered
+            bordered
             pagination={{
               pageSize: 5,
               hideOnSinglePage: true,

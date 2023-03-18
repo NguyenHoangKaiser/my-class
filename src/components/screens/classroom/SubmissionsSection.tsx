@@ -88,6 +88,8 @@ const GradeEditable = ({
   );
 };
 
+//TODO: Only when the teacher has downloaded the submission, the grade will be editable
+
 function SubmissionsSection({ classroomId }: { classroomId: string }) {
   const submissionsQuery = trpc.submission.getSubmissionForClassroom.useQuery({
     classroomId,

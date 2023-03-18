@@ -211,15 +211,11 @@ export const EditAssignmentScreen = ({
                 Select File
               </Button>
             </Upload>
-            <Button
-              type="primary"
-              onClick={handleUpload}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              // style={{ marginTop: 16 }}
-            >
-              {uploading ? "Uploading" : "Start Upload"}
-            </Button>
+            {fileList.length > 0 && (
+              <Button type="primary" onClick={handleUpload} loading={uploading}>
+                {uploading ? "Uploading" : "Start Upload"}
+              </Button>
+            )}
           </div>
         </section>
       </div>

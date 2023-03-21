@@ -2,6 +2,11 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Project "my-class" {
+  database_type: 'PostgreSQL'
+  Note: 'An online classroom management system'
+}
+
 Table Account {
   id String [pk]
   userId String [not null]

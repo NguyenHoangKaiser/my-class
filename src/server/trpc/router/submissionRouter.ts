@@ -52,16 +52,12 @@ export const submissionRouter = router({
       }
 
       const submissions = classroom.assignments.flatMap((assignment) =>
-        assignment.submissions.map((submission) => ({
-          id: submission.id,
-          fileName: submission.filename,
-          assignmentName: assignment.name,
-          assignmentId: assignment.id,
-          assignmentNumber: assignment.number,
-          studentId: submission.studentId,
-          studentName: submission.student.name,
-          grade: submission.grade,
-        }))
+        assignment.submissions.map((submission) => {
+          return {
+            ...submission,
+            assignmentName: assignment.name,
+          };
+        })
       );
       return submissions;
     }),

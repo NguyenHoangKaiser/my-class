@@ -5,9 +5,21 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
+// generator dbml {
+//   provider              = "prisma-dbml-generator"
+//   projectName           = "my-class"
+//   projectDatabaseType   = "PostgreSQL"
+//   projectNote           = "An online classroom management system"
+//   manyToMany            = true
+//   mapToDbSchema         = true
+//   includeRelationFields = true
+// }
+
+// generator erd {
+//   provider                  = "prisma-erd-generator"
+//   includeRelationFromFields = true
+//   output                    = "../ERDmd.md"
+// }
 
 datasource db {
   provider = "postgresql"

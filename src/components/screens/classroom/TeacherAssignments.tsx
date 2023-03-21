@@ -137,7 +137,7 @@ function TeacherAssignments({
             sortDirections={["ascend", "descend"]}
             // width={200}
             // ellipsis
-            responsive={["md"]}
+            // responsive={["md"]}
           />
           <Column<DataType>
             title="Subject"

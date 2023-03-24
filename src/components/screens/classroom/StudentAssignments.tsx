@@ -6,13 +6,18 @@ import type {
   Submission,
   User,
 } from "@prisma/client";
-import Link from "next/link";
-import { trpc } from "src/utils/trpc";
-import { useSession } from "src/hooks";
-import { EyeIcon } from "src/components/common/Icons";
 import { Space, Table, Tag, Typography } from "antd";
-import { useRouter } from "next/router";
 import dayjs from "dayjs";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { EyeIcon } from "src/components/common/Icons";
+import { useSession } from "src/hooks";
+import {
+  AssignmentStatusFilterOptions,
+  getAssignmentStatusColor,
+} from "src/utils/constants";
+import { getTagColor } from "src/utils/helper";
+import { trpc } from "src/utils/trpc";
 
 type DataType = Assignment & {
   attachments: Attachment[];
@@ -125,13 +130,7 @@ function StudentAssignments({
             dataIndex="subject"
             key="subject"
             render={(subject) => {
-              const color =
-                subject.length > 8
-                  ? "purple"
-                  : subject.length > 5
-                  ? "cyan"
-                  : "blue";
-              return <Tag color={color}>{subject}</Tag>;
+              return <Tag color={getTagColor(subject)}>{subject}</Tag>;
             }}
             filters={classroom?.subjects.map((subject) => ({
               text: subject.name,
@@ -172,32 +171,11 @@ function StudentAssignments({
             dataIndex="status"
             key="status"
             render={(status) => (
-              <Tag
-                color={
-                  status === "progressing"
-                    ? "green"
-                    : status === "completed"
-                    ? "red"
-                    : "orange"
-                }
-              >
+              <Tag color={getAssignmentStatusColor(status)}>
                 {status.toUpperCase()}
               </Tag>
             )}
-            filters={[
-              {
-                text: "Progressing",
-                value: "progressing",
-              },
-              {
-                text: "Completed",
-                value: "completed",
-              },
-              {
-                text: "Suspended",
-                value: "suspended",
-              },
-            ]}
+            filters={AssignmentStatusFilterOptions}
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.status.indexOf(value) === 0}
             // width={120}

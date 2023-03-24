@@ -6,6 +6,7 @@ import {
 import z from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { supabaseDeleteFile } from "src/utils/helper";
+import { TRPCError } from "@trpc/server";
 
 export const classroomRouter = router({
   getStudents: protectedProcedure
@@ -236,11 +237,30 @@ export const classroomRouter = router({
       return assignment;
     }),
   enrollInClassroom: protectedProcedure
-    .input(z.object({ classroomId: z.string() }))
+    .input(
+      z.object({ classroomId: z.string(), password: z.string().optional() })
+    )
     .mutation(async ({ ctx, input }) => {
       assertIsStudent(ctx);
       const userId = ctx.session.user.id as string;
-      const classroom = await ctx.prisma.user.update({
+      const classroom = await ctx.prisma.classroom.findUnique({
+        where: {
+          id: input.classroomId,
+        },
+      });
+      if (!classroom) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Classroom not found",
+        });
+      }
+      if (classroom.password && classroom.password !== input.password) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Incorrect password",
+        });
+      }
+      const user = await ctx.prisma.user.update({
         where: {
           id: userId,
         },
@@ -252,7 +272,7 @@ export const classroomRouter = router({
           },
         },
       });
-      return classroom;
+      return user;
     }),
   unEnroll: protectedProcedure
     .input(z.object({ classroomId: z.string() }))

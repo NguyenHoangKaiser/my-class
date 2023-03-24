@@ -56,6 +56,7 @@ export const submissionRouter = router({
           return {
             ...submission,
             assignmentName: assignment.name,
+            dueDate: assignment.dueDate,
           };
         })
       );

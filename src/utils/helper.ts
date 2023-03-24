@@ -1,4 +1,4 @@
-import { Attachment, Submission } from "@prisma/client";
+import type { Attachment, Submission } from "@prisma/client";
 import { supabase } from "src/libs/supabaseClient";
 
 type AssignmentKey = {
@@ -13,14 +13,14 @@ type SubmissionKey = {
 };
 type Key = AssignmentKey | SubmissionKey;
 
-function getKeyUrl(key: Key): string {
+export const getKeyUrl = (key: Key): string => {
   if ("assignmentId" in key) {
     return `assignments/${key.assignmentId}/${key.attachmentId}/${key.filename}`;
   }
   return `submissions/${key.submissionId}/${key.studentId}/${key.filename}`;
-}
+};
 
-const supabaseDeleteFile = async (key: Key) => {
+export const supabaseDeleteFile = async (key: Key) => {
   const { error } = await supabase.storage
     .from("files")
     .remove([getKeyUrl(key)]);
@@ -30,7 +30,7 @@ const supabaseDeleteFile = async (key: Key) => {
   }
 };
 
-const getDownloadUrl = async (key: Key) => {
+export const getDownloadUrl = async (key: Key) => {
   const { data } = await supabase.storage
     .from("files")
     .getPublicUrl(getKeyUrl(key), {
@@ -38,11 +38,11 @@ const getDownloadUrl = async (key: Key) => {
     });
 
   if (data) {
-    window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+    window.open(data.publicUrl, "_parent", "noopener,noreferrer");
   }
 };
 
-const firstLetterToUpperCase = (str: string) => {
+export const firstLetterToUpperCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
@@ -65,11 +65,15 @@ function assertIsAttachmentArray(
   return;
 }
 
-export {
-  getKeyUrl,
-  supabaseDeleteFile,
-  getDownloadUrl,
-  firstLetterToUpperCase,
-  assertIsSubmissionArray,
-  assertIsAttachmentArray,
+export const getTagColor = (tag: string) => {
+  const length = tag.length;
+  if (length > 8) {
+    return "purple";
+  } else if (length > 5) {
+    return "cyan";
+  } else {
+    return "blue";
+  }
 };
+
+export { assertIsAttachmentArray, assertIsSubmissionArray };

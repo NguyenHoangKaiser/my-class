@@ -21,6 +21,27 @@ document,
   @apply cursor-pointer hover:underline;
 }
 
+.editable-cell {
+  position: relative;
+}
+
+.editable-cell-value-wrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-row .editable-cell-value-wrap {
+  @apply border border-solid border-gray-600 border-opacity-0 dark:border-opacity-0;
+  padding: 4px 11px;
+  border-radius: 2px;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+  @apply border border-solid border-gray-300 dark:border-gray-500;
+  padding: 4px 11px;
+  border-radius: 2px;
+}
+
 input,
 textarea {
   @apply border bg-white p-2 dark:bg-gray-500;

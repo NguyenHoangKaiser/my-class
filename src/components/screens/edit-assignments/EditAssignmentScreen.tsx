@@ -15,6 +15,7 @@ import EditAssignmentModal from "./EditAssignmentModal";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
 import useAntUpload from "src/hooks/useAntUpload";
+import { getAssignmentStatusColor } from "src/utils/constants";
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -57,9 +58,18 @@ export const EditAssignmentScreen = ({
   });
 
   const handleDeleteAssignment = async () => {
-    await deleteAssignment.mutateAsync({ assignmentId });
-    message.success("Assignment deleted successfully!");
-    router.push(`/classrooms/${classroomId}`);
+    await deleteAssignment.mutateAsync(
+      { assignmentId },
+      {
+        onSuccess: () => {
+          message.success("Assignment deleted successfully!");
+          router.push(`/classrooms/${classroomId}`);
+        },
+        onError: () => {
+          message.error("Something went wrong!");
+        },
+      }
+    );
   };
 
   const handleOnAttachmentDelete = () => {
@@ -116,13 +126,7 @@ export const EditAssignmentScreen = ({
             </Tag>
           )}
           <Tag
-            color={
-              assignment?.status === "progressing"
-                ? "green"
-                : assignment?.status === "suspended"
-                ? "orange"
-                : "red"
-            }
+            color={getAssignmentStatusColor(assignment?.status as string)}
             style={{
               display: "flex",
               fontSize: 16,

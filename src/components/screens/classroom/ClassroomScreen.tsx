@@ -14,10 +14,8 @@ import StudentsSection from "./StudentsSection";
 import CreateAssignmentModal from "./CreateAssignmentModal";
 import EditClassroomModal from "./EditClassroomModal";
 import SubmissionsSection from "./SubmissionsSection";
-import LinkButton, {
-  LinkButtonVariant,
-} from "src/components/common/Button/LinkButton";
-import { Button, message } from "antd";
+import LinkButton from "src/components/common/Button/LinkButton";
+import { Button, message, Popconfirm, Typography } from "antd";
 
 function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
@@ -58,17 +56,34 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const showUnenroll = classrooms.data?.some(({ id }) => id === classroomId);
 
   const handleUnenroll = async () => {
-    if (confirm("You will be unenrolled from this classroom. Are you sure?")) {
-      await unenrollMutation.mutateAsync({ classroomId });
-      router.push("/dashboard");
-    }
+    await unenrollMutation.mutateAsync(
+      { classroomId },
+      {
+        onSuccess: () => {
+          message.success("Unenrolled from classroom successfully!");
+          router.push("/dashboard");
+        },
+        onError: () => {
+          message.error("Something went wrong!");
+        },
+      }
+    );
+    router.push("/dashboard");
   };
 
   const handleDeleteClassroom = async () => {
-    if (!confirm("Confirm delete classroom?")) return;
-    await deleteClassroom.mutateAsync({ classroomId });
-
-    router.push("/classrooms");
+    await deleteClassroom.mutateAsync(
+      { classroomId },
+      {
+        onSuccess: () => {
+          message.success("Classroom deleted successfully!");
+          router.push("/classrooms");
+        },
+        onError: () => {
+          message.error("Something went wrong!");
+        },
+      }
+    );
   };
 
   const openAssignmentModal = () => {
@@ -80,32 +95,45 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
       <MainHeading title={classroom?.name ?? "loading..."}>
         {hasAdminAccess && (
           <div className="flex gap-3">
-            <LinkButton
-              className="text-base"
-              onClick={() => setShowEditClassroomModal(true)}
-            >
+            <LinkButton onClick={() => setShowEditClassroomModal(true)}>
               <PencilSquare /> Edit
             </LinkButton>
-            <LinkButton
-              className="text-base"
-              onClick={handleDeleteClassroom}
-              variant={LinkButtonVariant.Danger}
+            <Popconfirm
+              title="Delete classroom"
+              placement="bottomRight"
+              description="Are you sure to delete this classroom?"
+              onConfirm={() => {
+                handleDeleteClassroom();
+              }}
+              okText="Yes"
+              cancelText="No"
             >
-              <TrashIcon /> Delete
-            </LinkButton>
+              <Typography.Link
+                href="#"
+                type="danger"
+                className="flex items-center gap-1"
+              >
+                <TrashIcon /> Delete
+              </Typography.Link>
+            </Popconfirm>
           </div>
         )}
 
         {showUnenroll && (
-          <Button
-            className="mr-4"
-            size="large"
-            type="primary"
-            danger
-            onClick={handleUnenroll}
+          <Popconfirm
+            title="Unenroll from this classroom"
+            placement="bottomRight"
+            description="Are you sure to unenroll from this classroom?"
+            onConfirm={() => {
+              handleUnenroll();
+            }}
+            okText="Yes"
+            cancelText="No"
           >
-            Unenroll
-          </Button>
+            <Button className="mr-4" size="large" type="primary" danger>
+              Unenroll
+            </Button>
+          </Popconfirm>
         )}
       </MainHeading>
 

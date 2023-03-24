@@ -4,6 +4,7 @@ import Image from "next/image";
 import student from "src/assets/student.jpeg";
 import { useRouter } from "next/router";
 import React from "react";
+import { getClassroomStatusColor } from "src/utils/constants";
 
 function ClassroomsList({
   classrooms,
@@ -60,13 +61,7 @@ function ClassroomsList({
             >
               <Badge.Ribbon
                 text={item.modifier.toLocaleUpperCase()}
-                color={
-                  item.status === "active"
-                    ? "green"
-                    : item.status === "archived"
-                    ? "red"
-                    : "orange"
-                }
+                color={getClassroomStatusColor(item.status)}
               >
                 <Card
                   onClick={() => router.push(`/classrooms/${item.id}`)}

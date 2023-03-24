@@ -22,6 +22,10 @@ import {
 } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import {
+  getSubmissionStatusColor,
+  SubmissionStatusFilterOptions,
+} from "src/utils/constants";
 
 const { Column } = Table;
 
@@ -92,7 +96,6 @@ function AttachmentsTable({
       <div className="overflow-x-auto">
         <Table
           dataSource={data}
-          // bordered
           pagination={{
             pageSize: 5,
             hideOnSinglePage: true,
@@ -127,33 +130,12 @@ function AttachmentsTable({
             key="status"
             render={(status) => {
               return (
-                <Tag
-                  color={
-                    status === "pending"
-                      ? "orange"
-                      : status === "graded"
-                      ? "green"
-                      : "red"
-                  }
-                >
+                <Tag color={getSubmissionStatusColor(status)}>
                   {status.toUpperCase()}
                 </Tag>
               );
             }}
-            filters={[
-              {
-                text: "Pending",
-                value: "pending",
-              },
-              {
-                text: "Late",
-                value: "late",
-              },
-              {
-                text: "Graded",
-                value: "graded",
-              },
-            ]}
+            filters={SubmissionStatusFilterOptions}
             //@ts-expect-error - this is the filter
             onFilter={(value, record) => record.status.indexOf(value) === 0}
           />

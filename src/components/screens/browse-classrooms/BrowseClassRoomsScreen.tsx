@@ -5,6 +5,7 @@ import { Avatar, Badge, Card, List, Space, Tag, Typography } from "antd";
 import React from "react";
 import { EyeOutlined, StarOutlined, TeamOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import { getClassroomStatusColor } from "src/utils/constants";
 
 function BrowseClassroomsScreen() {
   const { data, isLoading } = trpc.classroom.browseClassroom.useQuery();
@@ -60,13 +61,7 @@ function BrowseClassroomsScreen() {
             >
               <Badge.Ribbon
                 text={item.modifier.toLocaleUpperCase()}
-                color={
-                  item.status === "active"
-                    ? "green"
-                    : item.status === "archived"
-                    ? "red"
-                    : "orange"
-                }
+                color={getClassroomStatusColor(item.status)}
               >
                 <Card
                   // onClick={() => router.push(`/classrooms/${item.id}/overview`)}

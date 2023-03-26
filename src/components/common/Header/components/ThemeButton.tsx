@@ -40,7 +40,7 @@ function ThemeButton() {
       style={{ right: 30 }}
       icon={<SlidersOutlined />}
     >
-      <FloatButton icon={<CommentOutlined />} />
+      {/* <FloatButton icon={<CommentOutlined />} /> */}
       <FloatButton
         onClick={toggleTheme}
         icon={<BulbOutlined />}

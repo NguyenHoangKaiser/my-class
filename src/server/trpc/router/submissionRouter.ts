@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { getKeyUrl, supabaseDeleteFile } from "src/utils/helper";
+import { SubmissionStatus } from "src/utils/constants";
 
 export const submissionRouter = router({
   getSubmission: protectedProcedure
@@ -78,6 +79,13 @@ export const submissionRouter = router({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
+      if (submission.status === SubmissionStatus.pending) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You must first download the pending submission",
+        });
+      }
+
       assertIsClassroomAdmin(ctx, submission.assignment.classroomId);
 
       await ctx.prisma.submission.update({
@@ -86,6 +94,7 @@ export const submissionRouter = router({
         },
         data: {
           grade: input.grade,
+          status: SubmissionStatus.graded,
         },
       });
     }),
@@ -132,6 +141,39 @@ export const submissionRouter = router({
       await ctx.prisma.submission.delete({
         where: {
           id: input.submissionId,
+        },
+      });
+    }),
+  changeStatusSubmission: protectedProcedure
+    .input(
+      z.object({
+        submissionId: z.string(),
+        status: z.enum([
+          SubmissionStatus.graded,
+          SubmissionStatus.late,
+          SubmissionStatus.viewed,
+        ]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const submission = await ctx.prisma.submission.findUnique({
+        where: {
+          id: input.submissionId,
+        },
+        include: {
+          assignment: true,
+        },
+      });
+      if (!submission) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      assertIsClassroomAdmin(ctx, submission.assignment.classroomId);
+      await ctx.prisma.submission.update({
+        where: {
+          id: input.submissionId,
+        },
+        data: {
+          status: input.status,
         },
       });
     }),

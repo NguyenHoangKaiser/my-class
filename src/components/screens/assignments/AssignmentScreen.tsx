@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
-import Button, { Variant } from "src/components/common/Button";
-import { useFileUpload } from "src/hooks";
 import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "../edit-assignments/AttachmentsTable";
 import EmptyStateAttachments from "../edit-assignments/EmptyStateAttachments";
-import { Tag, Typography } from "antd";
+import { Button, Drawer, Tag, Typography, Upload } from "antd";
 import dayjs from "dayjs";
+import { UploadOutlined } from "@ant-design/icons";
+import useAntUpload from "src/hooks/useAntUpload";
+import { getAssignmentStatusColor } from "src/utils/constants";
+import CommentDrawer from "../edit-assignments/CommentDrawer";
 
 export const AssignmentScreen = ({
   assignmentId,
@@ -28,7 +30,17 @@ export const AssignmentScreen = ({
 
   const createFileUrl = trpc.submission.createFileUrl.useMutation();
 
-  const { file, fileRef, handleFileChange, uploadFile } = useFileUpload({
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const { fileList, handleUpload, uploadProps, uploading } = useAntUpload({
     getUploadUrl: (fileToUpload: File) =>
       createFileUrl.mutateAsync({
         filename: fileToUpload.name,
@@ -59,11 +71,6 @@ export const AssignmentScreen = ({
         titleStyle="text-primary-700 dark:text-primary-500"
         title="Assignment details"
       >
-        {/* {submissionQuery.data && submissionQuery.data.length > 0 ? (
-          <Badge variant={BadgeVariant.Success}>Submitted</Badge>
-        ) : (
-          <Badge variant={BadgeVariant.Error}>Due on {formattedDueDate}</Badge>
-        )} */}
         <div className="flex gap-4">
           <Tag
             color={isNotDue ? "green" : "red"}
@@ -80,13 +87,7 @@ export const AssignmentScreen = ({
           </Tag>
 
           <Tag
-            color={
-              assignment?.status === "progressing"
-                ? "green"
-                : assignment?.status === "suspended"
-                ? "orange"
-                : "red"
-            }
+            color={getAssignmentStatusColor(assignment?.status as string)}
             style={{
               display: "flex",
               fontSize: 16,
@@ -124,6 +125,9 @@ export const AssignmentScreen = ({
             Not submitted
           </Tag>
         )}
+        <Button type="primary" onClick={showDrawer}>
+          Open
+        </Button>
       </MainHeading>
 
       <div className="mx-10">
@@ -158,38 +162,22 @@ export const AssignmentScreen = ({
             <EmptyStateWrapper
               EmptyComponent={<EmptyStateAttachments />}
               NonEmptyComponent={
-                <AttachmentsTable data={attachmentsQuery.data ?? []} />
+                <AttachmentsTable
+                  data={attachmentsQuery.data ?? []}
+                  isLoadingAttachment={attachmentsQuery.isFetching}
+                />
               }
               isLoading={attachmentsQuery.isLoading}
               data={attachmentsQuery.data}
             />
           </div>
-          <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
-            {/* <Upload {...uploadProps}>
-              <Button
-                style={{ alignItems: "center", display: "flex" }}
-                icon={<UploadOutlined />}
-              >
-                Select File
-              </Button>
-            </Upload>
-            <Button
-              type="primary"
-              onClick={handleUpload}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              // style={{ marginTop: 16 }}
-            >
-              {uploading ? "Uploading" : "Start Upload"}
-            </Button> */}
-          </div>
-          <h2 className="mb-5 text-3xl">Submissions</h2>
           <div className="mb-5">
             <EmptyStateWrapper
               EmptyComponent={<EmptyStateAttachments />}
               NonEmptyComponent={
                 <AttachmentsTable
                   data={submissionQuery.data ?? []}
+                  isLoadingSubmission={submissionQuery.isFetching}
                   onFilesDeleted={handleOnSubmissionDelete}
                 />
               }
@@ -197,50 +185,36 @@ export const AssignmentScreen = ({
               data={submissionQuery.data}
             />
           </div>
-          <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
-            {/* <Upload {...uploadProps}>
+          {assignment?.status !== "completed" && (
+            <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
+              <Upload {...uploadProps}>
+                <Button
+                  style={{ alignItems: "center", display: "flex" }}
+                  icon={<UploadOutlined />}
+                >
+                  Select File
+                </Button>
+              </Upload>
               <Button
-                style={{ alignItems: "center", display: "flex" }}
-                icon={<UploadOutlined />}
+                type="primary"
+                onClick={handleUpload}
+                disabled={fileList.length === 0}
+                loading={uploading}
               >
-                Select File
+                {uploading ? "Uploading" : "Start Upload"}
               </Button>
-            </Upload>
-            <Button
-              type="primary"
-              onClick={handleUpload}
-              disabled={fileList.length === 0}
-              loading={uploading}
-              // style={{ marginTop: 16 }}
-            >
-              {uploading ? "Uploading" : "Start Upload"}
-            </Button> */}
-          </div>
+            </div>
+          )}
         </section>
       </div>
-
-      <div className="flex px-5">
-        <form className="text-white" onSubmit={uploadFile}>
-          <label
-            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-            htmlFor="file-upload"
-          >
-            Upload Submissions
-          </label>
-          <input
-            ref={fileRef}
-            id="file-upload"
-            className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-            onChange={handleFileChange}
-            type="file"
-          />
-          {file && (
-            <Button className="mt-4" type="submit" variant={Variant.Primary}>
-              Upload
-            </Button>
-          )}
-        </form>
-      </div>
+      <Drawer
+        placement="right"
+        onClose={onClose}
+        open={open}
+        title="Assignment comments"
+      >
+        <CommentDrawer assignmentId={assignmentId} />
+      </Drawer>
     </section>
   );
 };

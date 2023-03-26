@@ -175,7 +175,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
           <Select
             options={[
               {
-                label: "In progress",
+                label: "Progressing",
                 value: "progressing",
               },
               {

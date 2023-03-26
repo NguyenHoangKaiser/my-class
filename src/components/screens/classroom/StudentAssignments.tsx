@@ -10,6 +10,7 @@ import { Space, Table, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useWindowSize } from "react-use";
 import { EyeIcon } from "src/components/common/Icons";
 import { useSession } from "src/hooks";
 import {
@@ -47,6 +48,7 @@ function StudentAssignments({
 
   const router = useRouter();
   const session = useSession();
+  const { width } = useWindowSize();
 
   const submissionsQuery = trpc.submission.getSubmissionForStudent.useQuery(
     {
@@ -93,22 +95,26 @@ function StudentAssignments({
             pageSize: 5,
             hideOnSinglePage: true,
           }}
-          // scroll={{ x: 100, y: 500 }}
+          style={{
+            maxWidth: width - 323,
+          }}
+          scroll={{ x: true }}
         >
           <Column<DataType>
             title="#"
             key="index"
             render={(_text, _record, index) => <span>{index + 1}</span>}
-            // fixed="left"
-            // width={50}
+            fixed="left"
+            width={50}
           />
           <Column<DataType>
             title="Name"
             dataIndex="name"
             key="name"
+            fixed="left"
             sorter={(a, b) => a.name.localeCompare(b.name)}
             sortDirections={["ascend", "descend"]}
-            // width={150}
+            width={150}
           />
           <Column<DataType>
             title="Due date"
@@ -159,8 +165,8 @@ function StudentAssignments({
               const average = getSubmission(record.id);
               if (!average) return "N/A";
               return (
-                <Typography.Text type={average < 50 ? "danger" : "success"}>
-                  {average.toFixed(2)}
+                <Typography.Text type={average < 5 ? "danger" : "success"}>
+                  {average.toFixed(1)}
                 </Typography.Text>
               );
             }}
@@ -183,8 +189,8 @@ function StudentAssignments({
           <Column<DataType>
             title="Action"
             key="action"
-            // width={160}
-            // fixed="right"
+            width={100}
+            fixed="right"
             render={(_, record) => (
               <Space size="middle">
                 <Link

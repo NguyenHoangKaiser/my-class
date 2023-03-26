@@ -1,4 +1,5 @@
 import type { Attachment, Submission } from "@prisma/client";
+import { message } from "antd";
 import { supabase } from "src/libs/supabaseClient";
 
 type AssignmentKey = {
@@ -31,14 +32,15 @@ export const supabaseDeleteFile = async (key: Key) => {
 };
 
 export const getDownloadUrl = async (key: Key) => {
-  const { data } = await supabase.storage
-    .from("files")
-    .getPublicUrl(getKeyUrl(key), {
-      download: true,
-    });
+  const { data } = supabase.storage.from("files").getPublicUrl(getKeyUrl(key), {
+    download: true,
+  });
 
   if (data) {
     window.open(data.publicUrl, "_parent", "noopener,noreferrer");
+    message.success("Download started!");
+  } else {
+    message.error("Download failed!");
   }
 };
 

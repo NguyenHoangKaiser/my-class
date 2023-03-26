@@ -329,23 +329,6 @@ export const classroomRouter = router({
       });
       return classroom;
     }),
-  // addSubject: protectedProcedure
-  //   .input(
-  //     z.array(
-  //       z.object({
-  //         name: z.string(),
-  //         description: z.string(),
-  //       })
-  //     )
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     assertIsTeacher(ctx);
-  //     const subject = await ctx.prisma.subject.createMany({
-  //       data: input,
-  //       skipDuplicates: true,
-  //     });
-  //     return subject;
-  //   }),
   getSubjects: protectedProcedure.query(async ({ ctx }) => {
     const subjects = await ctx.prisma.subject.findMany();
     return subjects;
@@ -368,4 +351,95 @@ export const classroomRouter = router({
 
     return classroomsNotEnrolled;
   }),
+  rateClassroom: protectedProcedure
+    .input(
+      z.object({
+        classroomId: z.string(),
+        amount: z.number().min(1).max(5),
+        description: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      assertIsStudent(ctx);
+      const userId = ctx.session.user.id as string;
+      const rating = await ctx.prisma.rating.findFirst({
+        where: {
+          classroomId: input.classroomId,
+          studentId: userId,
+        },
+      });
+      if (rating) {
+        const updatedRating = await ctx.prisma.rating.update({
+          where: {
+            id: rating.id,
+          },
+          data: {
+            amount: input.amount,
+            description: input.description,
+          },
+        });
+        return updatedRating;
+      }
+      const newRating = await ctx.prisma.rating.create({
+        data: {
+          amount: input.amount,
+          description: input.description,
+          classroomId: input.classroomId,
+          studentId: userId,
+        },
+      });
+      return newRating;
+    }),
+  getRatings: protectedProcedure
+    .input(z.object({ classroomId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const ratings = await ctx.prisma.rating.findMany({
+        where: {
+          classroomId: input.classroomId,
+        },
+        include: {
+          student: true,
+        },
+      });
+      return ratings;
+    }),
+  editRating: protectedProcedure
+    .input(
+      z.object({
+        ratingId: z.string(),
+        amount: z.number().min(1).max(5),
+        description: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      assertIsStudent(ctx);
+      const userId = ctx.session.user.id as string;
+      const rating = await ctx.prisma.rating.findUnique({
+        where: {
+          id: input.ratingId,
+        },
+      });
+      if (!rating) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Rating not found",
+        });
+      }
+      if (rating.studentId !== userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You cannot edit this rating",
+        });
+      }
+      const updatedRating = await ctx.prisma.rating.update({
+        where: {
+          id: input.ratingId,
+        },
+        data: {
+          amount: input.amount,
+          description: input.description,
+        },
+      });
+      return updatedRating;
+    }),
 });

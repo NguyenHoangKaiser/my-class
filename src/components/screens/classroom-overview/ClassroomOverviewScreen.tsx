@@ -2,7 +2,17 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { trpc } from "../../../utils/trpc";
-import { Badge, Button, Descriptions, Rate, Skeleton, Space, Tag } from "antd";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Descriptions,
+  Rate,
+  Skeleton,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
 import dayjs from "dayjs";
 import { MainHeading } from "src/components/common";
 import { firstLetterToUpperCase, getTagColor } from "src/utils/helper";
@@ -22,23 +32,28 @@ export const ClassroomOverviewScreen = ({
 
   const classroom = classroomQuery.data;
 
-  useEffect(() => {
-    if (!userQuery.data) return;
-    if (!classroomId) return;
-    if (!router) return;
-    if (
-      !userQuery.data.enrolledIn.find(
-        (classroom) => classroom.id === classroomId
-      )
-    )
-      return;
-    router.push(`/classrooms/${classroomId}`);
-  }, [userQuery.data, classroomId, router]);
+  const rating = classroom?.ratings
+    ? classroom.ratings.reduce((a, b) => a + b.amount, 0) /
+      classroom.ratings.length
+    : 0;
+
+  // useEffect(() => {
+  //   if (!userQuery.data) return;
+  //   if (!classroomId) return;
+  //   if (!router) return;
+  //   if (
+  //     userQuery.data.enrolledIn.find(
+  //       (classroom) => classroom.id === classroomId
+  //     )
+  //   )
+  //     return;
+  //   router.push(`/classrooms/${classroomId}`);
+  // }, [userQuery.data, classroomId, router]);
 
   return (
     <>
       <MainHeading title="Classroom Overview" />
-      <section className="container px-5 pt-5">
+      <section className="container pl-14 pt-5">
         <Skeleton active loading={classroomQuery.isLoading}>
           <Descriptions
             labelStyle={{
@@ -50,18 +65,31 @@ export const ClassroomOverviewScreen = ({
               {classroom?.name}
             </Descriptions.Item>
             <Descriptions.Item label="Teacher">
-              {classroom?.teacher.displayName || classroom?.teacher.name}
+              <Space>
+                <Avatar src={classroom?.teacher.image} />
+                <Typography.Link href="#">
+                  {classroom?.teacher.displayName || classroom?.teacher.name}
+                </Typography.Link>
+              </Space>
             </Descriptions.Item>
             <Descriptions.Item label="Created At">
               {dayjs(classroom?.createdAt).format("DD-MM-YYYY HH:mm:ss")}
             </Descriptions.Item>
             <Descriptions.Item label="Language">
-              <Tag>
+              <Tag color="yellow">
                 {classroom?.language === "en" ? "English" : "Vietnamese"}
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Type">
-              <Tag>{firstLetterToUpperCase(classroom?.modifier || "")}</Tag>
+              <Tag
+                color={
+                  classroom?.modifier === "public"
+                    ? "green-inverse"
+                    : "orange-inverse"
+                }
+              >
+                {firstLetterToUpperCase(classroom?.modifier || "")}
+              </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Subject">
               <Space wrap>
@@ -88,14 +116,14 @@ export const ClassroomOverviewScreen = ({
                   classroom?.status === "active"
                     ? "processing"
                     : classroom?.status === "archived"
-                    ? "warning"
-                    : "error"
+                    ? "error"
+                    : "warning"
                 }
                 text={firstLetterToUpperCase(classroom?.status || "")}
               />
             </Descriptions.Item>
             <Descriptions.Item label="Rating">
-              <Rate disabled defaultValue={classroom?.ratings.length || 0} />
+              <Rate disabled allowHalf defaultValue={rating} />
             </Descriptions.Item>
             <Descriptions.Item label="Students">
               {classroom?.students.length || 0}
@@ -106,22 +134,28 @@ export const ClassroomOverviewScreen = ({
             <Descriptions.Item span={4} label="Requirements">
               <ReactMarkdown>{`${classroom?.requirements}`}</ReactMarkdown>
             </Descriptions.Item>
-            <Descriptions.Item span={4} label="Actions">
-              <Space size="large">
-                <Button
-                  type="primary"
-                  onClick={() => setIsEnrollModalOpen(true)}
-                >
-                  Enroll
-                </Button>
-                <Button
-                  type="default"
-                  onClick={() => router.push("/browse-classrooms")}
-                >
-                  Choose a different classroom
-                </Button>
-              </Space>
-            </Descriptions.Item>
+            {classroom?.status !== "archived" &&
+              userQuery.data?.role === "student" &&
+              !userQuery.data.enrolledIn.find(
+                (classroom) => classroom.id === classroomId
+              ) && (
+                <Descriptions.Item span={4} label="Actions">
+                  <Space size="large">
+                    <Button
+                      type="primary"
+                      onClick={() => setIsEnrollModalOpen(true)}
+                    >
+                      Enroll
+                    </Button>
+                    <Button
+                      type="default"
+                      onClick={() => router.push("/browse-classrooms")}
+                    >
+                      Choose a different classroom
+                    </Button>
+                  </Space>
+                </Descriptions.Item>
+              )}
           </Descriptions>
         </Skeleton>
       </section>

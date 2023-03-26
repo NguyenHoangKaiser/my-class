@@ -1,8 +1,21 @@
 import { EditOutlined, UploadOutlined } from "@ant-design/icons";
-import { Tag, Typography, Upload, Button, Popconfirm, message } from "antd";
+import {
+  Tag,
+  Typography,
+  Upload,
+  Button,
+  Popconfirm,
+  message,
+  Drawer,
+  Space,
+  Form,
+  Row,
+  Col,
+  Input,
+} from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useToggle } from "react-use";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
@@ -16,6 +29,7 @@ import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
 import useAntUpload from "src/hooks/useAntUpload";
 import { getAssignmentStatusColor } from "src/utils/constants";
+import CommentDrawer from "./CommentDrawer";
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -35,6 +49,16 @@ export const EditAssignmentScreen = ({
 
   useIsClassroomAdmin(classroomId);
   const createFileUrl = trpc.assignment.createFileUrl.useMutation();
+
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const { fileList, handleUpload, uploadProps, uploading } = useAntUpload({
     getUploadUrl: (fileToUpload: File) =>
@@ -139,7 +163,9 @@ export const EditAssignmentScreen = ({
             {assignment?.status.toUpperCase()}
           </Tag>
         </div>
-
+        <Button type="primary" onClick={showDrawer}>
+          Open
+        </Button>
         <div className="flex gap-3">
           <LinkButton onClick={() => setShowEditAssignmentModal(true)}>
             <PencilSquare /> Edit
@@ -206,23 +232,38 @@ export const EditAssignmentScreen = ({
               data={attachmentsQuery.data}
             />
           </div>
-          <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
-            <Upload {...uploadProps}>
-              <Button
-                style={{ alignItems: "center", display: "flex" }}
-                icon={<UploadOutlined />}
-              >
-                Select File
-              </Button>
-            </Upload>
-            {fileList.length > 0 && (
-              <Button type="primary" onClick={handleUpload} loading={uploading}>
-                {uploading ? "Uploading" : "Start Upload"}
-              </Button>
-            )}
-          </div>
+          {assignment?.status !== "completed" && (
+            <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
+              <Upload {...uploadProps}>
+                <Button
+                  style={{ alignItems: "center", display: "flex" }}
+                  icon={<UploadOutlined />}
+                >
+                  Select File
+                </Button>
+              </Upload>
+              {fileList.length > 0 && (
+                <Button
+                  type="primary"
+                  onClick={handleUpload}
+                  loading={uploading}
+                >
+                  {uploading ? "Uploading" : "Start Upload"}
+                </Button>
+              )}
+            </div>
+          )}
         </section>
       </div>
+
+      <Drawer
+        placement="right"
+        onClose={onClose}
+        open={open}
+        title="Assignment comments"
+      >
+        <CommentDrawer assignmentId={assignmentId} />
+      </Drawer>
 
       {assignmentQuery.data?.dueDate && (
         <EditDateModal

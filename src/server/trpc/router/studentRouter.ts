@@ -25,6 +25,7 @@ export const studentRouter = router({
         students: true,
         teacher: true,
         subjects: true,
+        ratings: true,
       },
     });
     return classrooms;

@@ -5,6 +5,7 @@ import student from "src/assets/student.jpeg";
 import { useRouter } from "next/router";
 import React from "react";
 import { getClassroomStatusColor } from "src/utils/constants";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 function ClassroomsList({
   classrooms,
@@ -98,7 +99,7 @@ function ClassroomsList({
                     }
                     description={
                       item.description !== "No description provided" ? (
-                        item.description
+                        <ReactMarkdown>{`${item.description}`}</ReactMarkdown>
                       ) : (
                         <Tag color="red">No description provided</Tag>
                       )

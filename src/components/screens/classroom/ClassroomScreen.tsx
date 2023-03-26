@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
 import { useSession } from "src/hooks";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
-import { PencilSquare, TrashIcon } from "src/components/common/Icons";
+import { EyeIcon, PencilSquare, TrashIcon } from "src/components/common/Icons";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
 import SideNavigation, { tabAtom } from "./SideNavigation";
@@ -15,7 +15,18 @@ import CreateAssignmentModal from "./CreateAssignmentModal";
 import EditClassroomModal from "./EditClassroomModal";
 import SubmissionsSection from "./SubmissionsSection";
 import LinkButton from "src/components/common/Button/LinkButton";
-import { Button, message, Popconfirm, Typography } from "antd";
+import {
+  Button,
+  message,
+  Popconfirm,
+  Popover,
+  Rate,
+  Space,
+  Typography,
+} from "antd";
+import { SmileOutlined } from "@ant-design/icons";
+
+const desc = ["terrible", "bad", "normal", "good", "wonderful"];
 
 function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const [selectedTab] = useAtom(tabAtom);
@@ -33,6 +44,8 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const deleteClassroom = trpc.classroom.deleteClassroom.useMutation();
 
   const deleteAssignment = trpc.assignment.deleteAssignment.useMutation();
+
+  const rateClassroom = trpc.classroom.rateClassroom.useMutation();
 
   const handleDeleteAssignment = async (assignmentId: string) => {
     await deleteAssignment.mutateAsync({ assignmentId });
@@ -54,6 +67,19 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   const classroom = classroomQuery.data;
   const hasAdminAccess = classroom?.userId === session.data?.user?.id;
   const showUnenroll = classrooms.data?.some(({ id }) => id === classroomId);
+  const hasRated = classroom?.ratings?.some(
+    ({ studentId }) => studentId === session.data?.user?.id
+  );
+
+  const myRate = classroom?.ratings?.find(
+    ({ studentId }) => studentId === session.data?.user?.id
+  )?.amount;
+
+  const handleRate = async (value: number) => {
+    await rateClassroom.mutateAsync({ classroomId, amount: value });
+    message.success("Rated classroom successfully!");
+    classroomQuery.refetch();
+  };
 
   const handleUnenroll = async () => {
     await unenrollMutation.mutateAsync(
@@ -93,8 +119,31 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   return (
     <>
       <MainHeading title={classroom?.name ?? "loading..."}>
+        {showUnenroll && !hasRated && (
+          <Popover
+            content={
+              <span>
+                <Rate tooltips={desc} onChange={handleRate} defaultValue={0} />
+              </span>
+            }
+            title="Rate this classroom"
+          >
+            <Space>
+              <Typography.Text>Like this class ?</Typography.Text>
+              <SmileOutlined />
+            </Space>
+          </Popover>
+        )}
+        {hasRated && (
+          <Rate tooltips={desc} onChange={handleRate} defaultValue={myRate} />
+        )}
         {hasAdminAccess && (
           <div className="flex gap-3">
+            <LinkButton
+              onClick={() => router.push(`/classrooms/${classroomId}/overview`)}
+            >
+              <EyeIcon /> Overview
+            </LinkButton>
             <LinkButton onClick={() => setShowEditClassroomModal(true)}>
               <PencilSquare /> Edit
             </LinkButton>
@@ -120,20 +169,27 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
         )}
 
         {showUnenroll && (
-          <Popconfirm
-            title="Unenroll from this classroom"
-            placement="bottomRight"
-            description="Are you sure to unenroll from this classroom?"
-            onConfirm={() => {
-              handleUnenroll();
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button className="mr-4" size="large" type="primary" danger>
-              Unenroll
-            </Button>
-          </Popconfirm>
+          <div className="flex gap-3">
+            <LinkButton
+              onClick={() => router.push(`/classrooms/${classroomId}/overview`)}
+            >
+              <EyeIcon /> Overview
+            </LinkButton>
+            <Popconfirm
+              title="Unenroll from this classroom"
+              placement="bottomRight"
+              description="Are you sure to unenroll from this classroom?"
+              onConfirm={() => {
+                handleUnenroll();
+              }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button className="mr-4" size="large" type="primary" danger>
+                Unenroll
+              </Button>
+            </Popconfirm>
+          </div>
         )}
       </MainHeading>
 

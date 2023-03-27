@@ -7,7 +7,9 @@ type EmptyStateAttachmentsProps = {
 function EmptyStateAttachments({ isSubmissions }: EmptyStateAttachmentsProps) {
   return (
     <>
-      <h2 className="mb-5 text-3xl">Attachments</h2>
+      <h2 className="mb-5 text-3xl">
+        {isSubmissions ? "Submissions" : "Attachments"}
+      </h2>
       <div className="mx-auto flex w-1/3 flex-col items-center justify-center gap-8">
         <Image
           width="150"

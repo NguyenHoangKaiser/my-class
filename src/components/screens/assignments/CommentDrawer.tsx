@@ -1,19 +1,12 @@
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  List,
-  Space,
-  Tag,
-  Typography,
-  message,
-} from "antd";
+import { Button, Form, Input, List, Tag, Typography, message } from "antd";
 import React from "react";
 import { trpc } from "src/utils/trpc";
 import dayjs from "dayjs";
 import { firstLetterToUpperCase } from "src/utils/helper";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { DeleteOutlined } from "@ant-design/icons";
+import Image from "next/image";
+import profileImage from "src/assets/profile.jpeg";
 
 type Props = {
   assignmentId?: string;
@@ -42,19 +35,23 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
 
   const deleteComment = trpc.comment.deleteComment.useMutation();
 
-  // const SubmissionComment = trpc.comment.getSubmissionComments.useQuery(
-  //   { submissionId: submissionId as string },
-  //   {
-  //     enabled: !!submissionId,
-  //   }
-  // );
-  // console.log("SubmissionComment", SubmissionComment.data);
-
   const createAssignmentComment =
     trpc.comment.createAssignmentComment.useMutation();
 
-  // const createSubmissionComment =
-  //   trpc.comment.createSubmissionComment.useMutation();
+  const handleDeleteComment = (commentId: string) => {
+    deleteComment.mutate(
+      { commentId: commentId },
+      {
+        onSuccess: () => {
+          assignmentCommentQuery.refetch();
+          message.success("Comment deleted");
+        },
+        onError: (error) => {
+          message.error(error.message);
+        },
+      }
+    );
+  };
 
   const onFinish = (values: { content: string }) => {
     if (assignmentId) {
@@ -69,28 +66,17 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
             assignmentCommentQuery.refetch();
             message.success("Comment created");
           },
+          onError(error) {
+            message.error(error.message);
+          },
         }
       );
     }
-    // if (submissionId) {
-    //   createSubmissionComment.mutate(
-    //     {
-    //       submissionId: assignmentId as string,
-    //       content: values.content,
-    //     },
-    //     {
-    //       onSuccess: () => {
-    //         form.resetFields();
-    //       },
-    //     }
-    //   );
-    // }
   };
 
   return (
     <div className="flex flex-col gap-2 scroll-auto">
       <List
-        // pagination={{ position, align }}
         bordered
         header={
           <Typography.Title level={5}>
@@ -106,68 +92,31 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
               flexDirection: "column",
               alignItems: "flex-start",
             }}
-            // actions={[
-            //   <Button
-            //     key={item.id}
-            //     size="small"
-            //     type="text"
-            //     danger
-            //     onClick={() => {
-            //       deleteComment.mutate(
-            //         { commentId: item.id },
-            //         {
-            //           onSuccess: () => {
-            //             assignmentCommentQuery.refetch();
-            //             message.success("Comment deleted");
-            //           },
-            //           onError: (error) => {
-            //             message.error(error.message);
-            //           },
-            //         }
-            //       );
-            //     }}
-            //   >
-            //     Delete
-            //   </Button>,
-            // ]}
           >
-            {/* <List.Item.Meta
-              avatar={
-                <Avatar
-                  style={{ width: 40, height: 40 }}
-                  src={item.user.image}
-                />
-              }
-              title={
-                <Space>
-                  <Typography.Link href="#" strong>
-                    {item.user.name}
-                  </Typography.Link>
-                  <Tag color={item.user.role === "teacher" ? "purple" : "lime"}>
-                    {firstLetterToUpperCase(item.user.role as string)}
-                  </Tag>
-                </Space>
-              }
-              description={
-                <Typography.Text style={{ fontSize: 12 }}>
-                  {dayjs(item.createdAt).format("DD/MM/YYYY HH:mm")}
-                </Typography.Text>
-              }
-            /> */}
             <div className="flex w-full">
-              <Avatar style={{ width: 40, height: 35 }} src={item.user.image} />
+              <Image
+                alt="User Avatar"
+                width={40}
+                height={40}
+                className="rounded-full"
+                src={item.user.image ?? profileImage}
+              />
               <div className="ml-2 flex w-full flex-col">
                 <div className="flex w-full justify-between">
-                  <Typography.Link href="#" strong>
-                    {item.user.name}
-                  </Typography.Link>
+                  <Typography.Text strong>{item.user.name}</Typography.Text>
                   <Tag color={item.user.role === "teacher" ? "purple" : "lime"}>
                     {firstLetterToUpperCase(item.user.role as string)}
                   </Tag>
                 </div>
-                <Typography.Text style={{ fontSize: 12 }}>
-                  {dayjs(item.createdAt).format("DD/MM/YYYY HH:mm")}
-                </Typography.Text>
+                <div className="flex gap-2">
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {dayjs(item.createdAt).format("DD/MM/YYYY HH:mm")}
+                  </Typography.Text>
+                  <DeleteOutlined
+                    className="text-red-500 hover:text-red-400"
+                    onClick={() => handleDeleteComment(item.id)}
+                  />
+                </div>
               </div>
             </div>
             <ReactMarkdown>{`${item.content}`}</ReactMarkdown>

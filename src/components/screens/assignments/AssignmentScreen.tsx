@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import { CommentOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Drawer, Tag, Typography, Upload } from "antd";
+import dayjs from "dayjs";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { EmptyStateWrapper, MainHeading } from "src/components/common";
+import useAntUpload from "src/hooks/useAntUpload";
+import { getAssignmentStatusColor } from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
 import AttachmentsTable from "../edit-assignments/AttachmentsTable";
 import EmptyStateAttachments from "../edit-assignments/EmptyStateAttachments";
-import { Button, Drawer, Tag, Typography, Upload } from "antd";
-import dayjs from "dayjs";
-import { UploadOutlined } from "@ant-design/icons";
-import useAntUpload from "src/hooks/useAntUpload";
-import { getAssignmentStatusColor } from "src/utils/constants";
-import CommentDrawer from "../edit-assignments/CommentDrawer";
+import CommentDrawer from "./CommentDrawer";
 
 export const AssignmentScreen = ({
   assignmentId,
@@ -93,11 +93,22 @@ export const AssignmentScreen = ({
               fontSize: 16,
               height: 40,
               alignItems: "center",
+            }}
+          >
+            {assignment?.status.toUpperCase()}
+          </Tag>
+          <Tag
+            color="cyan"
+            style={{
+              display: "flex",
+              fontSize: 16,
+              height: 40,
+              alignItems: "center",
               gap: 10,
               justifyContent: "space-between",
             }}
           >
-            {assignment?.status.toUpperCase()}
+            <CommentOutlined onClick={showDrawer} />
           </Tag>
         </div>
         {submissionQuery.data && submissionQuery.data.length > 0 ? (
@@ -125,9 +136,6 @@ export const AssignmentScreen = ({
             Not submitted
           </Tag>
         )}
-        <Button type="primary" onClick={showDrawer}>
-          Open
-        </Button>
       </MainHeading>
 
       <div className="mx-10">
@@ -173,9 +181,10 @@ export const AssignmentScreen = ({
           </div>
           <div className="mb-5">
             <EmptyStateWrapper
-              EmptyComponent={<EmptyStateAttachments />}
+              EmptyComponent={<EmptyStateAttachments isSubmissions />}
               NonEmptyComponent={
                 <AttachmentsTable
+                  type="Submission"
                   data={submissionQuery.data ?? []}
                   isLoadingSubmission={submissionQuery.isFetching}
                   onFilesDeleted={handleOnSubmissionDelete}

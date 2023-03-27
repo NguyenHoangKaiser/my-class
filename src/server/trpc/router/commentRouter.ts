@@ -49,6 +49,9 @@ export const commentRouter = router({
         where: {
           assignmentId: input.assignmentId,
         },
+        orderBy: {
+          createdAt: "asc",
+        },
         include: {
           user: true,
         },

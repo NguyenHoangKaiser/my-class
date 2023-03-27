@@ -1,17 +1,17 @@
-import { EditOutlined, UploadOutlined } from "@ant-design/icons";
 import {
+  CommentOutlined,
+  EditOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Drawer,
+  message,
+  Popconfirm,
   Tag,
+  Tooltip,
   Typography,
   Upload,
-  Button,
-  Popconfirm,
-  message,
-  Drawer,
-  Space,
-  Form,
-  Row,
-  Col,
-  Input,
 } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
@@ -22,14 +22,14 @@ import { EmptyStateWrapper, MainHeading } from "src/components/common";
 import LinkButton from "src/components/common/Button/LinkButton";
 import { PencilSquare, TrashIcon } from "src/components/common/Icons";
 import { useIsClassroomAdmin } from "src/hooks";
+import useAntUpload from "src/hooks/useAntUpload";
+import { getAssignmentStatusColor } from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
+import CommentDrawer from "../assignments/CommentDrawer";
 import AttachmentsTable from "./AttachmentsTable";
 import EditAssignmentModal from "./EditAssignmentModal";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
-import useAntUpload from "src/hooks/useAntUpload";
-import { getAssignmentStatusColor } from "src/utils/constants";
-import CommentDrawer from "./CommentDrawer";
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -118,22 +118,24 @@ export const EditAssignmentScreen = ({
       >
         <div className="flex gap-4">
           {assignment?.status !== "completed" ? (
-            <Tag
-              color={isNotDue ? "green" : "red"}
-              className="cursor-pointer"
-              onClick={() => toggleIsEditDueDateModalOpen()}
-              icon={<EditOutlined />}
-              style={{
-                display: "flex",
-                fontSize: 16,
-                height: 40,
-                alignItems: "center",
-                gap: 10,
-                justifyContent: "space-between",
-              }}
-            >
-              Due on {formattedDueDate}
-            </Tag>
+            <Tooltip title="You can extend the due date of assignment">
+              <Tag
+                color={isNotDue ? "green" : "red"}
+                className="cursor-pointer"
+                onClick={() => toggleIsEditDueDateModalOpen()}
+                icon={<EditOutlined />}
+                style={{
+                  display: "flex",
+                  fontSize: 16,
+                  height: 40,
+                  alignItems: "center",
+                  gap: 10,
+                  justifyContent: "space-between",
+                }}
+              >
+                Due on {formattedDueDate}
+              </Tag>
+            </Tooltip>
           ) : (
             <Tag
               color={isNotDue ? "green" : "red"}
@@ -156,16 +158,24 @@ export const EditAssignmentScreen = ({
               fontSize: 16,
               height: 40,
               alignItems: "center",
-              gap: 10,
-              justifyContent: "space-between",
             }}
           >
             {assignment?.status.toUpperCase()}
           </Tag>
+          <Tag
+            color="cyan"
+            style={{
+              display: "flex",
+              fontSize: 16,
+              height: 40,
+              alignItems: "center",
+              gap: 10,
+              justifyContent: "space-between",
+            }}
+          >
+            <CommentOutlined onClick={showDrawer} />
+          </Tag>
         </div>
-        <Button type="primary" onClick={showDrawer}>
-          Open
-        </Button>
         <div className="flex gap-3">
           <LinkButton onClick={() => setShowEditAssignmentModal(true)}>
             <PencilSquare /> Edit

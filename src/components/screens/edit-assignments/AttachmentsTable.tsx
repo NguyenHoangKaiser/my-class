@@ -45,11 +45,13 @@ function AttachmentsTable({
   onFilesDeleted,
   isLoadingSubmission,
   isLoadingAttachment,
+  type,
 }: {
   data: Attachment[] | Submission[];
   onFilesDeleted?: () => void;
   isLoadingSubmission?: boolean;
   isLoadingAttachment?: boolean;
+  type?: "Attachment" | "Submission";
 }) {
   const deleteAttachment = trpc.assignment.deleteAttachment.useMutation();
   const deleteSubmission = trpc.submission.deleteSubmission.useMutation();
@@ -94,7 +96,7 @@ function AttachmentsTable({
     onFilesDeleted?.();
   };
 
-  if (data && data[0] && "studentId" in data[0]) {
+  if (type === "Submission" || (data && data[0] && "studentId" in data[0])) {
     assertIsSubmissionArray(data);
     const deleteSelection = () => {
       setLoading(true);
@@ -102,7 +104,7 @@ function AttachmentsTable({
       Promise.all(
         selectedRowKeys.map((id) => handleDeleteAttachment(id as string))
       ).then(() => {
-        message.success("Attachments deleted successfully!");
+        message.success("Submissions deleted successfully!");
         setLoading(false);
         onFilesDeleted?.();
         setSelectedRowKeys([]);
@@ -121,7 +123,7 @@ function AttachmentsTable({
     return (
       <>
         <div className="mb-5 flex items-center gap-8 ">
-          <h2 className="text-3xl">Submissions</h2>
+          <h2 className="text-3xl">{type || "Submissions"}</h2>
           {hasSelected && (
             <Popconfirm
               title="Delete selected files"

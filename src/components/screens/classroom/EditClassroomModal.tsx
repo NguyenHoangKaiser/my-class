@@ -1,7 +1,8 @@
-import { MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import type { Classroom, Subject, User } from "@prisma/client";
-import { Button, Checkbox, Col, message, Select } from "antd";
+import { Button, Checkbox, Col, message, Select, Upload } from "antd";
 import { Form, Input, Modal, Radio } from "antd";
+import useAntUpload from "src/hooks/useAntUpload";
 import { trpc } from "src/utils/trpc";
 
 type FormSubject = {
@@ -53,6 +54,14 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
   if (classroom && classroom.students.length > 0) {
     disabled = true;
   }
+
+  const { fileList, handleUpload, uploadProps, uploading } = useAntUpload({
+    getUploadUrl: () => {
+      return Promise.resolve(`avatars/classroom/${classroom?.id}`);
+    },
+    canUpdate: true,
+    successMessage: "Classroom banner updated successfully!",
+  });
 
   const onFinish = async (
     values: CreateClassroomFormData,
@@ -312,6 +321,21 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
           <Input.TextArea showCount maxLength={200} />
         </Form.Item>
       </Form>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <Upload {...uploadProps} maxCount={1} multiple={false}>
+          <Button
+            style={{ alignItems: "center", display: "flex" }}
+            icon={<UploadOutlined />}
+          >
+            Select File
+          </Button>
+        </Upload>
+        {fileList.length > 0 && (
+          <Button type="primary" onClick={handleUpload} loading={uploading}>
+            {uploading ? "Uploading" : "Start Upload"}
+          </Button>
+        )}
+      </div>
     </Modal>
   );
 };

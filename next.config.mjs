@@ -15,6 +15,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
+    minimumCacheTTL: 30,
     remotePatterns: [
       {
         protocol: "https",
@@ -29,6 +30,11 @@ const config = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "vbmsuimkngpnjtxpacfl.supabase.co",
         port: "",
       },
     ],

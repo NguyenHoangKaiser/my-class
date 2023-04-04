@@ -6,9 +6,15 @@ import { supabase } from "src/libs/supabaseClient";
 const useAntUpload = ({
   onFileUploaded,
   getUploadUrl,
+  canUpdate = false,
+  successMessage = "Files uploaded successfully!",
+  errorMessage = "Error uploading files",
 }: {
-  onFileUploaded: () => void;
+  onFileUploaded?: () => void;
   getUploadUrl: (file: File) => Promise<string>;
+  canUpdate?: boolean;
+  successMessage?: string;
+  errorMessage?: string;
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -19,7 +25,18 @@ const useAntUpload = ({
     async function uploadFile(file: File) {
       const url = await getUploadUrl(file);
 
-      return await supabase.storage.from("files").upload(url, file);
+      if (canUpdate) {
+        const data = await supabase.storage.from("files").update(url, file, {
+          upsert: true,
+        });
+        if (data.error && data.error.message === "The resource was not found") {
+          console.error(data.error);
+          return await supabase.storage.from("files").upload(url, file);
+        }
+        return data;
+      } else {
+        return await supabase.storage.from("files").upload(url, file);
+      }
     }
 
     // loop over the files and upload them. We use promises to make sure that every file is uploaded at the same time
@@ -30,17 +47,17 @@ const useAntUpload = ({
     )
       .then((data) => {
         if (data.some((d) => d.error)) {
-          message.error("Error uploading files");
+          message.error(errorMessage);
           console.error(data);
           return;
         } else {
-          message.success("Files uploaded successfully!");
+          message.success(successMessage);
           setFileList([]);
-          onFileUploaded();
+          onFileUploaded && onFileUploaded();
         }
       })
       .catch((error: any) => {
-        message.error("Error uploading files");
+        message.error(errorMessage);
         console.error(error);
       })
       .finally(() => {
@@ -63,6 +80,14 @@ const useAntUpload = ({
       setFileList(info.fileList);
     },
     multiple: true,
+    listType: "picture",
+    previewFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    },
   };
 
   return { fileList, uploadProps, uploading, handleUpload };

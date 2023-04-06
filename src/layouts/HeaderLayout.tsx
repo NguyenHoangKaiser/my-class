@@ -2,13 +2,10 @@ import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
 import MyHeader from "src/components/common/Header";
 import {
-  FileOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ProfileOutlined,
   ReadOutlined,
   SearchOutlined,
-  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";

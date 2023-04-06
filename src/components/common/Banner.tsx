@@ -1,15 +1,12 @@
 import React from "react";
 import fallback from "src/assets/student.jpeg";
+import type { ImageWithFallbackProps } from "./ImageWithFallback";
 import ImageWithFallback from "./ImageWithFallback";
 import { supabase } from "src/libs/supabaseClient";
-import type { ImageProps } from "next/image";
 
-interface BannerProps {
+type BannerProps = Omit<ImageWithFallbackProps, "fallbackSrc" | "src"> & {
   classroomId: string;
-  height: ImageProps["height"];
-  width: ImageProps["width"];
-  alt: ImageProps["alt"];
-}
+};
 
 const Banner = (props: BannerProps) => {
   const { classroomId, ...rest } = props;
@@ -33,4 +30,8 @@ const Banner = (props: BannerProps) => {
   );
 };
 
-export default Banner;
+function areEqual(prevProps: BannerProps, nextProps: BannerProps) {
+  return prevProps.classroomId === nextProps.classroomId;
+}
+
+export default React.memo(Banner, areEqual);

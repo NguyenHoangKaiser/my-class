@@ -109,6 +109,8 @@ export const classroomRouter = router({
           },
           include: {
             subjects: true,
+            ratings: true,
+            students: true,
           },
         });
         return classrooms;
@@ -119,6 +121,8 @@ export const classroomRouter = router({
           },
           include: {
             subjects: true,
+            ratings: true,
+            students: true,
           },
         });
         return classrooms;

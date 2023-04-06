@@ -1,11 +1,11 @@
-import type { Classroom, Subject } from "@prisma/client";
-import { Badge, Card, List, Space, Tag, Typography } from "antd";
-import Image from "next/image";
-import student from "src/assets/student.jpeg";
+import type { Classroom, Rating, Subject, User } from "@prisma/client";
+import { Badge, Card, List, Space, Tag, Tooltip, Typography } from "antd";
 import { useRouter } from "next/router";
 import React from "react";
 import { getClassroomStatusColor } from "src/utils/constants";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { Banner } from "src/components/common";
+import { EyeOutlined, StarOutlined, TeamOutlined } from "@ant-design/icons";
 
 function ClassroomsList({
   classrooms,
@@ -14,7 +14,9 @@ function ClassroomsList({
 }: {
   classrooms:
     | (Classroom & {
+        ratings: Rating[];
         subjects: Subject[];
+        students: User[];
       })[]
     | undefined;
   isLoading: boolean;
@@ -61,7 +63,11 @@ function ClassroomsList({
               }}
             >
               <Badge.Ribbon
-                text={item.modifier.toLocaleUpperCase()}
+                text={
+                  <Tooltip title={`Class is ${item.status}`}>
+                    {item.modifier.toLocaleUpperCase()}
+                  </Tooltip>
+                }
                 color={getClassroomStatusColor(item.status)}
               >
                 <Card
@@ -70,22 +76,44 @@ function ClassroomsList({
                   hoverable
                   bordered={false}
                   cover={
-                    <Image
+                    <Banner
+                      height={140}
+                      width={300}
                       style={{
-                        // width: "auto",
-                        // height: "auto",
                         objectFit: "cover",
+                        // height: "auto",
+                        // width: "auto",
                         borderTopLeftRadius: 8,
                         borderTopRightRadius: 8,
                       }}
-                      src={student}
-                      alt="a student"
+                      classroomId={item.id}
+                      alt=""
                     />
                   }
-                  // actions={[
-                  //   <EditOutlined key="edit" />,
-                  //   <EllipsisOutlined key="ellipsis" />,
-                  // ]}
+                  actions={[
+                    <Space key="student">
+                      <TeamOutlined />
+                      {item.students.length ?? 0}
+                    </Space>,
+                    <Space key="rating">
+                      <StarOutlined />
+                      {item.ratings.length ?? 0}
+                    </Space>,
+                    <Space
+                      onClick={() =>
+                        router.push(`/classrooms/${item.id}/overview`)
+                      }
+                      key="view"
+                    >
+                      <EyeOutlined />
+                      View
+                    </Space>,
+                    // <IconText
+                    //   icon={MessageOutlined}
+                    //   text="2"
+                    //   key="list-vertical-message"
+                    // />,
+                  ]}
                 >
                   <Card.Meta
                     // avatar={<Avatar src="https://joesch.moe/api/v1/random" />}
@@ -99,29 +127,36 @@ function ClassroomsList({
                     }
                     description={
                       item.description !== "No description provided" ? (
-                        <ReactMarkdown>{`${item.description}`}</ReactMarkdown>
+                        <ReactMarkdown className="text-black">{`${item.description}`}</ReactMarkdown>
                       ) : (
                         <Tag color="red">No description provided</Tag>
                       )
                     }
                   />
-                  <Space style={{ marginTop: 12 }} wrap>
-                    {item.subjects.length > 0 ? (
-                      item.subjects.map((subject) => (
-                        <Tag
-                          key={subject.id}
-                          color={getTagColor(subject.name)}
-                          style={{ fontSize: 12 }}
-                        >
-                          {subject.name}
+                  <div className="flex flex-col justify-between gap-2">
+                    <Space style={{ marginTop: 12 }} wrap>
+                      {item.subjects.length > 0 ? (
+                        item.subjects.map((subject) => (
+                          <Tag
+                            key={subject.id}
+                            color={getTagColor(subject.name)}
+                            style={{ fontSize: 12 }}
+                          >
+                            {subject.name}
+                          </Tag>
+                        ))
+                      ) : (
+                        <Tag color="red" style={{ fontSize: 12 }}>
+                          No subject provided
                         </Tag>
-                      ))
-                    ) : (
-                      <Tag color="red" style={{ fontSize: 12 }}>
-                        No subject provided
+                      )}
+                    </Space>
+                    <Space>
+                      <Tag>
+                        {item.language === "en" ? "English" : "Vietnamese"}
                       </Tag>
-                    )}
-                  </Space>
+                    </Space>
+                  </div>
                 </Card>
               </Badge.Ribbon>
             </List.Item>

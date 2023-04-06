@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import type { ImageProps } from "next/image";
 import Image from "next/image";
 
-export interface ImageWithFallbackProps extends ImageProps {
+export type ImageWithFallbackProps = ImageProps & {
   fallbackSrc: ImageProps["src"];
-}
+};
 
 const ImageWithFallback = (props: ImageWithFallbackProps) => {
   const { src, fallbackSrc, ...rest } = props;

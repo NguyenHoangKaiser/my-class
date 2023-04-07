@@ -1,5 +1,14 @@
 import type { User } from "@prisma/client";
-import { Button, Col, Row, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Row,
+  Space,
+  Tabs,
+  TabsProps,
+  Tag,
+  Typography,
+} from "antd";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
@@ -8,10 +17,53 @@ import { MainHeading } from "src/components/common";
 // import Alert, { useDismissible } from "src/components/common/Alert";
 import { trpc } from "src/utils/trpc";
 import profileImage from "src/assets/profile.jpeg";
+import {
+  AuditOutlined,
+  ClockCircleOutlined,
+  CompassOutlined,
+  IdcardOutlined,
+  MailOutlined,
+  ManOutlined,
+  QuestionCircleOutlined,
+  QuestionOutlined,
+  ReadOutlined,
+  TeamOutlined,
+  UserOutlined,
+  WomanOutlined,
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import { firstLetterToUpperCase } from "src/utils/helper";
+import OverviewTab from "./OverviewTab";
 
 type FormData = {
   displayName: string;
 };
+
+const onChange = (key: string) => {
+  console.log(key);
+};
+
+const items: TabsProps["items"] = [
+  {
+    key: "1",
+    label: (
+      <span>
+        <AuditOutlined /> Overview
+      </span>
+    ),
+    children: <OverviewTab />,
+  },
+  {
+    key: "2",
+    label: `Tab 2`,
+    children: `Content of Tab Pane 2`,
+  },
+  {
+    key: "3",
+    label: `Tab 3`,
+    children: `Content of Tab Pane 3`,
+  },
+];
 
 function ProfileScreen() {
   // const { dismiss, show, isDisplayed } = useDismissible();
@@ -78,18 +130,16 @@ function ProfileScreen() {
         <Row>
           <Col
             style={{
-              // borderWidth: 1,
-              // borderColor: "red",
               display: "flex",
               flexDirection: "column",
             }}
-            className="border border-gray-500 px-5"
+            className="px-5"
             span={5}
           >
             <Image
               alt="User Avatar"
-              width={250}
-              height={250}
+              width={270}
+              height={270}
               className="mb-2 self-center rounded-full border border-gray-500"
               src={userData?.image ?? profileImage}
             />
@@ -102,15 +152,145 @@ function ProfileScreen() {
             >
               {userData?.displayName}
             </Typography.Text>
-            <Typography.Paragraph style={{ fontSize: 16, marginTop: 10 }}>
+            <Typography.Paragraph
+              ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
+              style={{ fontSize: 16, marginTop: 10 }}
+            >
               {userData?.bio ?? "No bio"}
             </Typography.Paragraph>
-            <Button block type="default" size="small">
+            <Button block type="default" size="middle">
               Edit profile
             </Button>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              <IdcardOutlined
+                style={{
+                  fontSize: 16,
+                }}
+              />
+              <Tag
+                color={
+                  userData?.role
+                    ? userData?.role === "teacher"
+                      ? "purple"
+                      : "lime"
+                    : "default"
+                }
+              >
+                {firstLetterToUpperCase(userData?.role ?? "No role specified")}
+              </Tag>
+            </Space>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              <ClockCircleOutlined
+                style={{
+                  fontSize: 16,
+                }}
+              />
+              <Typography.Text
+                style={{
+                  fontSize: 14,
+                }}
+              >
+                Join at {dayjs(userData?.createdAt).format("DD/MM/YYYY HH:mm")}
+              </Typography.Text>
+            </Space>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              <CompassOutlined
+                style={{
+                  fontSize: 16,
+                }}
+              />
+              <Typography.Text
+                style={{
+                  fontSize: 14,
+                }}
+              >
+                {userData?.location ?? "No location specified"}
+              </Typography.Text>
+            </Space>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              <MailOutlined
+                style={{
+                  fontSize: 16,
+                }}
+              />
+              <Typography.Text
+                style={{
+                  fontSize: 14,
+                }}
+              >
+                {userData?.email}
+              </Typography.Text>
+            </Space>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              <UserOutlined
+                style={{
+                  fontSize: 16,
+                }}
+              />
+              <Typography.Text
+                style={{
+                  fontSize: 14,
+                }}
+              >
+                {userData?.age ?? "No age specified"}
+              </Typography.Text>
+            </Space>
+            <Space
+              style={{
+                marginTop: 10,
+              }}
+              size="middle"
+            >
+              {userData?.gender === "male" ? (
+                <ManOutlined style={{ fontSize: 16 }} />
+              ) : userData?.gender === "female" ? (
+                <WomanOutlined style={{ fontSize: 16 }} />
+              ) : (
+                <QuestionCircleOutlined style={{ fontSize: 16 }} />
+              )}
+              <Typography.Text
+                style={{
+                  fontSize: 14,
+                }}
+              >
+                {firstLetterToUpperCase(
+                  userData?.gender ?? "No gender specified"
+                )}
+              </Typography.Text>
+            </Space>
           </Col>
           <Col span={18}>
-            <MainHeading title="Your Profile" />
+            <Tabs
+              size="large"
+              defaultActiveKey="1"
+              items={items}
+              onChange={onChange}
+            />
           </Col>
         </Row>
       </Col>

@@ -1,14 +1,6 @@
 import type { User } from "@prisma/client";
-import {
-  Button,
-  Col,
-  Row,
-  Space,
-  Tabs,
-  TabsProps,
-  Tag,
-  Typography,
-} from "antd";
+import type { TabsProps } from "antd";
+import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
@@ -19,6 +11,7 @@ import { trpc } from "src/utils/trpc";
 import profileImage from "src/assets/profile.jpeg";
 import {
   AuditOutlined,
+  BookOutlined,
   ClockCircleOutlined,
   CompassOutlined,
   IdcardOutlined,
@@ -78,19 +71,7 @@ function ProfileScreen() {
 
   const updateDisplayName = trpc.user.updateDisplayName.useMutation();
 
-  const { data: userData } = trpc.user.getProfile.useQuery(undefined, {
-    onSuccess(
-      userData: User & {
-        classroomsNo?: number;
-        enrolledNo?: number;
-        submissionsNo?: number;
-        ratingsNo?: number;
-        commentsNo?: number;
-      }
-    ) {
-      console.log("userData", userData);
-    },
-  });
+  const { data: userData } = trpc.user.getProfile.useQuery();
   const { data: classData } = trpc.user.getGradeEachClassroom.useQuery();
   console.log("classData", classData);
 
@@ -144,34 +125,15 @@ function ProfileScreen() {
               src={userData?.image ?? profileImage}
             />
             <Typography.Title level={3}>{userData?.name}</Typography.Title>
-            <Typography.Text
-              type="secondary"
-              style={{
-                fontSize: 20,
-              }}
-            >
-              {userData?.displayName}
-            </Typography.Text>
-            <Typography.Paragraph
-              ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
-              style={{ fontSize: 16, marginTop: 10 }}
-            >
-              {userData?.bio ?? "No bio"}
-            </Typography.Paragraph>
-            <Button block type="default" size="middle">
-              Edit profile
-            </Button>
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              <IdcardOutlined
+            <div className="flex items-center justify-between">
+              <Typography.Text
+                type="secondary"
                 style={{
-                  fontSize: 16,
+                  fontSize: 20,
                 }}
-              />
+              >
+                {userData?.displayName}
+              </Typography.Text>
               <Tag
                 color={
                   userData?.role
@@ -183,7 +145,50 @@ function ProfileScreen() {
               >
                 {firstLetterToUpperCase(userData?.role ?? "No role specified")}
               </Tag>
-            </Space>
+            </div>
+            <Typography.Paragraph
+              ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
+              style={{ fontSize: 16, marginTop: 10 }}
+            >
+              {userData?.bio ?? "No bio"}
+            </Typography.Paragraph>
+            <Button block type="default" size="middle">
+              Edit profile
+            </Button>
+            {userData?.role === "teacher" && (
+              <Space
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+                size="small"
+              >
+                <ReadOutlined
+                  style={{
+                    fontSize: 16,
+                  }}
+                />
+                <Typography.Text
+                  style={{
+                    fontSize: 16,
+                  }}
+                >
+                  {userData?.classroomsNo ?? 0} classrooms &nbsp; •
+                </Typography.Text>
+                <TeamOutlined
+                  style={{
+                    fontSize: 16,
+                  }}
+                />
+                <Typography.Text
+                  style={{
+                    fontSize: 16,
+                  }}
+                >
+                  {userData?.totalStudents ?? 0} students
+                </Typography.Text>
+              </Space>
+            )}
             <Space
               style={{
                 marginTop: 10,
@@ -195,11 +200,7 @@ function ProfileScreen() {
                   fontSize: 16,
                 }}
               />
-              <Typography.Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
+              <Typography.Text>
                 Join at {dayjs(userData?.createdAt).format("DD/MM/YYYY HH:mm")}
               </Typography.Text>
             </Space>
@@ -214,11 +215,7 @@ function ProfileScreen() {
                   fontSize: 16,
                 }}
               />
-              <Typography.Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
+              <Typography.Text>
                 {userData?.location ?? "No location specified"}
               </Typography.Text>
             </Space>
@@ -233,13 +230,7 @@ function ProfileScreen() {
                   fontSize: 16,
                 }}
               />
-              <Typography.Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
-                {userData?.email}
-              </Typography.Text>
+              <Typography.Text>{userData?.email}</Typography.Text>
             </Space>
             <Space
               style={{
@@ -252,11 +243,7 @@ function ProfileScreen() {
                   fontSize: 16,
                 }}
               />
-              <Typography.Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
+              <Typography.Text>
                 {userData?.age ?? "No age specified"}
               </Typography.Text>
             </Space>
@@ -273,11 +260,7 @@ function ProfileScreen() {
               ) : (
                 <QuestionCircleOutlined style={{ fontSize: 16 }} />
               )}
-              <Typography.Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
+              <Typography.Text>
                 {firstLetterToUpperCase(
                   userData?.gender ?? "No gender specified"
                 )}

@@ -26,7 +26,7 @@ function HeroSection() {
                 </div>
               </h1>
               <p className="mt-3 text-base text-gray-500 dark:text-white sm:mx-auto sm:mt-5 sm:max-w-xl sm:text-lg md:mt-5 md:text-xl lg:mx-0">
-                You should use this app because I made it.
+                Simple and easy to use platform for teachers and students.
               </p>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 {/* This is a hack because signIn type diff */}

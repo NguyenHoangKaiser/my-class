@@ -76,40 +76,51 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
   )?.amount;
 
   const handleRate = async (value: number) => {
-    await rateClassroom.mutateAsync({ classroomId, amount: value });
-    message.success("Rated classroom successfully!");
-    classroomQuery.refetch();
+    try {
+      await rateClassroom.mutateAsync({ classroomId, amount: value });
+      message.success("Rated classroom successfully!");
+      classroomQuery.refetch();
+    } catch (err) {
+      message.error("Something went wrong!");
+    }
   };
 
   const handleUnenroll = async () => {
-    await unenrollMutation.mutateAsync(
-      { classroomId },
-      {
-        onSuccess: () => {
-          message.success("Unenrolled from classroom successfully!");
-          router.push("/dashboard");
-        },
-        onError: () => {
-          message.error("Something went wrong!");
-        },
-      }
-    );
-    router.push("/dashboard");
+    try {
+      await unenrollMutation.mutateAsync(
+        { classroomId },
+        {
+          onSuccess: () => {
+            message.success("Unenrolled from classroom successfully!");
+            router.push("/dashboard");
+          },
+          onError: () => {
+            message.error("Something went wrong!");
+          },
+        }
+      );
+    } catch (err) {
+      message.error("Something went wrong!");
+    }
   };
 
   const handleDeleteClassroom = async () => {
-    await deleteClassroom.mutateAsync(
-      { classroomId },
-      {
-        onSuccess: () => {
-          message.success("Classroom deleted successfully!");
-          router.push("/classrooms");
-        },
-        onError: () => {
-          message.error("Something went wrong!");
-        },
-      }
-    );
+    try {
+      await deleteClassroom.mutateAsync(
+        { classroomId },
+        {
+          onSuccess: () => {
+            message.success("Classroom deleted successfully!");
+            router.push("/classrooms");
+          },
+          onError: () => {
+            message.error("Something went wrong!");
+          },
+        }
+      );
+    } catch (err) {
+      message.error("Something went wrong!");
+    }
   };
 
   const openAssignmentModal = () => {

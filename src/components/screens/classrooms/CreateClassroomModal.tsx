@@ -43,43 +43,44 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
     values: CreateClassroomFormData,
     resetFields: () => void
   ) => {
-    console.log("Received values of form: ", values);
-    let subjectArr: any[] = [];
-    if (values.subject) {
-      subjectArr = values.subject.map((subjectId) => {
-        const arr = subjectData?.find((subject) => subject.id === subjectId);
-        return {
-          name: arr?.name,
-          description: arr?.description,
-        };
-      });
+    if (createClassroom.isLoading) {
+      return;
     }
-    if (values.addSubjectCheck && values.addSubject) {
-      subjectArr = [...subjectArr, ...values.addSubject];
+    try {
+      const subjectArr: any[] = [];
+      if (values.subject) {
+        values.subject.forEach((subjectId) => {
+          const arr = subjectData?.find((subject) => subject.id === subjectId);
+          console.log("arr", arr);
+          subjectArr.push({
+            name: arr?.name,
+            description: arr?.description,
+          });
+        });
+      }
+      if (values.addSubjectCheck && values.addSubject) {
+        subjectArr.push(...values.addSubject);
+      }
+
+      const formData = {
+        name: values.name,
+        description: values.description ?? "No description provided",
+        language: values.language?.value ?? "en",
+        password: values.password ?? null,
+        requirements: values.requirements ?? "No requirements provided",
+        modifier: values.modifier,
+        subject: subjectArr,
+      };
+
+      console.log("formData", formData);
+      await createClassroom.mutateAsync(formData);
+      message.success("Classroom created successfully");
+      resetFields();
+      onCancel();
+      refetch();
+    } catch (error) {
+      message.error("Failed to create classroom");
     }
-
-    const formData = {
-      name: values.name,
-      description: values.description ?? "No description provided",
-      language: values.language?.value ?? "en",
-      password: values.password ?? null,
-      requirements: values.requirements ?? "No requirements provided",
-      modifier: values.modifier,
-      subject: subjectArr,
-    };
-
-    createClassroom.mutateAsync(formData, {
-      onSuccess: () => {
-        message.success("Classroom created successfully");
-        resetFields();
-        refetch();
-        onCancel();
-      },
-      onError: () => {
-        message.error("Failed to create classroom");
-      },
-    });
-    console.log("Form", formData);
   };
 
   return (

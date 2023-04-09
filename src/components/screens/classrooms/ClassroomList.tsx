@@ -57,6 +57,7 @@ function ClassroomsList({
           loading={isLoading}
           renderItem={(item) => (
             <List.Item
+              key={item.id}
               style={{
                 width: 400,
                 marginBottom: 32,
@@ -127,7 +128,7 @@ function ClassroomsList({
                     }
                     description={
                       item.description !== "No description provided" ? (
-                        <ReactMarkdown className="text-black">{`${item.description}`}</ReactMarkdown>
+                        <ReactMarkdown className="text-black dark:text-white">{`${item.description}`}</ReactMarkdown>
                       ) : (
                         <Tag color="red">No description provided</Tag>
                       )

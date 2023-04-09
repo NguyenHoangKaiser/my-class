@@ -38,11 +38,21 @@ export const userRouter = router({
       include: {
         enrolledIn: true,
         submissions: true,
-        classrooms: true,
+        classrooms: {
+          include: {
+            students: true,
+          },
+        },
         ratings: true,
         Comment: true,
       },
     });
+
+    const totalStudents = user?.classrooms.reduce((acc, cur) => {
+      acc += cur.students.length;
+      return acc;
+    }, 0);
+
     return {
       id: user?.id,
       displayName: user?.displayName,
@@ -65,6 +75,8 @@ export const userRouter = router({
       ratingsNo: user?.ratings.length,
       // calculate the number of comments the user has made
       commentsNo: user?.Comment.length,
+      // calculate the number of students the user is teaching
+      totalStudents: totalStudents,
     };
   }),
   getGradeEachClassroom: protectedProcedure.query(async ({ ctx }) => {
@@ -85,8 +97,15 @@ export const userRouter = router({
         },
       },
     });
+
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+
+    // get all the classrooms the user is enrolled in
     const enrolledIn = user?.enrolledIn;
 
+    // get all the submissions from the user
     const submission = await ctx.prisma.submission.findMany({
       where: {
         studentId: userId,

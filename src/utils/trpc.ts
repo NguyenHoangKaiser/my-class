@@ -18,10 +18,10 @@ export const trpc = createTRPCNext<AppRouter>({
       queryClientConfig: {
         defaultOptions: {
           queries: {
-            //TODO: remove this when in production
-            staleTime: 1000 * 60 * 3, // 1 minutes
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
+            // //TODO: remove this when in production
+            // staleTime: 1000 * 60 * 3, // 1 minutes
+            // refetchOnWindowFocus: false,
+            // refetchOnMount: false,
           },
           mutations: {
             onError(error, variables, context) {

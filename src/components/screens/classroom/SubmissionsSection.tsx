@@ -267,29 +267,27 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
   });
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-8">
+    <>
+      <div className="mb-3 flex items-center gap-8">
         <h2 className="text-2xl">Submissions</h2>
       </div>
-      <div className="mr-2">
-        <Table
-          components={components}
-          rowClassName={() => "editable-row"}
-          columns={columns as ColumnTypes}
-          dataSource={submissions}
-          loading={submissionsQuery.isFetching}
-          bordered
-          pagination={{
-            pageSize: 5,
-            hideOnSinglePage: true,
-          }}
-          style={{
-            maxWidth: width - 323,
-          }}
-          scroll={{ x: true }}
-        />
-      </div>
-    </div>
+      <Table
+        components={components}
+        rowClassName={() => "editable-row"}
+        columns={columns as ColumnTypes}
+        dataSource={submissions}
+        loading={submissionsQuery.isFetching}
+        bordered
+        pagination={{
+          pageSize: 5,
+          hideOnSinglePage: true,
+        }}
+        style={{
+          maxWidth: width - 323,
+        }}
+        scroll={{ x: true }}
+      />
+    </>
   );
 }
 

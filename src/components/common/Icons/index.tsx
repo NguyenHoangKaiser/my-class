@@ -8,3 +8,4 @@ export { default as EyeIcon } from "./EyeIcon";
 export { default as DownloadIcon } from "./DownloadIcon";
 export { default as TrashIcon } from "./TrashIcon";
 export { default as UploadIcon } from "./UploadIcon";
+export { default as ClassIcon } from "./ClassIcon";

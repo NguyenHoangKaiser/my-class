@@ -1,4 +1,4 @@
-import type { Classroom, Rating, Subject, User } from "@prisma/client";
+import type { Classroom, Prisma, Subject } from "@prisma/client";
 import { Badge, Card, List, Space, Tag, Tooltip, Typography } from "antd";
 import { useRouter } from "next/router";
 import React from "react";
@@ -6,6 +6,7 @@ import { getClassroomStatusColor } from "src/utils/constants";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { Banner } from "src/components/common";
 import { EyeOutlined, StarOutlined, TeamOutlined } from "@ant-design/icons";
+import { getTagColor } from "src/utils/helper";
 
 function ClassroomsList({
   classrooms,
@@ -14,26 +15,14 @@ function ClassroomsList({
 }: {
   classrooms:
     | (Classroom & {
-        ratings: Rating[];
+        _count: Prisma.ClassroomCountOutputType;
         subjects: Subject[];
-        students: User[];
       })[]
     | undefined;
   isLoading: boolean;
   emptyComponent: React.ReactNode;
 }) {
   const router = useRouter();
-  // make the get color function only run once when the subject name changes
-  const getTagColor = React.useCallback((name: string) => {
-    const length = name.length;
-    if (length > 8) {
-      return "purple";
-    } else if (length > 5) {
-      return "cyan";
-    } else {
-      return "blue";
-    }
-  }, []);
 
   return (
     <>
@@ -73,7 +62,6 @@ function ClassroomsList({
               >
                 <Card
                   onClick={() => router.push(`/classrooms/${item.id}`)}
-                  // style={{ width: 400 }}
                   hoverable
                   bordered={false}
                   cover={
@@ -82,8 +70,6 @@ function ClassroomsList({
                       width={300}
                       style={{
                         objectFit: "cover",
-                        // height: "auto",
-                        // width: "auto",
                         borderTopLeftRadius: 8,
                         borderTopRightRadius: 8,
                       }}
@@ -94,11 +80,11 @@ function ClassroomsList({
                   actions={[
                     <Space key="student">
                       <TeamOutlined />
-                      {item.students.length ?? 0}
+                      {item._count.students ?? 0}
                     </Space>,
                     <Space key="rating">
                       <StarOutlined />
-                      {item.ratings.length ?? 0}
+                      {item._count.ratings ?? 0}
                     </Space>,
                     <Space
                       onClick={() =>
@@ -109,22 +95,11 @@ function ClassroomsList({
                       <EyeOutlined />
                       View
                     </Space>,
-                    // <IconText
-                    //   icon={MessageOutlined}
-                    //   text="2"
-                    //   key="list-vertical-message"
-                    // />,
                   ]}
                 >
                   <Card.Meta
-                    // avatar={<Avatar src="https://joesch.moe/api/v1/random" />}
                     title={
-                      // <div className="flex gap-1">
                       <Typography.Title level={4}>{item.name}</Typography.Title>
-                      //   <Badge
-                      //     status={item.status === "active" ? "success" : "error"}
-                      //   />
-                      // </div>
                     }
                     description={
                       item.description !== "No description provided" ? (

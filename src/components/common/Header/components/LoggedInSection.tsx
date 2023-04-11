@@ -1,5 +1,5 @@
 import { trpc } from "src/utils/trpc";
-import type { MenuProps } from "antd";
+import { MenuProps, Typography } from "antd";
 import { Dropdown } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -51,12 +51,12 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
       <div className="ml-3 flex items-center justify-between">
         <div className="pr-4">{displayName}</div>
         <div>
-          <Dropdown menu={menuProps} trigger={["click"]}>
+          <Dropdown menu={menuProps} trigger={["hover"]}>
             <button
               id="user-menu-button"
               aria-expanded="false"
               aria-haspopup="true"
-              className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="flex rounded-full bg-gray-800 text-sm hover:outline-none hover:ring-2 hover:ring-white hover:ring-offset-2 hover:ring-offset-gray-800"
             >
               <span className="sr-only">Open user menu</span>
               <Image

@@ -94,6 +94,7 @@ export const classroomRouter = router({
         .object({
           modifier: z.string().optional(),
           language: z.string().optional(),
+          count: z.number().optional(),
           // name: z.string().nullable(),
         })
         .nullish()
@@ -109,8 +110,7 @@ export const classroomRouter = router({
           },
           include: {
             subjects: true,
-            ratings: true,
-            students: true,
+            _count: true,
           },
         });
         return classrooms;
@@ -121,8 +121,7 @@ export const classroomRouter = router({
           },
           include: {
             subjects: true,
-            ratings: true,
-            students: true,
+            _count: true,
           },
         });
         return classrooms;

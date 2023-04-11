@@ -1,39 +1,30 @@
-import type { User } from "@prisma/client";
 import type { TabsProps } from "antd";
 import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { MainHeading } from "src/components/common";
-// import Alert, { useDismissible } from "src/components/common/Alert";
-import { trpc } from "src/utils/trpc";
-import profileImage from "src/assets/profile.jpeg";
 import {
-  AuditOutlined,
-  BookOutlined,
   ClockCircleOutlined,
   CompassOutlined,
-  IdcardOutlined,
   MailOutlined,
   ManOutlined,
   QuestionCircleOutlined,
-  QuestionOutlined,
   ReadOutlined,
+  SettingOutlined,
   TeamOutlined,
   UserOutlined,
   WomanOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import profileImage from "src/assets/profile.jpeg";
 import { firstLetterToUpperCase } from "src/utils/helper";
+import { trpc } from "src/utils/trpc";
 import OverviewTab from "./OverviewTab";
+import { ClassIcon } from "src/components/common/Icons";
+import EditProfileModal from "./EditProfileModal";
 
 type FormData = {
   displayName: string;
-};
-
-const onChange = (key: string) => {
-  console.log(key);
 };
 
 const items: TabsProps["items"] = [
@@ -41,39 +32,32 @@ const items: TabsProps["items"] = [
     key: "1",
     label: (
       <span>
-        <AuditOutlined /> Overview
+        <ReadOutlined />
+        Overview
       </span>
     ),
     children: <OverviewTab />,
   },
   {
     key: "2",
-    label: `Tab 2`,
-    children: `Content of Tab Pane 2`,
-  },
-  {
-    key: "3",
-    label: `Tab 3`,
-    children: `Content of Tab Pane 3`,
+    label: (
+      <span>
+        <SettingOutlined />
+        Setting
+      </span>
+    ),
+    children: "Coming soon",
   },
 ];
 
 function ProfileScreen() {
-  // const { dismiss, show, isDisplayed } = useDismissible();
+  const [showEditProfileModal, setShowEditProfileModal] =
+    React.useState<boolean>(false);
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<FormData>();
-
-  const updateDisplayName = trpc.user.updateDisplayName.useMutation();
-
-  const { data: userData } = trpc.user.getProfile.useQuery();
+  const { data: userData, refetch: userProfileRefetch } =
+    trpc.user.getProfile.useQuery();
   const { data: classData } = trpc.user.getGradeEachClassroom.useQuery();
-  console.log("classData", classData);
 
   // const totalGrade = classData?.reduce((acc, curr) => {
   //   if (curr.grade < 0) {
@@ -93,13 +77,13 @@ function ProfileScreen() {
 
   const queryClient = trpc.useContext();
 
-  const handleProfileSubmit = async (data: FormData) => {
-    await updateDisplayName.mutateAsync({
-      displayName: data.displayName,
-    });
-    queryClient.user.getUser.invalidate();
-    // show();
-  };
+  // const handleProfileSubmit = async (data: FormData) => {
+  //   await updateDisplayName.mutateAsync({
+  //     displayName: data.displayName,
+  //   });
+  //   queryClient.user.getUser.invalidate();
+  //   // show();
+  // };
 
   return (
     <Row
@@ -107,7 +91,24 @@ function ProfileScreen() {
         paddingTop: "2rem",
       }}
     >
-      <Col span={22} offset={1}>
+      <Col
+        sm={{
+          span: 24,
+          offset: 0,
+        }}
+        lg={{
+          span: 22,
+          offset: 1,
+        }}
+        xl={{
+          span: 20,
+          offset: 0,
+        }}
+        xxl={{
+          span: 18,
+          offset: 3,
+        }}
+      >
         <Row>
           <Col
             style={{
@@ -115,7 +116,11 @@ function ProfileScreen() {
               flexDirection: "column",
             }}
             className="px-5"
-            span={5}
+            sm={24}
+            md={9}
+            lg={7}
+            xl={6}
+            xxl={6}
           >
             <Image
               alt="User Avatar"
@@ -152,7 +157,12 @@ function ProfileScreen() {
             >
               {userData?.bio ?? "No bio"}
             </Typography.Paragraph>
-            <Button block type="default" size="middle">
+            <Button
+              block
+              type="default"
+              size="middle"
+              onClick={() => setShowEditProfileModal(true)}
+            >
               Edit profile
             </Button>
             {userData?.role === "teacher" && (
@@ -163,9 +173,9 @@ function ProfileScreen() {
                 }}
                 size="small"
               >
-                <ReadOutlined
+                <ClassIcon
                   style={{
-                    fontSize: 16,
+                    fontSize: 18,
                   }}
                 />
                 <Typography.Text
@@ -173,7 +183,7 @@ function ProfileScreen() {
                     fontSize: 16,
                   }}
                 >
-                  {userData?.classroomsNo ?? 0} classrooms &nbsp; •
+                  {userData?.classroomsNo ?? 0} classes &nbsp; •
                 </Typography.Text>
                 <TeamOutlined
                   style={{
@@ -267,15 +277,27 @@ function ProfileScreen() {
               </Typography.Text>
             </Space>
           </Col>
-          <Col span={18}>
+          <Col className="px-5 " sm={24} md={15} lg={17} xl={18} xxl={18}>
             <Tabs
               size="large"
               defaultActiveKey="1"
               items={items}
-              onChange={onChange}
+              // onChange={onChange}
             />
           </Col>
         </Row>
+        <EditProfileModal
+          open={showEditProfileModal}
+          refetch={userProfileRefetch}
+          onCancel={() => setShowEditProfileModal(false)}
+          profile={{
+            displayName: userData?.displayName,
+            bio: userData?.bio,
+            age: userData?.age,
+            gender: userData?.gender,
+            location: userData?.location,
+          }}
+        />
       </Col>
     </Row>
   );

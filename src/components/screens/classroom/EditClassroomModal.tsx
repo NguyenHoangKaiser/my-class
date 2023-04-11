@@ -67,7 +67,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
     values: CreateClassroomFormData,
     resetFields: () => void
   ) => {
-    console.log("Received values of form: ", values);
     let subjectArr: any[] = [];
     if (values.subject) {
       subjectArr = values.subject.map((subjectId) => {
@@ -106,7 +105,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
           message.error("Failed to update classroom details!");
         },
       });
-      console.log("Form", formData);
     }
   };
 
@@ -239,8 +237,7 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         <Form.Item name="addSubjectCheck" valuePropName="checked">
           <Checkbox
             disabled={disabled}
-            onChange={(value) => {
-              console.log(value);
+            onChange={() => {
               form.setFieldsValue({
                 addSubject: [
                   {

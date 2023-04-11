@@ -22,10 +22,8 @@ export const studentRouter = router({
         },
       },
       include: {
-        students: true,
-        teacher: true,
         subjects: true,
-        ratings: true,
+        _count: true,
       },
     });
     return classrooms;

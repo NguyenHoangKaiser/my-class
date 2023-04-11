@@ -4,7 +4,6 @@ import MyHeader from "src/components/common/Header";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ReadOutlined,
   SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -14,6 +13,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import logo from "src/assets/logo.png";
 import Link from "next/link";
+import { ClassIcon } from "src/components/common/Icons";
 
 const { Header, Content, Sider } = Layout;
 
@@ -23,40 +23,20 @@ const itemsTeacher: MenuItem[] = [
   {
     label: "Classrooms",
     key: "/classrooms",
-    icon: <ReadOutlined />,
+    icon: <ClassIcon style={{ fontSize: 17 }} />,
   },
   {
     label: "Profile",
     key: "/profile",
     icon: <UserOutlined />,
   },
-  // {
-  //   label: "Team",
-  //   key: "sub2",
-  //   icon: <TeamOutlined />,
-  //   children: [
-  //     {
-  //       label: "Team 1",
-  //       key: "6",
-  //     },
-  //     {
-  //       label: "Team 2",
-  //       key: "8",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Files",
-  //   key: "9",
-  //   icon: <FileOutlined />,
-  // },
 ];
 
 const itemsStudent: MenuItem[] = [
   {
     label: "Classrooms",
     key: "/dashboard",
-    icon: <ReadOutlined />,
+    icon: <ClassIcon style={{ fontSize: 17 }} />,
   },
   {
     label: "Browse Classrooms",
@@ -68,21 +48,6 @@ const itemsStudent: MenuItem[] = [
     key: "/profile",
     icon: <UserOutlined />,
   },
-  // {
-  //   label: "Team",
-  //   key: "sub2",
-  //   icon: <TeamOutlined />,
-  //   children: [
-  //     {
-  //       label: "Team 1",
-  //       key: "6",
-  //     },
-  //     {
-  //       label: "Team 2",
-  //       key: "8",
-  //     },
-  //   ],
-  // },
 ];
 
 function HeaderLayout({ children }: { children: React.ReactNode }) {
@@ -93,7 +58,6 @@ function HeaderLayout({ children }: { children: React.ReactNode }) {
   const userMetadata = session.data?.user;
 
   const router = useRouter();
-  console.log("HeaderLayout", router.asPath);
   return (
     <Layout
       style={{

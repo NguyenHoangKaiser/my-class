@@ -14,7 +14,7 @@ function EmptyStateWrapper({
   NonEmptyComponent: ReactNode;
 }) {
   return (
-    <div>
+    <>
       {isLoading ? (
         <ThreeDots
           height="80"
@@ -29,7 +29,7 @@ function EmptyStateWrapper({
       ) : (
         NonEmptyComponent
       )}
-    </div>
+    </>
   );
 }
 

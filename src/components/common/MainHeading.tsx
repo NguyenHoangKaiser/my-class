@@ -14,7 +14,7 @@ function MainHeading({
 }) {
   return (
     <>
-      <section className="mb-8 flex flex-col gap-8 px-5 md:flex-row md:items-end md:justify-between">
+      <section className="mb-8 flex flex-col gap-8 pl-5 pr-9 md:flex-row md:items-end md:justify-between">
         <div className="flex-col">
           <h1 className={classNames("mt-8 text-4xl md:ml-10", titleStyle)}>
             {title}

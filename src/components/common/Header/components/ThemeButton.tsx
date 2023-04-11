@@ -2,11 +2,7 @@ import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { atom, useAtom } from "jotai";
 import { FloatButton } from "antd";
-import {
-  BulbOutlined,
-  CommentOutlined,
-  SlidersOutlined,
-} from "@ant-design/icons";
+import { BulbOutlined, SlidersOutlined } from "@ant-design/icons";
 
 export enum Themes {
   Dark = "dark",
@@ -22,7 +18,7 @@ function ThemeButton() {
 
   useEffect(() => {
     setMounted(true);
-    setModeAtom(theme === Themes.Dark ? Themes.Dark : Themes.Light);
+    setModeAtom(theme === Themes.Light ? Themes.Light : Themes.Dark);
   }, [setModeAtom, theme]);
 
   if (!mounted) return null;
@@ -40,7 +36,6 @@ function ThemeButton() {
       style={{ right: 30 }}
       icon={<SlidersOutlined />}
     >
-      {/* <FloatButton icon={<CommentOutlined />} /> */}
       <FloatButton
         onClick={toggleTheme}
         icon={<BulbOutlined />}

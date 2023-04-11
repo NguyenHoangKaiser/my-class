@@ -2,8 +2,16 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const userRouter = router({
-  updateDisplayName: protectedProcedure
-    .input(z.object({ displayName: z.string() }))
+  editProfile: protectedProcedure
+    .input(
+      z.object({
+        displayName: z.string(),
+        bio: z.string(),
+        location: z.string(),
+        age: z.number().int(),
+        gender: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
       const user = await ctx.prisma.user.update({
@@ -12,6 +20,10 @@ export const userRouter = router({
         },
         data: {
           displayName: input.displayName,
+          bio: input.bio,
+          location: input.location,
+          age: input.age,
+          gender: input.gender,
         },
       });
       return user;

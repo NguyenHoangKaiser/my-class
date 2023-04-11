@@ -42,15 +42,6 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
     values: EditAssignmentFormData,
     resetFields: () => void
   ) => {
-    console.log("Received values of form: ", values);
-
-    console.log("classroom", {
-      classroomId: classroom?.id as string,
-      name: values.name,
-      description: values.description,
-      subject: values.subject,
-      dueDate: values["dueDate"]?.toISOString() as string,
-    });
     await editAssignment.mutateAsync(
       {
         assignmentId: assignment?.id as string,

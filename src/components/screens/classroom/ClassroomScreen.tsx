@@ -2,7 +2,11 @@ import React from "react";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
 import { useSession } from "src/hooks";
-import { EmptyStateWrapper, MainHeading } from "src/components/common";
+import {
+  EmptyStateWrapper,
+  MainHeading,
+  TabWrapper,
+} from "src/components/common";
 import { EyeIcon, PencilSquare, TrashIcon } from "src/components/common/Icons";
 import Roles from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
@@ -206,8 +210,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
 
       <div className="mb-12 mr-7 flex">
         <SideNavigation />
-
-        <section className="grow">
+        <TabWrapper>
           {selectedTab === "assignments" && (
             <EmptyStateWrapper
               isLoading={isLoadingAssignments}
@@ -240,7 +243,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
           {selectedTab === "submissions" && (
             <SubmissionsSection classroomId={classroomId} />
           )}
-        </section>
+        </TabWrapper>
       </div>
 
       <CreateAssignmentModal

@@ -11,12 +11,11 @@ import {
   Typography,
 } from "antd";
 import { useRouter } from "next/router";
-import React from "react";
 import { getClassroomStatusColor } from "src/utils/constants";
 import { getTagColor } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
 
-function OverviewTab() {
+function ClassOverviewTab() {
   const { data: classrooms, isLoading } =
     trpc.classroom.getClassroomsForTeacher.useQuery();
 
@@ -109,4 +108,4 @@ function OverviewTab() {
   );
 }
 
-export default OverviewTab;
+export default ClassOverviewTab;

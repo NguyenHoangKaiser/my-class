@@ -1,8 +1,3 @@
-import type { TabsProps } from "antd";
-import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import React from "react";
 import {
   ClockCircleOutlined,
   CompassOutlined,
@@ -15,12 +10,17 @@ import {
   UserOutlined,
   WomanOutlined,
 } from "@ant-design/icons";
+import type { TabsProps } from "antd";
+import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
 import dayjs from "dayjs";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { useMemo } from "react";
 import profileImage from "src/assets/profile.jpeg";
+import { ClassIcon } from "src/components/common/Icons";
 import { firstLetterToUpperCase } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
-import OverviewTab from "./OverviewTab";
-import { ClassIcon } from "src/components/common/Icons";
+import ClassOverviewTab from "./ClassOverviewTab";
 import EditProfileModal from "./EditProfileModal";
 
 type FormData = {
@@ -36,7 +36,7 @@ const items: TabsProps["items"] = [
         Overview
       </span>
     ),
-    children: <OverviewTab />,
+    children: <ClassOverviewTab />,
   },
   {
     key: "2",
@@ -58,6 +58,41 @@ function ProfileScreen() {
   const { data: userData, refetch: userProfileRefetch } =
     trpc.user.getProfile.useQuery();
   const { data: classData } = trpc.user.getGradeEachClassroom.useQuery();
+
+  // memoize the item of the tab
+  const tabList = useMemo(
+    () =>
+      [
+        {
+          key: "1",
+          label: (
+            <span>
+              <ReadOutlined />
+              Overview
+            </span>
+          ),
+          children:
+            userData?.role === "teacher" ? (
+              <ClassOverviewTab />
+            ) : userData?.role === "student" ? (
+              <ClassOverviewTab />
+            ) : (
+              <ClassOverviewTab />
+            ),
+        },
+        {
+          key: "2",
+          label: (
+            <span>
+              <SettingOutlined />
+              Setting
+            </span>
+          ),
+          children: "Coming soon",
+        },
+      ] as TabsProps["items"],
+    [userData?.role]
+  );
 
   // const totalGrade = classData?.reduce((acc, curr) => {
   //   if (curr.grade < 0) {

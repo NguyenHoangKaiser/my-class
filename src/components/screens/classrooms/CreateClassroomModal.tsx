@@ -47,15 +47,13 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
       return;
     }
     try {
-      const subjectArr: any[] = [];
+      const subjectArr: FormSubject[] = [];
       if (values.subject) {
         values.subject.forEach((subjectId) => {
           const arr = subjectData?.find((subject) => subject.id === subjectId);
-          console.log("arr", arr);
-          subjectArr.push({
-            name: arr?.name,
-            description: arr?.description,
-          });
+          if (arr) {
+            subjectArr.push(arr);
+          }
         });
       }
       if (values.addSubjectCheck && values.addSubject) {
@@ -72,7 +70,6 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         subject: subjectArr,
       };
 
-      console.log("formData", formData);
       await createClassroom.mutateAsync(formData);
       message.success("Classroom created successfully");
       resetFields();
@@ -94,9 +91,6 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         form.validateFields().then((values) => {
           onFinish(values, form.resetFields);
         });
-        // .catch((info) => {
-        //   console.log("Validate Failed:", info);
-        // });
       }}
     >
       <Form
@@ -192,8 +186,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         </Form.Item>
         <Form.Item name="addSubjectCheck" valuePropName="checked">
           <Checkbox
-            onChange={(value) => {
-              console.log(value);
+            onChange={() => {
               form.setFieldsValue({
                 addSubject: [
                   {

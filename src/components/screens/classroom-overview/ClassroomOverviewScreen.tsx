@@ -37,19 +37,6 @@ export const ClassroomOverviewScreen = ({
       classroom.ratings.length
     : 0;
 
-  // useEffect(() => {
-  //   if (!userQuery.data) return;
-  //   if (!classroomId) return;
-  //   if (!router) return;
-  //   if (
-  //     userQuery.data.enrolledIn.find(
-  //       (classroom) => classroom.id === classroomId
-  //     )
-  //   )
-  //     return;
-  //   router.push(`/classrooms/${classroomId}`);
-  // }, [userQuery.data, classroomId, router]);
-
   return (
     <>
       <MainHeading title="Classroom Overview" />

@@ -4,7 +4,6 @@ import type { Rule } from "antd/es/form";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React from "react";
-import { useWindowSize } from "react-use";
 import LinkButton, {
   LinkButtonVariant,
 } from "src/components/common/Button/LinkButton";
@@ -29,8 +28,6 @@ type EditableTableProps = Parameters<typeof Table<DataType>>[0];
 
 type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
 
-//TODO: Only when the teacher has downloaded the submission, the grade will be editable
-
 function SubmissionsSection({ classroomId }: { classroomId: string }) {
   const { components } = useEditableTable<DataType>();
 
@@ -46,8 +43,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
   const router = useRouter();
 
   const submissions = submissionsQuery.data;
-
-  const { width } = useWindowSize();
 
   const handleDownloadSubmission = async (submission: DataType) => {
     getDownloadUrl({
@@ -228,7 +223,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
   ];
 
   const handleSave = (row: DataType) => {
-    console.log(row);
     if (row.grade) {
       updateGradeMutation.mutate(
         {
@@ -282,10 +276,7 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
           pageSize: 5,
           hideOnSinglePage: true,
         }}
-        style={{
-          maxWidth: width - 323,
-        }}
-        scroll={{ x: true }}
+        scroll={{ x: 1000 }}
       />
     </>
   );

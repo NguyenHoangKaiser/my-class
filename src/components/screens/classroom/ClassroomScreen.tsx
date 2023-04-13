@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
-import { useSession } from "src/hooks";
+import { useSession } from "next-auth/react";
 import {
   EmptyStateWrapper,
   MainHeading,

@@ -44,7 +44,6 @@ function ClassroomsScreen() {
               allowClear
               placeholder="Type"
               onChange={(value) => {
-                console.log(value);
                 setFilter((prev) => ({ ...prev, modifier: value as string }));
               }}
             />

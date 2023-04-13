@@ -1,5 +1,5 @@
 import { trpc } from "src/utils/trpc";
-import { MenuProps, Typography } from "antd";
+import type { MenuProps } from "antd";
 import { Dropdown } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";

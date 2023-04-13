@@ -1,7 +1,7 @@
-import { Row, Col, Typography, Space, Divider } from "antd";
+import { Typography, Space, Divider } from "antd";
 import React from "react";
 
-const { Paragraph, Text, Link } = Typography;
+const { Text, Link } = Typography;
 
 function Footer() {
   return (
@@ -17,10 +17,6 @@ function Footer() {
         <Typography.Link>Privacy Policy</Typography.Link>
       </Space>
     </div>
-
-    // <Paragraph>
-    //   © 2022 <Text strong>HUYHOANG</Text>. All Rights Reserved.
-    // </Paragraph>
   );
 }
 

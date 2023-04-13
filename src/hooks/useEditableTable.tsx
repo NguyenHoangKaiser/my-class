@@ -1,4 +1,5 @@
-import { FormInstance, InputRef, message } from "antd";
+import type { FormInstance, InputRef } from "antd";
+import { message } from "antd";
 import { Form, Input } from "antd";
 import type { Rule } from "antd/es/form";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -61,7 +62,6 @@ export const useEditableTable = <T extends object>() => {
         toggleEdit();
         handleSave({ ...record, ...values });
       } catch (errInfo) {
-        console.log("Save failed:", errInfo);
         message.error("Save failed");
       }
     };

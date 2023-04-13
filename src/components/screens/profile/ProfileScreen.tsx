@@ -14,7 +14,6 @@ import type { TabsProps } from "antd";
 import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import profileImage from "src/assets/profile.jpeg";
 import { ClassIcon } from "src/components/common/Icons";
@@ -23,41 +22,12 @@ import { trpc } from "src/utils/trpc";
 import ClassOverviewTab from "./ClassOverviewTab";
 import EditProfileModal from "./EditProfileModal";
 
-type FormData = {
-  displayName: string;
-};
-
-const items: TabsProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <span>
-        <ReadOutlined />
-        Overview
-      </span>
-    ),
-    children: <ClassOverviewTab />,
-  },
-  {
-    key: "2",
-    label: (
-      <span>
-        <SettingOutlined />
-        Setting
-      </span>
-    ),
-    children: "Coming soon",
-  },
-];
-
 function ProfileScreen() {
   const [showEditProfileModal, setShowEditProfileModal] =
     React.useState<boolean>(false);
-  const router = useRouter();
 
   const { data: userData, refetch: userProfileRefetch } =
     trpc.user.getProfile.useQuery();
-  const { data: classData } = trpc.user.getGradeEachClassroom.useQuery();
 
   // memoize the item of the tab
   const tabList = useMemo(
@@ -109,16 +79,6 @@ function ProfileScreen() {
   //   submissionHasGrade && totalGrade
   //     ? totalGrade / submissionHasGrade.length
   //     : 0;
-
-  const queryClient = trpc.useContext();
-
-  // const handleProfileSubmit = async (data: FormData) => {
-  //   await updateDisplayName.mutateAsync({
-  //     displayName: data.displayName,
-  //   });
-  //   queryClient.user.getUser.invalidate();
-  //   // show();
-  // };
 
   return (
     <Row
@@ -316,7 +276,7 @@ function ProfileScreen() {
             <Tabs
               size="large"
               defaultActiveKey="1"
-              items={items}
+              items={tabList}
               // onChange={onChange}
             />
           </Col>

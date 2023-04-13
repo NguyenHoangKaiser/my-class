@@ -6,7 +6,7 @@ import {
   PencilSquare,
 } from "src/components/common/Icons";
 import Roles from "src/utils/constants";
-import { useSession } from "src/hooks";
+import { useSession } from "next-auth/react";
 import { Tabs } from "antd";
 
 export const tabAtom = atom("assignments");

@@ -8,10 +8,10 @@ import type {
 } from "@prisma/client";
 import { Space, Table, Tag, Typography } from "antd";
 import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { EyeIcon } from "src/components/common/Icons";
-import { useSession } from "src/hooks";
 import {
   AssignmentStatusFilterOptions,
   getAssignmentStatusColor,

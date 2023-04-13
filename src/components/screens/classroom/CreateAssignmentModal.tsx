@@ -38,8 +38,6 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
     values: CreateAssignmentFormData,
     resetFields: () => void
   ) => {
-    console.log("Received values of form: ", values);
-
     await createAssignment.mutateAsync(
       {
         classroomId: classroom?.id as string,
@@ -79,9 +77,6 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
         form.validateFields().then((values) => {
           onFinish(values, form.resetFields);
         });
-        // .catch((info) => {
-        //   console.log("Validate Failed:", info);
-        // });
       }}
     >
       <Form form={form} layout="vertical" name="create-assignment">

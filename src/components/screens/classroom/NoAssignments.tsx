@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import Image from "next/image";
 import assignmentsImage from "src/assets/assignments.svg";
-import { useSession } from "src/hooks";
+import { useSession } from "next-auth/react";
 
 function NoAssignments({
   openAssignmentModal,

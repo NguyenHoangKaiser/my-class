@@ -67,44 +67,44 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
     values: CreateClassroomFormData,
     resetFields: () => void
   ) => {
-    let subjectArr: any[] = [];
-    if (values.subject) {
-      subjectArr = values.subject.map((subjectId) => {
-        const arr = subjectData?.find((subject) => subject.id === subjectId);
-        return {
-          name: arr?.name,
-          description: arr?.description,
+    if (editClassroom.isLoading) {
+      return;
+    }
+    try {
+      const subjectArr: FormSubject[] = [];
+      if (values.subject) {
+        values.subject.forEach((subjectId) => {
+          const arr = subjectData?.find((subject) => subject.id === subjectId);
+          if (arr) {
+            subjectArr.push(arr);
+          }
+        });
+      }
+      if (values.addSubjectCheck && values.addSubject) {
+        subjectArr.push(...values.addSubject);
+      }
+
+      if (classroom && classroom.id) {
+        const formData = {
+          classroomId: classroom?.id,
+          name: values.name,
+          description: values.description ?? "No description provided",
+          language: values.language?.value ?? "en",
+          password: values.password ?? null,
+          requirements: values.requirements ?? "No requirements provided",
+          modifier: values.modifier,
+          subject: subjectArr,
+          status: values.status,
         };
-      });
-    }
-    if (values.addSubjectCheck && values.addSubject) {
-      subjectArr = [...subjectArr, ...values.addSubject];
-    }
 
-    if (classroom && classroom.id) {
-      const formData = {
-        classroomId: classroom?.id,
-        name: values.name,
-        description: values.description ?? "No description provided",
-        language: values.language?.value ?? "en",
-        password: values.password ?? null,
-        requirements: values.requirements ?? "No requirements provided",
-        modifier: values.modifier,
-        subject: subjectArr,
-        status: values.status,
-      };
-
-      editClassroom.mutateAsync(formData, {
-        onSuccess: () => {
-          message.success("Classroom details updated successfully!");
-          resetFields();
-          refetch();
-          onCancel();
-        },
-        onError: () => {
-          message.error("Failed to update classroom details!");
-        },
-      });
+        await editClassroom.mutateAsync(formData);
+        message.success("Classroom updated successfully!");
+        resetFields();
+        refetch();
+        onCancel();
+      }
+    } catch (error) {
+      message.error("Failed to update classroom");
     }
   };
 
@@ -119,9 +119,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         form.validateFields().then((values) => {
           onFinish(values, form.resetFields);
         });
-        // .catch((info) => {
-        //   console.log("Validate Failed:", info);
-        // });
       }}
     >
       <Form

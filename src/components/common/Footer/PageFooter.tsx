@@ -1,3 +1,5 @@
+import React from "react";
+
 function PageFooter() {
   return (
     <footer className="bg-neutral text-neutral-content p-10">

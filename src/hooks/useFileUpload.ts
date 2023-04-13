@@ -19,7 +19,6 @@ const useFileUpload = ({
     e.preventDefault();
     if (!file) return;
     const url = await getUploadUrl(file);
-    console.log("RcFile", file);
 
     const { error } = await supabase.storage.from("files").upload(url, file);
     if (error) {

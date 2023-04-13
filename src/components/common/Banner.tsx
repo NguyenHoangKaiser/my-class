@@ -15,7 +15,6 @@ const Banner = (props: BannerProps) => {
       .from("files")
       .getPublicUrl(`avatars/classroom/${classroomId}`);
   }, [classroomId]);
-  console.log(classAvatar);
 
   return (
     <>

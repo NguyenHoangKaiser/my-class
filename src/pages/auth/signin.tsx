@@ -1,9 +1,8 @@
-import { getProviders, signIn, getCsrfToken } from "next-auth/react";
+import { getProviders, signIn, getCsrfToken, useSession } from "next-auth/react";
 import type { InferGetServerSidePropsType } from "next";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import type { CtxOrReq } from "next-auth/client/_utils";
-import { useSession } from "src/hooks";
 
 const errors = {
   Signin: "Try signing with a different account.",

@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { trpc } from "../utils/trpc";
-import useSession from "./useSession";
 import Roles from "src/utils/constants";
+import { useSession } from "next-auth/react";
 
 const useIsClassroomAdmin = (classroomId: string) => {
   const session = useSession();

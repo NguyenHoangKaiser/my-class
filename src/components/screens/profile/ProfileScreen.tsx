@@ -11,8 +11,10 @@ import {
   WomanOutlined,
 } from "@ant-design/icons";
 import type { TabsProps } from "antd";
+import { Skeleton } from "antd";
 import { Button, Col, Row, Space, Tabs, Tag, Typography } from "antd";
 import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import profileImage from "src/assets/profile.jpeg";
@@ -21,18 +23,28 @@ import { firstLetterToUpperCase } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
 import ClassOverviewTab from "./ClassOverviewTab";
 import EditProfileModal from "./EditProfileModal";
+import StudentOverviewTab from "./StudentOverviewTab";
 
-function ProfileScreen() {
+type Props = {
+  userId?: string | undefined;
+  isProfile?: boolean;
+};
+
+function ProfileScreen({ userId, isProfile }: Props) {
+  const { data } = useSession();
   const [showEditProfileModal, setShowEditProfileModal] =
     React.useState<boolean>(false);
 
-  const { data: userData, refetch: userProfileRefetch } =
-    trpc.user.getProfile.useQuery();
+  const {
+    data: userData,
+    refetch: userProfileRefetch,
+    isLoading,
+  } = trpc.user.getProfile.useQuery({ userId });
 
   // memoize the item of the tab
-  const tabList = useMemo(
-    () =>
-      [
+  const tabList = useMemo(() => {
+    if (data?.user?.id === userId) {
+      return [
         {
           key: "1",
           label: (
@@ -43,11 +55,11 @@ function ProfileScreen() {
           ),
           children:
             userData?.role === "teacher" ? (
-              <ClassOverviewTab />
+              <ClassOverviewTab userId={userId} />
             ) : userData?.role === "student" ? (
-              <ClassOverviewTab />
+              <StudentOverviewTab />
             ) : (
-              <ClassOverviewTab />
+              <Typography.Text>Please select a role first</Typography.Text>
             ),
         },
         {
@@ -60,9 +72,29 @@ function ProfileScreen() {
           ),
           children: "Coming soon",
         },
-      ] as TabsProps["items"],
-    [userData?.role]
-  );
+      ] as TabsProps["items"];
+    } else {
+      return [
+        {
+          key: "1",
+          label: (
+            <span>
+              <ReadOutlined />
+              Overview
+            </span>
+          ),
+          children:
+            userData?.role === "teacher" ? (
+              <ClassOverviewTab userId={userId} />
+            ) : userData?.role === "student" ? (
+              <StudentOverviewTab />
+            ) : (
+              <Typography.Text>Please select a role first</Typography.Text>
+            ),
+        },
+      ] as TabsProps["items"];
+    }
+  }, [data?.user?.id, userData?.role, userId]);
 
   // const totalGrade = classData?.reduce((acc, curr) => {
   //   if (curr.grade < 0) {
@@ -117,160 +149,191 @@ function ProfileScreen() {
             xl={6}
             xxl={6}
           >
-            <Image
-              alt="User Avatar"
-              width={270}
-              height={270}
-              className="mb-2 self-center rounded-full border border-gray-500"
-              src={userData?.image ?? profileImage}
-            />
-            <Typography.Title level={3}>{userData?.name}</Typography.Title>
-            <div className="flex items-center justify-between">
-              <Typography.Text
-                type="secondary"
-                style={{
-                  fontSize: 20,
-                }}
-              >
-                {userData?.displayName}
-              </Typography.Text>
-              <Tag
-                color={
-                  userData?.role
-                    ? userData?.role === "teacher"
-                      ? "purple"
-                      : "lime"
-                    : "default"
-                }
-              >
-                {firstLetterToUpperCase(userData?.role ?? "No role specified")}
-              </Tag>
-            </div>
-            <Typography.Paragraph
-              ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
-              style={{ fontSize: 16, marginTop: 10 }}
-            >
-              {userData?.bio ?? "No bio"}
-            </Typography.Paragraph>
-            <Button
-              block
-              type="default"
-              size="middle"
-              onClick={() => setShowEditProfileModal(true)}
-            >
-              Edit profile
-            </Button>
-            {userData?.role === "teacher" && (
-              <Space
-                style={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                }}
-                size="small"
-              >
-                <ClassIcon
-                  style={{
-                    fontSize: 18,
-                  }}
+            {isLoading ? (
+              <Skeleton.Avatar active size={270} shape="circle" />
+            ) : (
+              <div className="relative">
+                <Image
+                  loading="eager"
+                  alt="User Avatar"
+                  width={270}
+                  height={270}
+                  className="mb-2 self-center rounded-full border border-gray-500"
+                  src={userData?.image ?? profileImage}
                 />
-                <Typography.Text
+                <Tag
                   style={{
-                    fontSize: 16,
+                    position: "absolute",
+                    bottom: 30,
+                    right: 16,
+                    borderRadius: 50,
                   }}
+                  color={
+                    userData?.role
+                      ? userData?.role === "teacher"
+                        ? "purple-inverse"
+                        : "blue-inverse"
+                      : "default"
+                  }
                 >
-                  {userData?.classroomsNo ?? 0} classes &nbsp; •
-                </Typography.Text>
-                <TeamOutlined
-                  style={{
-                    fontSize: 16,
-                  }}
-                />
-                <Typography.Text
-                  style={{
-                    fontSize: 16,
-                  }}
-                >
-                  {userData?.totalStudents ?? 0} students
-                </Typography.Text>
-              </Space>
+                  {firstLetterToUpperCase(
+                    userData?.role ?? "No role specified"
+                  )}
+                </Tag>
+              </div>
             )}
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              <ClockCircleOutlined
+            {isLoading ? (
+              <Skeleton
+                active
                 style={{
-                  fontSize: 16,
+                  marginTop: 16,
+                }}
+                paragraph={{
+                  rows: 5,
                 }}
               />
-              <Typography.Text>
-                Join at {dayjs(userData?.createdAt).format("DD/MM/YYYY HH:mm")}
-              </Typography.Text>
-            </Space>
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              <CompassOutlined
-                style={{
-                  fontSize: 16,
-                }}
-              />
-              <Typography.Text>
-                {userData?.location ?? "No location specified"}
-              </Typography.Text>
-            </Space>
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              <MailOutlined
-                style={{
-                  fontSize: 16,
-                }}
-              />
-              <Typography.Text>{userData?.email}</Typography.Text>
-            </Space>
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              <UserOutlined
-                style={{
-                  fontSize: 16,
-                }}
-              />
-              <Typography.Text>
-                {userData?.age ?? "No age specified"}
-              </Typography.Text>
-            </Space>
-            <Space
-              style={{
-                marginTop: 10,
-              }}
-              size="middle"
-            >
-              {userData?.gender === "male" ? (
-                <ManOutlined style={{ fontSize: 16 }} />
-              ) : userData?.gender === "female" ? (
-                <WomanOutlined style={{ fontSize: 16 }} />
-              ) : (
-                <QuestionCircleOutlined style={{ fontSize: 16 }} />
-              )}
-              <Typography.Text>
-                {firstLetterToUpperCase(
-                  userData?.gender ?? "No gender specified"
+            ) : (
+              <>
+                <Typography.Title level={3}>{userData?.name}</Typography.Title>
+                {userData?.displayName && (
+                  <Typography.Text
+                    type="secondary"
+                    style={{
+                      fontSize: 20,
+                    }}
+                  >
+                    {userData?.displayName}
+                  </Typography.Text>
                 )}
-              </Typography.Text>
-            </Space>
+                <Typography.Paragraph
+                  ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
+                  style={{ fontSize: 16, marginTop: 10 }}
+                >
+                  {userData?.bio ?? "No bio"}
+                </Typography.Paragraph>
+                <Button
+                  block
+                  type="default"
+                  disabled={!isProfile && data?.user?.id !== userId}
+                  size="middle"
+                  onClick={() => setShowEditProfileModal(true)}
+                >
+                  Edit profile
+                </Button>
+                {userData?.role === "teacher" && (
+                  <Space
+                    style={{
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}
+                    size="small"
+                  >
+                    <ClassIcon
+                      style={{
+                        fontSize: 18,
+                      }}
+                    />
+                    <Typography.Text
+                      style={{
+                        fontSize: 16,
+                      }}
+                    >
+                      {userData?._count?.classrooms ?? 0} classes &nbsp; •
+                    </Typography.Text>
+                    <TeamOutlined
+                      style={{
+                        fontSize: 16,
+                      }}
+                    />
+                    <Typography.Text
+                      style={{
+                        fontSize: 16,
+                      }}
+                    >
+                      {userData?.totalStudents ?? 0} students
+                    </Typography.Text>
+                  </Space>
+                )}
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  <ClockCircleOutlined
+                    style={{
+                      fontSize: 16,
+                    }}
+                  />
+                  <Typography.Text>
+                    Join at{" "}
+                    {dayjs(userData?.createdAt).format("DD/MM/YYYY HH:mm")}
+                  </Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  <CompassOutlined
+                    style={{
+                      fontSize: 16,
+                    }}
+                  />
+                  <Typography.Text>
+                    {userData?.location ?? "No location specified"}
+                  </Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  <MailOutlined
+                    style={{
+                      fontSize: 16,
+                    }}
+                  />
+                  <Typography.Text>{userData?.email}</Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  <UserOutlined
+                    style={{
+                      fontSize: 16,
+                    }}
+                  />
+                  <Typography.Text>
+                    {userData?.age ?? "No age specified"}
+                  </Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  {userData?.gender === "male" ? (
+                    <ManOutlined style={{ fontSize: 16 }} />
+                  ) : userData?.gender === "female" ? (
+                    <WomanOutlined style={{ fontSize: 16 }} />
+                  ) : (
+                    <QuestionCircleOutlined style={{ fontSize: 16 }} />
+                  )}
+                  <Typography.Text>
+                    {firstLetterToUpperCase(
+                      userData?.gender ?? "No gender specified"
+                    )}
+                  </Typography.Text>
+                </Space>
+              </>
+            )}
           </Col>
           <Col className="px-5 " sm={24} md={15} lg={17} xl={18} xxl={18}>
             <Tabs

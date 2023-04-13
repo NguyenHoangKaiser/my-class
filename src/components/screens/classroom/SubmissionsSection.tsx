@@ -98,7 +98,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
       dataIndex: "assignmentName",
       key: "assignmentName",
       editable: false,
-      width: 180,
       ellipsis: true,
       filters: assignmentNames,
       //@ts-expect-error - this is the filter function
@@ -120,7 +119,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
       dataIndex: ["student", "name"],
       key: "studentName",
       editable: false,
-      width: 180,
       filters: studentNames,
       //@ts-expect-error - this is the filter function
       onFilter: (value, record) => record.student.name.indexOf(value) === 0,
@@ -130,7 +128,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
       dataIndex: "filename",
       key: "filename",
       editable: false,
-      width: 180,
       ellipsis: true,
       sorter: (a, b) => a.filename.localeCompare(b.filename),
       sortDirections: ["ascend", "descend"],
@@ -183,7 +180,6 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
       ],
       key: "grade",
       editable: true,
-      width: 90,
       render: (grade) => <span>{grade ? grade : "N/A"}</span>,
       sorter: (a, b) => (a.grade || 0) - (b.grade || 0),
       sortDirections: ["ascend", "descend"],
@@ -207,7 +203,7 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
       title: "Actions",
       key: "actions",
       fixed: "right",
-      width: 60,
+      width: 150,
       render: (_text, submissions) => (
         <LinkButton
           className="px-0"

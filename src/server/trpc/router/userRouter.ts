@@ -41,56 +41,40 @@ export const userRouter = router({
     });
     return user;
   }),
-  getProfile: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-    const user = await ctx.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        enrolledIn: true,
-        submissions: true,
-        classrooms: {
-          include: {
-            students: true,
-          },
+  getProfile: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = input.userId || ctx.session.user.id;
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: userId,
         },
-        ratings: true,
-        Comment: true,
-      },
-    });
+        include: {
+          classrooms: {
+            include: {
+              students: true,
+            },
+          },
 
-    const totalStudents = user?.classrooms.reduce((acc, cur) => {
-      acc += cur.students.length;
-      return acc;
-    }, 0);
+          _count: true,
+        },
+      });
 
-    return {
-      id: user?.id,
-      displayName: user?.displayName,
-      email: user?.email,
-      name: user?.name,
-      image: user?.image,
-      bio: user?.bio,
-      location: user?.location,
-      age: user?.age,
-      gender: user?.gender,
-      role: user?.role,
-      createdAt: user?.createdAt,
-      // calculate the number of classes the user is enrolled in
-      enrolledInNo: user?.enrolledIn.length,
-      // calculate the number of classes the user is teaching
-      classroomsNo: user?.classrooms.length,
-      // calculate the number of submissions the user has made
-      submissionsNo: user?.submissions.length,
-      // calculate the number of ratings the user has received
-      ratingsNo: user?.ratings.length,
-      // calculate the number of comments the user has made
-      commentsNo: user?.Comment.length,
-      // calculate the number of students the user is teaching
-      totalStudents: totalStudents,
-    };
-  }),
+      const totalStudents = user?.classrooms.reduce((acc, cur) => {
+        acc += cur.students.length;
+        return acc;
+      }, 0);
+
+      return {
+        ...user,
+        // calculate the number of students the user is teaching
+        totalStudents: totalStudents,
+      };
+    }),
   getGradeEachClassroom: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const user = await ctx.prisma.user.findUnique({

@@ -131,4 +131,49 @@ export const ClassroomStatusFilterOptions = [
   },
 ];
 
+export const UserGenders = {
+  male: "male",
+  female: "female",
+  other: "other",
+};
+
+export const UserGendersColor = {
+  male: "blue",
+  female: "pink",
+  other: "purple",
+  default: "default",
+};
+
+export const UserGendersFilterOptions = [
+  {
+    text: "Male",
+    value: "male",
+  },
+  {
+    text: "Female",
+    value: "female",
+  },
+  {
+    text: "Other",
+    value: "other",
+  },
+  {
+    text: "Not specified",
+    value: "not specified",
+  },
+];
+
+export const getGenderColor = (gender: string) => {
+  switch (gender) {
+    case UserGenders.male:
+      return UserGendersColor.male;
+    case UserGenders.female:
+      return UserGendersColor.female;
+    case UserGenders.other:
+      return UserGendersColor.other;
+    default:
+      return UserGendersColor.default;
+  }
+};
+
 export default Roles;

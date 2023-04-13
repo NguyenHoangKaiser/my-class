@@ -71,7 +71,7 @@ function StudentAssignments({
 
   return (
     <>
-      <div className="flex items-center gap-8">
+      <div className="mb-3 flex items-center gap-8">
         <h2 className="text-2xl">
           Your Assignments ({totalAssignments} total)
         </h2>

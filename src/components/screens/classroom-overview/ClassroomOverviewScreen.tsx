@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { MainHeading } from "src/components/common";
 import { firstLetterToUpperCase, getTagColor } from "src/utils/helper";
 import EnrollClassroomModal from "./EnrollClassroomModal";
+import Link from "next/link";
 
 export const ClassroomOverviewScreen = ({
   classroomId,
@@ -54,9 +55,9 @@ export const ClassroomOverviewScreen = ({
             <Descriptions.Item label="Teacher">
               <Space>
                 <Avatar src={classroom?.teacher.image} />
-                <Typography.Link href="#">
+                <Link href={`/user/${classroom?.teacher.id}`}>
                   {classroom?.teacher.displayName || classroom?.teacher.name}
-                </Typography.Link>
+                </Link>
               </Space>
             </Descriptions.Item>
             <Descriptions.Item label="Created At">

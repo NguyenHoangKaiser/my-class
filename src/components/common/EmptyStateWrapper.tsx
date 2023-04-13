@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { ThreeDots } from "react-loader-spinner";
 import { isEmpty } from "lodash";
+import { Spin } from "antd";
 
 function EmptyStateWrapper({
   isLoading,
@@ -16,14 +16,9 @@ function EmptyStateWrapper({
   return (
     <>
       {isLoading ? (
-        <ThreeDots
-          height="80"
-          width="80"
-          radius="9"
-          color="#6466f1"
-          ariaLabel="three-dots-loading"
-          visible={true}
-        />
+        <div className="mx-auto px-6 py-4 text-center">
+          <Spin spinning />
+        </div>
       ) : isEmpty(data) ? (
         EmptyComponent
       ) : (

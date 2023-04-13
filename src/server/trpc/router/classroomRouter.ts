@@ -17,13 +17,21 @@ export const classroomRouter = router({
           id: input.classroomId,
         },
         include: {
-          students: true,
+          students: {
+            include: {
+              ratings: true,
+            },
+          },
         },
       });
-      return classroom?.students.map((student) => ({
-        ...student,
-        email: "",
-      }));
+      return classroom?.students.map((student) => {
+        return {
+          ...student,
+          ratings: student.ratings.find(
+            (rating) => rating.classroomId === input.classroomId
+          ),
+        };
+      });
     }),
   findClassroom: protectedProcedure
     .input(z.object({ name: z.string().nullish() }).nullish())
@@ -92,6 +100,7 @@ export const classroomRouter = router({
     .input(
       z
         .object({
+          userId: z.string().optional(),
           modifier: z.string().optional(),
           language: z.string().optional(),
           count: z.number().optional(),
@@ -100,20 +109,33 @@ export const classroomRouter = router({
         .nullish()
     )
     .query(async ({ ctx, input }) => {
-      if (input && input.modifier !== "all" && input.language !== "all") {
-        const classrooms = await ctx.prisma.classroom.findMany({
-          where: {
-            userId: ctx.session.user.id as string,
-            modifier: input.modifier ? input.modifier : undefined,
-            language: input.language ? input.language : undefined,
-            // name: input.name ? input.name : undefined,
-          },
-          include: {
-            subjects: true,
-            _count: true,
-          },
-        });
-        return classrooms;
+      if (input) {
+        if (input.modifier !== "all" && input.language !== "all") {
+          const classrooms = await ctx.prisma.classroom.findMany({
+            where: {
+              userId: input.userId || (ctx.session.user.id as string),
+              modifier: input.modifier ? input.modifier : undefined,
+              language: input.language ? input.language : undefined,
+              // name: input.name ? input.name : undefined,
+            },
+            include: {
+              subjects: true,
+              _count: true,
+            },
+          });
+          return classrooms;
+        } else {
+          const classrooms = await ctx.prisma.classroom.findMany({
+            where: {
+              userId: input.userId || (ctx.session.user.id as string),
+            },
+            include: {
+              subjects: true,
+              _count: true,
+            },
+          });
+          return classrooms;
+        }
       } else {
         const classrooms = await ctx.prisma.classroom.findMany({
           where: {

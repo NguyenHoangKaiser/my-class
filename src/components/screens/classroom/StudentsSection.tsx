@@ -5,16 +5,16 @@ import NoStudents from "./NoStudents";
 import Students from "./Students";
 
 function StudentsSection({ classroomId }: { classroomId: string }) {
-  const studentsQuery = trpc.classroom.getStudents.useQuery({ classroomId });
-
-  const { data: students, isLoading } = studentsQuery;
+  const { data, isLoading } = trpc.classroom.getStudents.useQuery({
+    classroomId,
+  });
 
   return (
     <EmptyStateWrapper
       isLoading={isLoading}
-      data={students}
+      data={data}
       EmptyComponent={<NoStudents />}
-      NonEmptyComponent={<Students students={students ?? []} />}
+      NonEmptyComponent={<Students students={data ?? []} />}
     />
   );
 }

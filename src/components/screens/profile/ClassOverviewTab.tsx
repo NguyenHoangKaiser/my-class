@@ -15,9 +15,13 @@ import { getClassroomStatusColor } from "src/utils/constants";
 import { getTagColor } from "src/utils/helper";
 import { trpc } from "src/utils/trpc";
 
-function ClassOverviewTab() {
+type Props = {
+  userId?: string | undefined;
+};
+
+function ClassOverviewTab({ userId }: Props) {
   const { data: classrooms, isLoading } =
-    trpc.classroom.getClassroomsForTeacher.useQuery();
+    trpc.classroom.getClassroomsForTeacher.useQuery({ userId });
 
   const router = useRouter();
 
@@ -62,7 +66,9 @@ function ClassOverviewTab() {
                       {item._count.ratings ?? 0}
                     </Space>,
                     <Space
-                      onClick={() => router.push(`/classrooms/${item.id}`)}
+                      onClick={() =>
+                        router.push(`/classrooms/${item.id}/overview`)
+                      }
                       key="view"
                     >
                       <EyeOutlined />

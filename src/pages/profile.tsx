@@ -13,7 +13,7 @@ const ProfilePage: NextPageWithLayout = () => {
         <meta name="description" content="Profile page" />
       </Head>
 
-      <ProfileScreen />
+      <ProfileScreen isProfile />
     </>
   );
 };

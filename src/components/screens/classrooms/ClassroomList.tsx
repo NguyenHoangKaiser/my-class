@@ -46,7 +46,7 @@ function ClassroomsList({
           loading={isLoading}
           renderItem={(item) => (
             <List.Item
-              key={item.id}
+              // key={item.id}
               style={{
                 width: 400,
                 marginBottom: 32,
@@ -66,8 +66,9 @@ function ClassroomsList({
                   bordered={false}
                   cover={
                     <Banner
-                      height={140}
-                      width={300}
+                      height={200}
+                      useAnt
+                      width={"100%"}
                       style={{
                         objectFit: "cover",
                         borderTopLeftRadius: 8,
@@ -103,7 +104,7 @@ function ClassroomsList({
                     }
                     description={
                       item.description !== "No description provided" ? (
-                        <ReactMarkdown className="text-black dark:text-white">{`${item.description}`}</ReactMarkdown>
+                        <ReactMarkdown className="line-clamp-2">{`${item.description}`}</ReactMarkdown>
                       ) : (
                         <Tag color="red">No description provided</Tag>
                       )

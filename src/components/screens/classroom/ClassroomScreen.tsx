@@ -253,14 +253,14 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
         classroom={classroom}
       />
 
-      {classroom && (
-        <EditClassroomModal
-          onCancel={() => setShowEditClassroomModal(false)}
-          refetch={classroomQuery.refetch}
-          open={showEditClassroomModal}
-          classroom={classroom}
-        />
-      )}
+      {/* {classroom && ( */}
+      <EditClassroomModal
+        onCancel={() => setShowEditClassroomModal(false)}
+        refetch={classroomQuery.refetch}
+        open={showEditClassroomModal}
+        classroom={classroomQuery.data}
+      />
+      {/* )} */}
     </>
   );
 }

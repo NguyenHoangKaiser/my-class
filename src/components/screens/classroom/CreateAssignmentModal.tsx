@@ -69,7 +69,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Create a new assignment"
+      title="CREATE A NEW ASSIGNMENT"
       okText="Create"
       cancelText="Cancel"
       onCancel={onCancel}

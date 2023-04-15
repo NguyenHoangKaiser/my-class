@@ -48,7 +48,6 @@ const useAntUpload = ({
       .then((data) => {
         if (data.some((d) => d.error)) {
           message.error(errorMessage);
-          console.error(data);
           return;
         } else {
           message.success(successMessage);
@@ -57,8 +56,7 @@ const useAntUpload = ({
         }
       })
       .catch((error: any) => {
-        message.error(errorMessage);
-        console.error(error);
+        message.error(errorMessage || error.message);
       })
       .finally(() => {
         setUploading(false);

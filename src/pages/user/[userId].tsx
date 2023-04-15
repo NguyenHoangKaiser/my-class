@@ -2,7 +2,6 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
-import ClassroomScreen from "src/components/screens/classroom/ClassroomScreen";
 import ProfileScreen from "src/components/screens/profile/ProfileScreen";
 import HeaderLayout from "src/layouts/HeaderLayout";
 import type { NextPageWithLayout } from "src/pages/_app";

@@ -1,7 +1,26 @@
-import { MinusCircleOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  MinusCircleOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import type { Classroom, Subject, User } from "@prisma/client";
-import { Button, Checkbox, Col, message, Select, Upload } from "antd";
-import { Form, Input, Modal, Radio } from "antd";
+import {
+  Button,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  Tooltip,
+  Upload,
+} from "antd";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import { Banner } from "src/components/common";
 import useAntUpload from "src/hooks/useAntUpload";
 import { trpc } from "src/utils/trpc";
 
@@ -50,12 +69,18 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
   const editClassroom = trpc.classroom.editClassroom.useMutation();
   const addSubjectCheckValue = Form.useWatch("addSubjectCheck", form);
   const modifierValue = Form.useWatch("modifier", form);
+  const descriptionMD = Form.useWatch("description", form);
+  const requirementsMD = Form.useWatch("requirements", form);
+
+  const [showDescPreview, setShowDescPreview] = React.useState(false);
+  const [showReqPreview, setShowReqPreview] = React.useState(false);
+
   let disabled = false;
   if (classroom && classroom.students.length > 0) {
     disabled = true;
   }
 
-  const { fileList, handleUpload, uploadProps, uploading } = useAntUpload({
+  const { handleUpload, uploadProps, fileList } = useAntUpload({
     getUploadUrl: () => {
       return Promise.resolve(`avatars/classroom/${classroom?.id}`);
     },
@@ -63,12 +88,13 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
     successMessage: "Classroom banner updated successfully!",
   });
 
-  const onFinish = async (
-    values: CreateClassroomFormData,
-    resetFields: () => void
-  ) => {
+  const onFinish = async (values: CreateClassroomFormData) => {
+    console.log(values);
     if (editClassroom.isLoading) {
       return;
+    }
+    if (fileList.length > 0) {
+      handleUpload();
     }
     try {
       const subjectArr: FormSubject[] = [];
@@ -99,7 +125,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
 
         await editClassroom.mutateAsync(formData);
         message.success("Classroom updated successfully!");
-        resetFields();
         refetch();
         onCancel();
       }
@@ -111,13 +136,13 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Edit classroom details"
+      title="EDIT CLASSROOM DETAILS"
       okText="Save"
       cancelText="Cancel"
       onCancel={onCancel}
       onOk={() => {
         form.validateFields().then((values) => {
-          onFinish(values, form.resetFields);
+          onFinish(values);
         });
       }}
     >
@@ -151,9 +176,28 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         >
           <Input placeholder="Classroom name" />
         </Form.Item>
-        <Form.Item name="description" label="Description">
-          <Input.TextArea placeholder="Description" showCount maxLength={200} />
+        <Form.Item
+          name="description"
+          label={
+            <Space>
+              <span>Description</span>
+              <Tooltip title="Markdown is supported. Click the eye icon to preview the description.">
+                <EyeOutlined
+                  onClick={() => setShowDescPreview(!showDescPreview)}
+                />
+              </Tooltip>
+            </Space>
+          }
+        >
+          <Input.TextArea placeholder="Description" showCount maxLength={500} />
         </Form.Item>
+        {showDescPreview && (
+          <Form.Item name="descPreview" label="Description preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown>{`${descriptionMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
+        )}
         <Form.Item
           name="modifier"
           label="Modifier"
@@ -310,26 +354,61 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         <Form.Item
           style={{ marginBottom: 40 }}
           name="requirements"
-          label="Requirements"
+          label={
+            <Space>
+              <span>Requirements</span>
+              <Tooltip title="Markdown is supported. Click the eye icon to preview the Requirements.">
+                <EyeOutlined
+                  onClick={() => setShowReqPreview(!showReqPreview)}
+                />
+              </Tooltip>
+            </Space>
+          }
         >
           <Input.TextArea showCount maxLength={200} />
         </Form.Item>
-      </Form>
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <Upload {...uploadProps} maxCount={1} multiple={false}>
-          <Button
-            style={{ alignItems: "center", display: "flex" }}
-            icon={<UploadOutlined />}
-          >
-            Select File
-          </Button>
-        </Upload>
-        {fileList.length > 0 && (
-          <Button type="primary" onClick={handleUpload} loading={uploading}>
-            {uploading ? "Uploading" : "Start Upload"}
-          </Button>
+        {showReqPreview && (
+          <Form.Item name="reqPreview" label="Requirements preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown>{`${requirementsMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
         )}
-      </div>
+        <Form.Item name="banner" label="Class banner">
+          <Banner
+            width={"100%"}
+            height={250}
+            style={{ borderRadius: 8 }}
+            useAnt
+            classroomId={classroom?.id as string}
+            alt=""
+          />
+          <div className="relative my-4 flex items-start justify-between gap-4">
+            <Upload {...uploadProps} maxCount={1} multiple={false}>
+              <Button
+                style={{ alignItems: "center", display: "flex" }}
+                icon={<UploadOutlined />}
+              >
+                Select File
+              </Button>
+            </Upload>
+            {/* {fileList.length > 0 && (
+              <Button
+                type="primary"
+                style={{
+                  position: "absolute",
+                  left: 150,
+                  top: 0,
+                }}
+                onClick={handleUpload}
+                loading={uploading}
+              >
+                {uploading ? "Uploading" : "Start Upload"}
+              </Button>
+            )} */}
+          </div>
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };

@@ -195,7 +195,7 @@ export const AssignmentScreen = ({
             />
           </div>
           {assignment?.status !== "completed" && (
-            <div className="mb-8 flex w-1/4 items-start justify-between gap-4">
+            <div className="relative mb-8 flex items-start justify-between gap-4">
               <Upload {...uploadProps}>
                 <Button
                   style={{ alignItems: "center", display: "flex" }}
@@ -206,6 +206,11 @@ export const AssignmentScreen = ({
               </Upload>
               <Button
                 type="primary"
+                style={{
+                  position: "absolute",
+                  left: 150,
+                  top: 0,
+                }}
                 onClick={handleUpload}
                 disabled={fileList.length === 0}
                 loading={uploading}

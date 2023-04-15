@@ -1,20 +1,21 @@
 import { useRouter } from "next/router";
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "src/utils/trpc";
 import {
   Avatar,
   Badge,
   Button,
+  Col,
   Descriptions,
   Rate,
+  Row,
   Skeleton,
   Space,
   Tag,
-  Typography,
 } from "antd";
 import dayjs from "dayjs";
-import { MainHeading } from "src/components/common";
+import { Banner, MainHeading } from "src/components/common";
 import { firstLetterToUpperCase, getTagColor } from "src/utils/helper";
 import EnrollClassroomModal from "./EnrollClassroomModal";
 import Link from "next/link";
@@ -38,10 +39,21 @@ export const ClassroomOverviewScreen = ({
       classroom.ratings.length
     : 0;
 
+  const isStudent = userQuery.data?.role === "student";
+  const isOwner = classroom?.teacher.id === userQuery.data?.id;
+  const isEnrolled = classroom?.students.some(
+    (student) => student.id === userQuery.data?.id
+  );
+  const isNotArchived = classroom?.status !== "archived";
+
   return (
-    <>
-      <MainHeading title="Classroom Overview" />
-      <section className="container pl-14 pt-5">
+    <Row>
+      <Col
+        className="no-scrollbar max-h-[calc(100vh-4rem)] overflow-y-scroll pr-2"
+        span={13}
+        offset={2}
+      >
+        <MainHeading title="Classroom Overview" />
         <Skeleton active loading={classroomQuery.isLoading}>
           <Descriptions
             labelStyle={{
@@ -64,7 +76,7 @@ export const ClassroomOverviewScreen = ({
               {dayjs(classroom?.createdAt).format("DD-MM-YYYY HH:mm:ss")}
             </Descriptions.Item>
             <Descriptions.Item label="Language">
-              <Tag color="yellow">
+              <Tag>
                 {classroom?.language === "en" ? "English" : "Vietnamese"}
               </Tag>
             </Descriptions.Item>
@@ -110,44 +122,77 @@ export const ClassroomOverviewScreen = ({
                 text={firstLetterToUpperCase(classroom?.status || "")}
               />
             </Descriptions.Item>
-            <Descriptions.Item label="Rating">
-              <Rate disabled allowHalf defaultValue={rating} />
-            </Descriptions.Item>
             <Descriptions.Item label="Students">
-              {classroom?.students.length || 0}
+              <Tag color="geekblue-inverse">
+                {classroom?._count.students ?? 0} Students
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Assignments">
+              <Tag color="geekblue-inverse">
+                {classroom?._count.assignments ?? 0} Assignments
+              </Tag>
             </Descriptions.Item>
             <Descriptions.Item span={4} label="Description">
-              <ReactMarkdown>{`${classroom?.description}`}</ReactMarkdown>
+              <ReactMarkdown className="text-base">{`${classroom?.description}`}</ReactMarkdown>
             </Descriptions.Item>
             <Descriptions.Item span={4} label="Requirements">
-              <ReactMarkdown>{`${classroom?.requirements}`}</ReactMarkdown>
+              <ReactMarkdown className="text-base">{`${classroom?.requirements}`}</ReactMarkdown>
             </Descriptions.Item>
-            {classroom?.status !== "archived" &&
-              userQuery.data?.role === "student" &&
-              !userQuery.data.enrolledIn.find(
-                (classroom) => classroom.id === classroomId
-              ) && (
-                <Descriptions.Item span={4} label="Actions">
-                  <Space size="large">
-                    <Button
-                      type="primary"
-                      onClick={() => setIsEnrollModalOpen(true)}
-                    >
-                      Enroll
-                    </Button>
-                    <Button
-                      type="default"
-                      onClick={() => router.push("/browse-classrooms")}
-                    >
-                      Choose a different classroom
-                    </Button>
-                  </Space>
-                </Descriptions.Item>
-              )}
           </Descriptions>
         </Skeleton>
-      </section>
-
+      </Col>
+      <Col span={8} className="pt-28 pl-2">
+        <div className="flex flex-col items-center gap-5">
+          {classroomQuery.isLoading ? (
+            <Skeleton.Image style={{ width: 500, height: 300 }} active />
+          ) : (
+            <Banner
+              useAnt
+              width={500}
+              height={300}
+              alt=""
+              classroomId={classroomId}
+            />
+          )}
+          <Skeleton active loading={classroomQuery.isLoading}>
+            <div className="mt-4 flex flex-col items-center gap-5">
+              <Rate disabled allowHalf defaultValue={rating} />
+              {isNotArchived && isStudent && !isEnrolled && (
+                <Space size="large">
+                  <Button
+                    type="primary"
+                    onClick={() => setIsEnrollModalOpen(true)}
+                  >
+                    Enroll
+                  </Button>
+                  <Button
+                    type="default"
+                    onClick={() => router.push("/browse-classrooms")}
+                  >
+                    Choose a different classroom
+                  </Button>
+                </Space>
+              )}
+              {isEnrolled && (
+                <Button
+                  type="primary"
+                  onClick={() => router.push(`/classrooms/${classroomId}`)}
+                >
+                  Go to classroom
+                </Button>
+              )}
+              {isOwner && (
+                <Button
+                  type="primary"
+                  onClick={() => router.push(`/classrooms/${classroomId}`)}
+                >
+                  Go to classroom
+                </Button>
+              )}
+            </div>
+          </Skeleton>
+        </div>
+      </Col>
       <EnrollClassroomModal
         open={isEnrollModalOpen}
         onCancel={() => setIsEnrollModalOpen(false)}
@@ -155,6 +200,6 @@ export const ClassroomOverviewScreen = ({
         classroomId={classroomId}
         modifier={classroom?.modifier || "private"}
       />
-    </>
+    </Row>
   );
 };

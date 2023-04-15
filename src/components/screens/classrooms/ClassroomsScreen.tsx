@@ -11,7 +11,14 @@ function ClassroomsScreen() {
   const [filter, setFilter] = useState({
     modifier: "",
     language: "",
+    subject: "",
   });
+
+  const { data: subjects } = trpc.classroom.getSubjects.useQuery();
+  const subjectsOptions = subjects?.map((subject) => ({
+    label: subject.name,
+    value: subject.id,
+  }));
 
   const {
     data: classrooms,
@@ -39,7 +46,6 @@ function ClassroomsScreen() {
                   value: "private",
                 },
               ]}
-              // defaultValue="all"
               style={{ width: 120 }}
               allowClear
               placeholder="Type"
@@ -63,6 +69,15 @@ function ClassroomsScreen() {
               placeholder="Language"
               onChange={(value) => {
                 setFilter((prev) => ({ ...prev, language: value as string }));
+              }}
+            />
+            <Select
+              options={subjectsOptions}
+              style={{ width: 120 }}
+              allowClear
+              placeholder="Subject"
+              onChange={(value) => {
+                setFilter((prev) => ({ ...prev, subject: value as string }));
               }}
             />
           </Space>

@@ -24,6 +24,7 @@ import { trpc } from "src/utils/trpc";
 import ClassOverviewTab from "./ClassOverviewTab";
 import EditProfileModal from "./EditProfileModal";
 import StudentOverviewTab from "./StudentOverviewTab";
+import ReactMarkdown from "react-markdown";
 
 type Props = {
   userId?: string | undefined;
@@ -172,7 +173,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                     userData?.role
                       ? userData?.role === "teacher"
                         ? "purple-inverse"
-                        : "blue-inverse"
+                        : "lime-inverse"
                       : "default"
                   }
                 >
@@ -205,12 +206,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                     {userData?.displayName}
                   </Typography.Text>
                 )}
-                <Typography.Paragraph
-                  ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
-                  style={{ fontSize: 16, marginTop: 10 }}
-                >
-                  {userData?.bio ?? "No bio"}
-                </Typography.Paragraph>
+                <ReactMarkdown className="my-2 text-lg text-black line-clamp-4 dark:text-white">{`${userData?.bio}`}</ReactMarkdown>
                 <Button
                   block
                   type="default"
@@ -260,6 +256,42 @@ function ProfileScreen({ userId, isProfile }: Props) {
                   }}
                   size="middle"
                 >
+                  <UserOutlined
+                    style={{
+                      fontSize: 16,
+                    }}
+                  />
+                  <Typography.Text>
+                    {userData?.age
+                      ? `${userData?.age} years old`
+                      : "No age specified"}
+                  </Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
+                  {userData?.gender === "male" ? (
+                    <ManOutlined style={{ fontSize: 16 }} />
+                  ) : userData?.gender === "female" ? (
+                    <WomanOutlined style={{ fontSize: 16 }} />
+                  ) : (
+                    <QuestionCircleOutlined style={{ fontSize: 16 }} />
+                  )}
+                  <Typography.Text>
+                    {firstLetterToUpperCase(
+                      userData?.gender ?? "No gender specified"
+                    )}
+                  </Typography.Text>
+                </Space>
+                <Space
+                  style={{
+                    marginTop: 10,
+                  }}
+                  size="middle"
+                >
                   <ClockCircleOutlined
                     style={{
                       fontSize: 16,
@@ -297,40 +329,6 @@ function ProfileScreen({ userId, isProfile }: Props) {
                     }}
                   />
                   <Typography.Text>{userData?.email}</Typography.Text>
-                </Space>
-                <Space
-                  style={{
-                    marginTop: 10,
-                  }}
-                  size="middle"
-                >
-                  <UserOutlined
-                    style={{
-                      fontSize: 16,
-                    }}
-                  />
-                  <Typography.Text>
-                    {userData?.age ?? "No age specified"}
-                  </Typography.Text>
-                </Space>
-                <Space
-                  style={{
-                    marginTop: 10,
-                  }}
-                  size="middle"
-                >
-                  {userData?.gender === "male" ? (
-                    <ManOutlined style={{ fontSize: 16 }} />
-                  ) : userData?.gender === "female" ? (
-                    <WomanOutlined style={{ fontSize: 16 }} />
-                  ) : (
-                    <QuestionCircleOutlined style={{ fontSize: 16 }} />
-                  )}
-                  <Typography.Text>
-                    {firstLetterToUpperCase(
-                      userData?.gender ?? "No gender specified"
-                    )}
-                  </Typography.Text>
                 </Space>
               </>
             )}

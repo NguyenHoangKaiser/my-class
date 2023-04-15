@@ -12,11 +12,14 @@ type SubmissionKey = {
   studentId: string;
   filename: string;
 };
-type Key = AssignmentKey | SubmissionKey;
+type Key = AssignmentKey | SubmissionKey | { classroomId: string };
 
 export const getKeyUrl = (key: Key): string => {
   if ("assignmentId" in key) {
     return `assignments/${key.assignmentId}/${key.attachmentId}/${key.filename}`;
+  }
+  if ("classroomId" in key) {
+    return `avatars/classroom/${key.classroomId}`;
   }
   return `submissions/${key.submissionId}/${key.studentId}/${key.filename}`;
 };
@@ -26,7 +29,7 @@ export const supabaseDeleteFile = async (key: Key) => {
     .from("files")
     .remove([getKeyUrl(key)]);
   if (error) {
-    alert(error.message);
+    message.error(error.message);
     return;
   }
 };

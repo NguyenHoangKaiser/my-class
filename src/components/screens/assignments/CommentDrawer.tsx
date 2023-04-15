@@ -4,7 +4,7 @@ import { trpc } from "src/utils/trpc";
 import dayjs from "dayjs";
 import { firstLetterToUpperCase } from "src/utils/helper";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SendOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import profileImage from "src/assets/profile.jpeg";
 
@@ -93,7 +93,7 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
               alignItems: "flex-start",
             }}
           >
-            <div className="flex w-full">
+            <div className="mb-2 flex w-full">
               <Image
                 alt="User Avatar"
                 width={40}
@@ -104,7 +104,13 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
               <div className="ml-2 flex w-full flex-col">
                 <div className="flex w-full justify-between">
                   <Typography.Text strong>{item.user.name}</Typography.Text>
-                  <Tag color={item.user.role === "teacher" ? "purple" : "lime"}>
+                  <Tag
+                    color={
+                      item.user.role === "teacher"
+                        ? "purple-inverse"
+                        : "lime-inverse"
+                    }
+                  >
                     {firstLetterToUpperCase(item.user.role as string)}
                   </Tag>
                 </div>
@@ -132,7 +138,7 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
         <Form.Item
           name="content"
           label="Comment"
-          tooltip="You can add some style by using markdown"
+          tooltip="Markdown is supported."
           rules={[
             {
               required: true,
@@ -140,15 +146,16 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
             },
           ]}
         >
-          <Input.TextArea
-            rows={4}
-            maxLength={200}
-            placeholder="Content of the comment"
-          />
+          <Input.TextArea rows={4} maxLength={200} placeholder="Content" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
+          <Button
+            style={{ display: "flex", alignItems: "center" }}
+            type="primary"
+            icon={<SendOutlined />}
+            htmlType="submit"
+          >
+            Send
           </Button>
         </Form.Item>
       </Form>

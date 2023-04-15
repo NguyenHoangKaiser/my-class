@@ -116,7 +116,7 @@ function TeacherAssignments({
           key="name"
           sorter={(a, b) => a.name.localeCompare(b.name)}
           sortDirections={["ascend", "descend"]}
-          width={150}
+          width={250}
           fixed="left"
           ellipsis
         />

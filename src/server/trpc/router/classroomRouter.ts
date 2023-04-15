@@ -104,18 +104,27 @@ export const classroomRouter = router({
           modifier: z.string().optional(),
           language: z.string().optional(),
           count: z.number().optional(),
+          subject: z.string().optional(),
           // name: z.string().nullable(),
         })
         .nullish()
     )
     .query(async ({ ctx, input }) => {
       if (input) {
-        if (input.modifier !== "all" && input.language !== "all") {
+        if (input.modifier || input.language || input.subject) {
           const classrooms = await ctx.prisma.classroom.findMany({
+            orderBy: {
+              createdAt: "asc",
+            },
             where: {
               userId: input.userId || (ctx.session.user.id as string),
               modifier: input.modifier ? input.modifier : undefined,
               language: input.language ? input.language : undefined,
+              subjects: {
+                some: {
+                  id: input.subject ? input.subject : undefined,
+                },
+              },
               // name: input.name ? input.name : undefined,
             },
             include: {
@@ -126,6 +135,9 @@ export const classroomRouter = router({
           return classrooms;
         } else {
           const classrooms = await ctx.prisma.classroom.findMany({
+            orderBy: {
+              createdAt: "asc",
+            },
             where: {
               userId: input.userId || (ctx.session.user.id as string),
             },
@@ -162,6 +174,7 @@ export const classroomRouter = router({
           assignments: true,
           teacher: true,
           ratings: true,
+          _count: true,
         },
       });
       return classroom;
@@ -241,6 +254,9 @@ export const classroomRouter = router({
     .input(z.object({ classroomId: z.string() }))
     .query(async ({ ctx, input }) => {
       const assignments = await ctx.prisma.assignment.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           classroomId: input.classroomId,
         },
@@ -331,6 +347,7 @@ export const classroomRouter = router({
           attachments: true,
         },
       });
+      supabaseDeleteFile({ classroomId: input.classroomId });
       for (const assignment of assignments) {
         for (const submission of assignment.submissions) {
           supabaseDeleteFile({
@@ -355,12 +372,19 @@ export const classroomRouter = router({
       return classroom;
     }),
   getSubjects: protectedProcedure.query(async ({ ctx }) => {
-    const subjects = await ctx.prisma.subject.findMany();
+    const subjects = await ctx.prisma.subject.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
     return subjects;
   }),
   browseClassroom: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id as string;
     const allClassrooms = await ctx.prisma.classroom.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
       include: {
         subjects: true,
         students: true,

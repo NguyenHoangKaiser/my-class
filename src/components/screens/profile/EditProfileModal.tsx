@@ -1,7 +1,10 @@
 import type { User } from "@prisma/client";
-import { message, Select } from "antd";
+import { message, Select, Space } from "antd";
 import { Form, Input, Modal } from "antd";
 import { trpc } from "src/utils/trpc";
+import ReactMarkdown from "react-markdown";
+import { useState } from "react";
+import { EyeOutlined } from "@ant-design/icons";
 
 type EditProfileFormData = {
   displayName: string;
@@ -28,6 +31,9 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
 }) => {
   const [form] = Form.useForm<EditProfileFormData>();
   const editProfile = trpc.user.editProfile.useMutation();
+  const bioMD = Form.useWatch("bio", form);
+
+  const [showBioPreview, setShowBioPreview] = useState(false);
 
   const onFinish = async (
     values: EditProfileFormData,
@@ -55,7 +61,7 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Edit your profile"
+      title="EDIT YOUR PROFILE"
       okText="Save"
       cancelText="Cancel"
       onCancel={onCancel}
@@ -86,11 +92,25 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
         </Form.Item>
         <Form.Item
           name="bio"
-          label="Biography"
-          tooltip="Tell us a little bit about yourself."
+          label={
+            <Space>
+              <span>Biography</span>
+              <EyeOutlined
+                onClick={() => setShowBioPreview(!setShowBioPreview)}
+              />
+            </Space>
+          }
+          tooltip="Markdown is supported. Click the eye icon to preview the Biography."
         >
-          <Input.TextArea placeholder="Description" showCount maxLength={200} />
+          <Input.TextArea placeholder="Biography" showCount maxLength={500} />
         </Form.Item>
+        {showBioPreview && (
+          <Form.Item name="bioPreview" label="Biography preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown>{`${bioMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
+        )}
         <Form.Item
           name="location"
           label="Location"

@@ -76,7 +76,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Edit this assignment"
+      title="EDIT THIS ASSIGNMENT"
       okText="Save"
       cancelText="Cancel"
       onCancel={onCancel}

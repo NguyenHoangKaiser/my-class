@@ -1,7 +1,9 @@
-import { MinusCircleOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Col, message, Select } from "antd";
+import { useState } from "react";
+import { EyeOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Col, message, Select, Space } from "antd";
 import { Form, Input, Modal, Radio } from "antd";
 import { trpc } from "src/utils/trpc";
+import ReactMarkdown from "react-markdown";
 
 type FormSubject = {
   name: string;
@@ -11,10 +13,7 @@ type FormSubject = {
 type CreateClassroomFormData = {
   name: string;
   description?: string;
-  language?: {
-    label: string;
-    value: string;
-  };
+  language?: string;
   subject: [];
   addSubjectCheck?: boolean;
   addSubject?: FormSubject[];
@@ -38,6 +37,11 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
   const createClassroom = trpc.classroom.createClassroom.useMutation();
   const addSubjectCheckValue = Form.useWatch("addSubjectCheck", form);
   const modifierValue = Form.useWatch("modifier", form);
+  const descriptionMD = Form.useWatch("description", form);
+  const requirementsMD = Form.useWatch("requirements", form);
+
+  const [showDescPreview, setShowDescPreview] = useState(false);
+  const [showReqPreview, setShowReqPreview] = useState(false);
 
   const onFinish = async (
     values: CreateClassroomFormData,
@@ -63,7 +67,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
       const formData = {
         name: values.name,
         description: values.description ?? "No description provided",
-        language: values.language?.value ?? "en",
+        language: values.language ?? "en",
         password: values.password ?? null,
         requirements: values.requirements ?? "No requirements provided",
         modifier: values.modifier,
@@ -83,7 +87,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
   return (
     <Modal
       open={open}
-      title="Create a new classroom"
+      title="CREATE A NEW CLASSROOM"
       okText="Create"
       cancelText="Cancel"
       onCancel={onCancel}
@@ -113,9 +117,27 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         >
           <Input placeholder="Classroom name" />
         </Form.Item>
-        <Form.Item name="description" label="Description">
-          <Input.TextArea placeholder="Description" showCount maxLength={200} />
+        <Form.Item
+          name="description"
+          tooltip="Markdown is supported. Click the eye icon to preview the description."
+          label={
+            <Space>
+              <span>Description</span>
+              <EyeOutlined
+                onClick={() => setShowDescPreview(!showDescPreview)}
+              />
+            </Space>
+          }
+        >
+          <Input.TextArea placeholder="Description" showCount maxLength={500} />
         </Form.Item>
+        {showDescPreview && (
+          <Form.Item name="descPreview" label="Description preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown>{`${descriptionMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
+        )}
         <Form.Item
           name="modifier"
           label="Modifier"
@@ -262,10 +284,23 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         <Form.Item
           style={{ marginBottom: 40 }}
           name="requirements"
-          label="Requirements"
+          tooltip="Markdown is supported. Click the eye icon to preview the requirements."
+          label={
+            <Space>
+              <span>Requirements</span>
+              <EyeOutlined onClick={() => setShowReqPreview(!showReqPreview)} />
+            </Space>
+          }
         >
           <Input.TextArea showCount maxLength={200} />
         </Form.Item>
+        {showReqPreview && (
+          <Form.Item name="reqPreview" label="Requirements preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown>{`${requirementsMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
+        )}
       </Form>
     </Modal>
   );

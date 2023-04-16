@@ -76,7 +76,7 @@ export const AssignmentScreen = ({
             color={isNotDue ? "green" : "red"}
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
               gap: 10,
@@ -90,7 +90,7 @@ export const AssignmentScreen = ({
             color={getAssignmentStatusColor(assignment?.status as string)}
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
             }}
@@ -101,7 +101,7 @@ export const AssignmentScreen = ({
             color="cyan"
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
               gap: 10,
@@ -116,7 +116,7 @@ export const AssignmentScreen = ({
             color="green"
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
             }}
@@ -128,7 +128,7 @@ export const AssignmentScreen = ({
             color="red"
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
             }}

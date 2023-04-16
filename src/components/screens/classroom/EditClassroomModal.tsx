@@ -379,9 +379,8 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
             width={"100%"}
             height={250}
             style={{ borderRadius: 8 }}
-            useAnt
             classroomId={classroom?.id as string}
-            alt=""
+            alt="Classroom banner"
           />
           <div className="relative my-4 flex items-start justify-between gap-4">
             <Upload {...uploadProps} maxCount={1} multiple={false}>
@@ -392,20 +391,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
                 Select File
               </Button>
             </Upload>
-            {/* {fileList.length > 0 && (
-              <Button
-                type="primary"
-                style={{
-                  position: "absolute",
-                  left: 150,
-                  top: 0,
-                }}
-                onClick={handleUpload}
-                loading={uploading}
-              >
-                {uploading ? "Uploading" : "Start Upload"}
-              </Button>
-            )} */}
           </div>
         </Form.Item>
       </Form>

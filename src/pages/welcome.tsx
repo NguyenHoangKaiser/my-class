@@ -7,11 +7,14 @@ import { trpc } from "src/utils/trpc";
 import { useRouter } from "next/router";
 import reloadSession from "src/utils/reloadSession";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
-import { Button } from "antd";
-
+import { Button, Col, Row, Typography, theme } from "antd";
+import { useState } from "react";
+import { ArrowRightOutlined } from "@ant-design/icons";
+const { useToken } = theme;
 const Welcome: NextPage = () => {
   const router = useRouter();
-
+  const { token } = useToken();
+  const [role, setRole] = useState<string>();
   const { mutateAsync: setRoleAsTeacher } =
     trpc.auth.setRoleAsTeacher.useMutation();
 
@@ -58,63 +61,120 @@ const Welcome: NextPage = () => {
         />
       </Head>
 
-      <main className="container m-auto">
-        <div className="mx-auto flex h-full flex-col items-center justify-center p-4">
-          <h1 className="text-4xl text-gray-900 dark:text-white">
+      <Row>
+        <Col
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            padding: "2rem",
+          }}
+          span={24}
+        >
+          <Typography.Title level={1}>
             Welcome to My-Classroom!
-          </h1>
-          <p className="mt-3 text-gray-900 dark:text-white">
+          </Typography.Title>
+          <Typography.Paragraph style={{ fontSize: "1.125rem" }}>
             Before we start, click what type of role you want to be:
-          </p>
-
-          <div className="mt-10 mb-4 hidden gap-8 sm:grid sm:grid-cols-2">
-            <Image
-              height="300"
-              className="object-cover"
-              src={feynman}
-              alt="A picture of Richard Feynman(well known physics professor) teaching"
-            />
-            <Image
-              height="300"
-              className="object-cover"
-              src={student}
-              alt="A person studying"
-            />
-          </div>
-
-          <div className="hidden w-full grid-cols-2 gap-8 sm:grid">
-            <div className="relative flex flex-col items-center justify-center rounded">
-              <Button onClick={setTeacherRole}>I&apos;m a teacher</Button>
-            </div>
-            <div className="relative flex flex-col items-center justify-center rounded">
-              <Button onClick={setStudentRole}>I&apos;m a student</Button>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col sm:hidden">
-            <Image
-              height={150}
-              width={300}
-              className="object-cover object-top"
-              src={feynman}
-              alt="A picture of Richard Feynman(well known physics professor) teaching"
-            />
-            <Button size="large" type="primary" onClick={setTeacherRole}>
-              I&apos;m a teacher
-            </Button>
-
-            <Image
-              height={150}
-              width={300}
-              className="object-cover"
-              src={student}
-              alt="A person studying"
-            />
-
-            <Button type="primary">I&apos;m a student</Button>
-          </div>
-        </div>
-      </main>
+          </Typography.Paragraph>
+          <Row
+            style={{
+              backgroundColor: token.colorBgLayout,
+              padding: "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            gutter={[32, 16]}
+          >
+            <Col span={24}>
+              <Row gutter={[32, 16]}>
+                <Col span={12}>
+                  <button
+                    className="flex w-[300px] flex-col rounded-lg border border-gray-500 bg-slate-200 hover:shadow-lg hover:outline-none hover:ring-2 hover:ring-white hover:ring-offset-2 hover:ring-offset-gray-800 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 dark:border-gray-600 dark:bg-gray-900 dark:hover:shadow-black/30"
+                    onClick={() => setRole("teacher")}
+                  >
+                    <Image
+                      style={{
+                        height: 190,
+                        borderTopLeftRadius: 8,
+                        borderTopRightRadius: 8,
+                      }}
+                      src={feynman}
+                      alt="A picture of Richard Feynman(well known physics professor) teaching"
+                    />
+                    <Typography.Title level={4} className="mt-3">
+                      I&apos;m a teacher
+                    </Typography.Title>
+                  </button>
+                </Col>
+                <Col span={12}>
+                  <button
+                    className="flex w-[300px] flex-col rounded-lg border border-gray-500 bg-slate-200  hover:shadow-lg hover:outline-none hover:ring-2 hover:ring-white hover:ring-offset-2 hover:ring-offset-gray-800 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 dark:border-gray-600 dark:bg-gray-900 dark:hover:shadow-black/30"
+                    onClick={() => setRole("student")}
+                  >
+                    <Image
+                      style={{
+                        height: 190,
+                        borderTopLeftRadius: 8,
+                        borderTopRightRadius: 8,
+                      }}
+                      src={student}
+                      alt="A person studying"
+                    />
+                    <Typography.Title level={4} className="mt-3">
+                      I&apos;m a student
+                    </Typography.Title>
+                  </button>
+                </Col>
+              </Row>
+              <Col className="mt-5" span={24}>
+                {role === "teacher" && (
+                  <Typography.Paragraph style={{ fontSize: "16p" }}>
+                    Teacher accounts allow you to create classrooms and manage
+                    the students in them.
+                  </Typography.Paragraph>
+                )}
+                {role === "student" && (
+                  <Typography.Paragraph style={{ fontSize: "16p" }}>
+                    Student accounts allow you to join classrooms and access the
+                    content in them.
+                  </Typography.Paragraph>
+                )}
+                {!role && (
+                  <Typography.Paragraph style={{ fontSize: "16p" }}>
+                    Please select a role to continue.
+                  </Typography.Paragraph>
+                )}
+              </Col>
+            </Col>
+          </Row>
+          <Button
+            size="large"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "2rem",
+              width: 270,
+            }}
+            type="primary"
+            disabled={!role}
+            onClick={
+              role === "teacher"
+                ? setTeacherRole
+                : role === "student"
+                ? setStudentRole
+                : undefined
+            }
+          >
+            {`CONTINUE AS ${(role || "")?.toLocaleUpperCase()}`}{" "}
+            <ArrowRightOutlined />
+          </Button>
+        </Col>
+      </Row>
     </>
   );
 };

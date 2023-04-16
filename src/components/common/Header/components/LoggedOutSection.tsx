@@ -18,7 +18,7 @@ function LoggedOutSection({ signIn }: TLoggedOutSectionProps) {
         }}
       >
         Register / Sign in
-        <LoginOutlined style={{ fontSize: 16, marginTop: 3 }} />
+        <LoginOutlined style={{ fontSize: "1rem", marginTop: 3 }} />
       </Button>
     </div>
   );

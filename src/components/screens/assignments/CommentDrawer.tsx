@@ -115,7 +115,10 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
                   </Tag>
                 </div>
                 <div className="flex gap-2">
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  <Typography.Text
+                    type="secondary"
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     {dayjs(item.createdAt).format("DD/MM/YYYY HH:mm")}
                   </Typography.Text>
                   <DeleteOutlined

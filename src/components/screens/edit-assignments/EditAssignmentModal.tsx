@@ -143,7 +143,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
               <div className="flex flex-col items-center justify-center">
                 <InboxOutlined
                   style={{
-                    fontSize: 30,
+                    fontSize: "1.875rem",
                   }}
                 />{" "}
                 This classroom has no subjects yet. Please add one first.

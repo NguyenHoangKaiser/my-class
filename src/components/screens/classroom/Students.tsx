@@ -92,11 +92,11 @@ function Students({ students }: { students: DataType[] }) {
               {firstLetterToUpperCase(value ?? "not specified")}
               {"  "}
               {value === "male" ? (
-                <ManOutlined style={{ fontSize: 14 }} />
+                <ManOutlined style={{ fontSize: "0.875rem" }} />
               ) : value === "female" ? (
-                <WomanOutlined style={{ fontSize: 14 }} />
+                <WomanOutlined style={{ fontSize: "0.875rem" }} />
               ) : value === "other" ? (
-                <QuestionCircleOutlined style={{ fontSize: 14 }} />
+                <QuestionCircleOutlined style={{ fontSize: "0.875rem" }} />
               ) : null}
             </Tag>
           )}

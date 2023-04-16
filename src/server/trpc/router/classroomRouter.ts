@@ -1,12 +1,12 @@
+import { TRPCError } from "@trpc/server";
+import { supabaseDeleteFile } from "src/utils/helper";
+import z from "zod";
+import { protectedProcedure, router } from "../trpc";
 import {
   assertIsClassroomAdmin,
   assertIsStudent,
   assertIsTeacher,
 } from "./../../utils/assert";
-import z from "zod";
-import { router, protectedProcedure } from "../trpc";
-import { supabaseDeleteFile } from "src/utils/helper";
-import { TRPCError } from "@trpc/server";
 
 export const classroomRouter = router({
   getStudents: protectedProcedure
@@ -98,68 +98,44 @@ export const classroomRouter = router({
     }),
   getClassroomsForTeacher: protectedProcedure
     .input(
-      z
-        .object({
-          userId: z.string().optional(),
-          modifier: z.string().optional(),
-          language: z.string().optional(),
-          count: z.number().optional(),
-          subject: z.string().optional(),
-          // name: z.string().nullable(),
-        })
-        .nullish()
+      z.object({
+        userId: z.string().optional(),
+        modifier: z.string().optional(),
+        language: z.string().optional(),
+        count: z.number().optional(),
+        subject: z.string().optional(),
+      })
     )
     .query(async ({ ctx, input }) => {
-      if (input) {
-        if (input.modifier || input.language || input.subject) {
-          const classrooms = await ctx.prisma.classroom.findMany({
-            orderBy: {
-              createdAt: "asc",
-            },
-            where: {
-              userId: input.userId || (ctx.session.user.id as string),
-              modifier: input.modifier ? input.modifier : undefined,
-              language: input.language ? input.language : undefined,
-              subjects: {
-                some: {
-                  id: input.subject ? input.subject : undefined,
-                },
-              },
-              // name: input.name ? input.name : undefined,
-            },
-            include: {
-              subjects: true,
-              _count: true,
-            },
-          });
-          return classrooms;
-        } else {
-          const classrooms = await ctx.prisma.classroom.findMany({
-            orderBy: {
-              createdAt: "asc",
-            },
-            where: {
-              userId: input.userId || (ctx.session.user.id as string),
-            },
-            include: {
-              subjects: true,
-              _count: true,
-            },
-          });
-          return classrooms;
-        }
-      } else {
-        const classrooms = await ctx.prisma.classroom.findMany({
-          where: {
-            userId: ctx.session.user.id as string,
-          },
-          include: {
-            subjects: true,
-            _count: true,
-          },
+      const userId = ctx.session.user.id;
+
+      if (!userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to access this resource",
         });
-        return classrooms;
       }
+
+      const classrooms = await ctx.prisma.classroom.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
+        where: {
+          userId: input.userId || userId,
+          modifier: input.modifier,
+          language: input.language,
+          subjects: {
+            some: {
+              id: input.subject,
+            },
+          },
+        },
+        include: {
+          subjects: true,
+          _count: true,
+        },
+      });
+      return classrooms;
     }),
   getClassroom: protectedProcedure
     .input(z.object({ classroomId: z.string() }))
@@ -379,27 +355,52 @@ export const classroomRouter = router({
     });
     return subjects;
   }),
-  browseClassroom: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id as string;
-    const allClassrooms = await ctx.prisma.classroom.findMany({
-      orderBy: {
-        createdAt: "asc",
-      },
-      include: {
-        subjects: true,
-        students: true,
-        teacher: true,
-        ratings: true,
-      },
-    });
+  browseClassroom: protectedProcedure
+    .input(
+      z.object({
+        modifier: z.string().optional(),
+        language: z.string().optional(),
+        count: z.number().optional(),
+        subject: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
 
-    const classroomsNotEnrolled = allClassrooms.filter(
-      (classroom) =>
-        classroom.students.findIndex((student) => student.id === userId) === -1
-    );
+      if (!userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to access this resource",
+        });
+      }
 
-    return classroomsNotEnrolled;
-  }),
+      const classrooms = await ctx.prisma.classroom.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
+        where: {
+          modifier: input.modifier,
+          language: input.language,
+          subjects: {
+            some: {
+              id: input.subject,
+            },
+          },
+        },
+        include: {
+          subjects: true,
+          students: true,
+          _count: true,
+        },
+      });
+      const classroomsNotEnrolled = classrooms.filter(
+        (classroom) =>
+          classroom.students.findIndex((student) => student.id === userId) ===
+          -1
+      );
+
+      return classroomsNotEnrolled;
+    }),
   rateClassroom: protectedProcedure
     .input(
       z.object({
@@ -443,6 +444,9 @@ export const classroomRouter = router({
     .input(z.object({ classroomId: z.string() }))
     .query(async ({ ctx, input }) => {
       const ratings = await ctx.prisma.rating.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           classroomId: input.classroomId,
         },

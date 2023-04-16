@@ -10,6 +10,9 @@ export const submissionRouter = router({
     .input(z.object({ assignmentId: z.string() }))
     .query(async ({ ctx, input }) => {
       const submission = await ctx.prisma.submission.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           assignmentId: input.assignmentId,
           studentId: ctx.session.user.id,
@@ -21,6 +24,9 @@ export const submissionRouter = router({
     .input(z.object({ studentId: z.string() }))
     .query(async ({ ctx, input }) => {
       const submission = await ctx.prisma.submission.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           studentId: input.studentId,
           // assignmentId: input.assignmentId,

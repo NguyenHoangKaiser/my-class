@@ -41,7 +41,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
 
   const classroomQuery = trpc.classroom.getClassroom.useQuery({ classroomId });
 
-  const classrooms = trpc.student.getClassrooms.useQuery();
+  const classrooms = trpc.student.getClassrooms.useQuery({});
 
   const unenrollMutation = trpc.classroom.unEnroll.useMutation();
 

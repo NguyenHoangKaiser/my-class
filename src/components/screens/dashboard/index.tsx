@@ -4,7 +4,7 @@ import { trpc } from "src/utils/trpc";
 import ClassroomsList from "../classrooms/ClassroomList";
 
 function DashboardScreen() {
-  const enrolledClassroomsQuery = trpc.student.getClassrooms.useQuery();
+  const enrolledClassroomsQuery = trpc.student.getClassrooms.useQuery({});
 
   const { data: classrooms, isLoading } = enrolledClassroomsQuery;
 

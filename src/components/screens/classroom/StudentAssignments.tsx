@@ -92,7 +92,7 @@ function StudentAssignments({
           pageSize: 5,
           hideOnSinglePage: true,
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1300 }}
       >
         <Column<DataType>
           title="#"
@@ -126,7 +126,7 @@ function StudentAssignments({
           // width={200}
         />
         <Column<DataType>
-          title="Subject"
+          title="Subject1"
           dataIndex="subject"
           key="subject"
           render={(subject) => {

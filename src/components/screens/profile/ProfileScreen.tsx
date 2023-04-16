@@ -97,22 +97,6 @@ function ProfileScreen({ userId, isProfile }: Props) {
     }
   }, [data?.user?.id, userData?.role, userId]);
 
-  // const totalGrade = classData?.reduce((acc, curr) => {
-  //   if (curr.grade < 0) {
-  //     return acc;
-  //   }
-  //   return acc + curr.grade;
-  // }, 0);
-
-  // const submissionHasGrade = userData?.submissions.filter(
-  //   (submission) => submission.grade !== null
-  // );
-
-  // const averageGrade =
-  //   submissionHasGrade && totalGrade
-  //     ? totalGrade / submissionHasGrade.length
-  //     : 0;
-
   return (
     <Row
       style={{
@@ -159,7 +143,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                   alt="User Avatar"
                   width={270}
                   height={270}
-                  className="mb-2 self-center rounded-full border border-gray-500"
+                  className="mb-2 self-center rounded-full ring-1 ring-gray-500 ring-offset-2 ring-offset-gray-500 dark:ring-white dark:ring-offset-white"
                   src={userData?.image ?? profileImage}
                 />
                 <Tag
@@ -200,7 +184,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                   <Typography.Text
                     type="secondary"
                     style={{
-                      fontSize: 20,
+                      fontSize: "1.25rem",
                     }}
                   >
                     {userData?.displayName}
@@ -226,24 +210,24 @@ function ProfileScreen({ userId, isProfile }: Props) {
                   >
                     <ClassIcon
                       style={{
-                        fontSize: 18,
+                        fontSize: "1.125rem",
                       }}
                     />
                     <Typography.Text
                       style={{
-                        fontSize: 16,
+                        fontSize: "1rem",
                       }}
                     >
                       {userData?._count?.classrooms ?? 0} classes &nbsp; •
                     </Typography.Text>
                     <TeamOutlined
                       style={{
-                        fontSize: 16,
+                        fontSize: "1rem",
                       }}
                     />
                     <Typography.Text
                       style={{
-                        fontSize: 16,
+                        fontSize: "1rem",
                       }}
                     >
                       {userData?.totalStudents ?? 0} students
@@ -258,7 +242,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                 >
                   <UserOutlined
                     style={{
-                      fontSize: 16,
+                      fontSize: "1rem",
                     }}
                   />
                   <Typography.Text>
@@ -274,11 +258,11 @@ function ProfileScreen({ userId, isProfile }: Props) {
                   size="middle"
                 >
                   {userData?.gender === "male" ? (
-                    <ManOutlined style={{ fontSize: 16 }} />
+                    <ManOutlined style={{ fontSize: "1rem" }} />
                   ) : userData?.gender === "female" ? (
-                    <WomanOutlined style={{ fontSize: 16 }} />
+                    <WomanOutlined style={{ fontSize: "1rem" }} />
                   ) : (
-                    <QuestionCircleOutlined style={{ fontSize: 16 }} />
+                    <QuestionCircleOutlined style={{ fontSize: "1rem" }} />
                   )}
                   <Typography.Text>
                     {firstLetterToUpperCase(
@@ -294,7 +278,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                 >
                   <ClockCircleOutlined
                     style={{
-                      fontSize: 16,
+                      fontSize: "1rem",
                     }}
                   />
                   <Typography.Text>
@@ -310,7 +294,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                 >
                   <CompassOutlined
                     style={{
-                      fontSize: 16,
+                      fontSize: "1rem",
                     }}
                   />
                   <Typography.Text>
@@ -325,7 +309,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                 >
                   <MailOutlined
                     style={{
-                      fontSize: 16,
+                      fontSize: "1rem",
                     }}
                   />
                   <Typography.Text>{userData?.email}</Typography.Text>
@@ -334,12 +318,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
             )}
           </Col>
           <Col className="px-5 " sm={24} md={15} lg={17} xl={18} xxl={18}>
-            <Tabs
-              size="large"
-              defaultActiveKey="1"
-              items={tabList}
-              // onChange={onChange}
-            />
+            <Tabs size="large" defaultActiveKey="1" items={tabList} />
           </Col>
         </Row>
         <EditProfileModal
@@ -360,88 +339,3 @@ function ProfileScreen({ userId, isProfile }: Props) {
 }
 
 export default ProfileScreen;
-
-{
-  /* <MainHeading title="Your Profile" />;
-
-{
-  isDisplayed && (
-    <Alert
-      message="Your profile has been successfully updated."
-      onClose={dismiss}
-    />
-  );
-}
-
-<section className="px-5">
-  <h2 className="mb-4 text-2xl">Settings</h2>
-  <form onSubmit={handleSubmit(handleProfileSubmit)} className="w-1/3">
-    <FormGroup
-      label="Display Name"
-      error={errors.displayName && "Display name is required"}
-      name="displayName"
-    >
-      <>
-        <input
-          id="displayName"
-          className="mb-2"
-          {...register("displayName", { required: true })}
-        />
-        <Button isLoading={updateDisplayName.isLoading} className="self-start">
-          Update
-        </Button>
-      </>
-    </FormGroup>
-  </form>
-  {userData?.role === "student" && (
-    <>
-      <div className="mt-6 w-1/3 flex-col gap-4">
-        <h3 className="mb-4 text-2xl">Your stats</h3>
-        <p>{`Total class currently enrolled in: ${
-          userData?.enrolledIn.length ?? 0
-        }`}</p>
-        <p>{`Total submissions: ${userData?.submissions.length ?? 0}`}</p>
-        <p>{`Average submission's grade: ${averageGrade}`}</p>
-      </div>
-      {classData && classData.length > 0 && (
-        <div className="mt-4 flex flex-col gap-4">
-          <div className="flex items-center gap-8">
-            <h3 className="text-2xl">Grade Table</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <Table
-              headers={[
-                "Class name",
-                "Total Assignments",
-                "Total Submission Graded",
-                "Grade",
-                "Actions",
-              ]}
-              rows={classData.map((classroom, index) => [
-                classroom.name,
-                classroom.assignments.length,
-                classroom.assignments.filter(
-                  (assignment) =>
-                    assignment.submissions.filter(
-                      (submission) => submission.grade !== null
-                    ).length > 0
-                ).length,
-                classroom.grade < 0 ? "N/A" : classroom.grade,
-                <LinkButton
-                  onClick={() => {
-                    router.push(`/classrooms/${classroom.id}`);
-                  }}
-                  key={index}
-                  className="self-start"
-                >
-                  View
-                </LinkButton>,
-              ])}
-            />
-          </div>
-        </div>
-      )}
-    </>
-  )}
-</section>; */
-}

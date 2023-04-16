@@ -23,7 +23,7 @@ const itemsTeacher: MenuItem[] = [
   {
     label: "Classrooms",
     key: "/classrooms",
-    icon: <ClassIcon style={{ fontSize: 17 }} />,
+    icon: <ClassIcon style={{ fontSize: "1.0625rem" }} />,
   },
   {
     label: "Profile",
@@ -36,7 +36,7 @@ const itemsStudent: MenuItem[] = [
   {
     label: "Classrooms",
     key: "/dashboard",
-    icon: <ClassIcon style={{ fontSize: 17 }} />,
+    icon: <ClassIcon style={{ fontSize: "1.0625rem" }} />,
   },
   {
     label: "Browse Classrooms",

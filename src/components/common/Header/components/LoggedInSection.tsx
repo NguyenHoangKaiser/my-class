@@ -56,7 +56,7 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
               id="user-menu-button"
               aria-expanded="false"
               aria-haspopup="true"
-              className="flex rounded-full bg-gray-800 text-sm hover:outline-none hover:ring-2 hover:ring-white hover:ring-offset-2 hover:ring-offset-gray-800"
+              className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
             >
               <span className="sr-only">Open user menu</span>
               <Image

@@ -100,7 +100,7 @@ function TeacherAssignments({
           pageSize: 5,
           hideOnSinglePage: true,
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1300 }}
       >
         <Column<DataType>
           title="#"

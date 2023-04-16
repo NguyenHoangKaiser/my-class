@@ -103,6 +103,9 @@ export const userRouter = router({
 
     // get all the submissions from the user
     const submission = await ctx.prisma.submission.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
       where: {
         studentId: userId,
       },

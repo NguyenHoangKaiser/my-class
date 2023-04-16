@@ -88,13 +88,13 @@ function ClassOverviewTab({ userId }: Props) {
                           <Tag
                             key={subject.id}
                             color={getTagColor(subject.name)}
-                            style={{ fontSize: 12 }}
+                            style={{ fontSize: "0.75rem" }}
                           >
                             {subject.name}
                           </Tag>
                         ))
                       ) : (
-                        <Tag color="red" style={{ fontSize: 12 }}>
+                        <Tag color="red" style={{ fontSize: "0.75rem" }}>
                           No subject provided
                         </Tag>
                       )}

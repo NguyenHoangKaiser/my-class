@@ -126,7 +126,7 @@ export const EditAssignmentScreen = ({
                 icon={<EditOutlined />}
                 style={{
                   display: "flex",
-                  fontSize: 16,
+                  fontSize: "1rem",
                   height: 40,
                   alignItems: "center",
                   gap: 10,
@@ -141,7 +141,7 @@ export const EditAssignmentScreen = ({
               color={isNotDue ? "green" : "red"}
               style={{
                 display: "flex",
-                fontSize: 16,
+                fontSize: "1rem",
                 height: 40,
                 alignItems: "center",
                 gap: 10,
@@ -155,7 +155,7 @@ export const EditAssignmentScreen = ({
             color={getAssignmentStatusColor(assignment?.status as string)}
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
             }}
@@ -166,7 +166,7 @@ export const EditAssignmentScreen = ({
             color="cyan"
             style={{
               display: "flex",
-              fontSize: 16,
+              fontSize: "1rem",
               height: 40,
               alignItems: "center",
               gap: 10,

@@ -1,31 +1,33 @@
+import { assertIsStudent } from "src/server/utils/assert";
 import { router, protectedProcedure } from "../trpc";
+import { z } from "zod";
 
 export const studentRouter = router({
-  getClassrooms: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-    // const user = await ctx.prisma.user.findUnique({
-    //   where: {
-    //     id: userId,
-    //   },
-    //   include: {
-    //     enrolledIn: true,
-    //   },
-    // });
-    // return user?.enrolledIn;
-    // find all classrooms that the user is enrolled in
-    const classrooms = await ctx.prisma.classroom.findMany({
-      where: {
-        students: {
-          some: {
-            id: userId,
+  getClassrooms: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      assertIsStudent(ctx);
+      const classrooms = await ctx.prisma.classroom.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
+        where: {
+          students: {
+            some: {
+              id: input.userId || userId,
+            },
           },
         },
-      },
-      include: {
-        subjects: true,
-        _count: true,
-      },
-    });
-    return classrooms;
-  }),
+        include: {
+          subjects: true,
+          _count: true,
+        },
+      });
+      return classrooms;
+    }),
 });

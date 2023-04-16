@@ -12,6 +12,7 @@ function ClassroomsList({
   classrooms,
   isLoading,
   emptyComponent,
+  cardNotClickable,
 }: {
   classrooms:
     | (Classroom & {
@@ -21,6 +22,7 @@ function ClassroomsList({
     | undefined;
   isLoading: boolean;
   emptyComponent: React.ReactNode;
+  cardNotClickable?: boolean;
 }) {
   const router = useRouter();
 
@@ -61,13 +63,16 @@ function ClassroomsList({
                 color={getClassroomStatusColor(item.status)}
               >
                 <Card
-                  onClick={() => router.push(`/classrooms/${item.id}`)}
+                  onClick={
+                    cardNotClickable
+                      ? () => router.push(`/classrooms/${item.id}/overview`)
+                      : () => router.push(`/classrooms/${item.id}`)
+                  }
                   hoverable
                   bordered={false}
                   cover={
                     <Banner
                       height={200}
-                      useAnt
                       width={"100%"}
                       style={{
                         objectFit: "cover",
@@ -75,7 +80,7 @@ function ClassroomsList({
                         borderTopRightRadius: 8,
                       }}
                       classroomId={item.id}
-                      alt=""
+                      alt="Classroom banner"
                     />
                   }
                   actions={[
@@ -117,13 +122,13 @@ function ClassroomsList({
                           <Tag
                             key={subject.id}
                             color={getTagColor(subject.name)}
-                            style={{ fontSize: 12 }}
+                            style={{ fontSize: "0.75rem" }}
                           >
                             {subject.name}
                           </Tag>
                         ))
                       ) : (
-                        <Tag color="red" style={{ fontSize: 12 }}>
+                        <Tag color="red" style={{ fontSize: "0.75rem" }}>
                           No subject provided
                         </Tag>
                       )}

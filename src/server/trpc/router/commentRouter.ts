@@ -33,6 +33,9 @@ export const commentRouter = router({
     .input(z.object({ submissionId: z.string() }))
     .query(async ({ ctx, input }) => {
       const comments = await ctx.prisma.comment.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
         where: {
           submissionId: input.submissionId,
         },

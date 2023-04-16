@@ -98,13 +98,13 @@ export const ClassroomOverviewScreen = ({
                     <Tag
                       key={subject.id}
                       color={getTagColor(subject.name)}
-                      style={{ fontSize: 12 }}
+                      style={{ fontSize: "0.75rem" }}
                     >
                       {subject.name}
                     </Tag>
                   ))
                 ) : (
-                  <Tag color="red" style={{ fontSize: 12 }}>
+                  <Tag color="red" style={{ fontSize: "0.75rem" }}>
                     No subject provided
                   </Tag>
                 )}
@@ -147,10 +147,9 @@ export const ClassroomOverviewScreen = ({
             <Skeleton.Image style={{ width: 500, height: 300 }} active />
           ) : (
             <Banner
-              useAnt
               width={500}
               height={300}
-              alt=""
+              alt="Classroom banner"
               classroomId={classroomId}
             />
           )}

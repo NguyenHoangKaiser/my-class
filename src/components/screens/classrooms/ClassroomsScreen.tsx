@@ -8,11 +8,11 @@ import EmptyStateClassrooms from "./EmptyStateClassrooms";
 
 function ClassroomsScreen() {
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState({
-    modifier: "",
-    language: "",
-    subject: "",
-  });
+  const [filter, setFilter] = useState<{
+    modifier?: string;
+    language?: string;
+    subject?: string;
+  }>({});
 
   const { data: subjects } = trpc.classroom.getSubjects.useQuery();
   const subjectsOptions = subjects?.map((subject) => ({

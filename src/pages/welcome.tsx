@@ -69,6 +69,7 @@ const Welcome: NextPage = () => {
             alignItems: "center",
             flexDirection: "column",
             padding: "2rem",
+            marginTop: "7rem",
           }}
           span={24}
         >

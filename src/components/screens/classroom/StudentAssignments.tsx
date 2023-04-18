@@ -126,7 +126,7 @@ function StudentAssignments({
           // width={200}
         />
         <Column<DataType>
-          title="Subject1"
+          title="Subject"
           dataIndex="subject"
           key="subject"
           render={(subject) => {

@@ -101,6 +101,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
     <Row
       style={{
         paddingTop: "2rem",
+        paddingBottom: "2rem",
       }}
     >
       <Col
@@ -211,23 +212,28 @@ function ProfileScreen({ userId, isProfile }: Props) {
                     <ClassIcon
                       style={{
                         fontSize: "1.125rem",
+                        color: "#1890ff",
                       }}
                     />
                     <Typography.Text
                       style={{
                         fontSize: "1rem",
+                        color: "blue",
                       }}
                     >
-                      {userData?._count?.classrooms ?? 0} classes &nbsp; •
+                      {userData?._count?.classrooms ?? 0} classes
                     </Typography.Text>
+                    <Typography.Text>•</Typography.Text>
                     <TeamOutlined
                       style={{
                         fontSize: "1rem",
+                        color: "#52c41a",
                       }}
                     />
                     <Typography.Text
                       style={{
                         fontSize: "1rem",
+                        color: "lime",
                       }}
                     >
                       {userData?.totalStudents ?? 0} students

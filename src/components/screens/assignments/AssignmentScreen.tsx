@@ -1,5 +1,5 @@
 import { CommentOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Drawer, Tag, Typography, Upload } from "antd";
+import { Button, Col, Drawer, Row, Tag, Typography, Upload } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -66,169 +66,169 @@ export const AssignmentScreen = ({
   const assignment = assignmentQuery.data;
 
   return (
-    <section>
-      <MainHeading
-        titleStyle="text-primary-700 dark:text-primary-500"
-        title="Assignment details"
-      >
-        <div className="flex gap-4">
-          <Tag
-            color={isNotDue ? "green" : "red"}
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-              gap: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            Due on {formattedDueDate}
-          </Tag>
-
-          <Tag
-            color={getAssignmentStatusColor(assignment?.status as string)}
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-            }}
-          >
-            {assignment?.status.toUpperCase()}
-          </Tag>
-          <Tag
-            color="cyan"
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-              gap: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            <CommentOutlined onClick={showDrawer} />
-          </Tag>
-        </div>
-        {submissionQuery.data && submissionQuery.data.length > 0 ? (
-          <Tag
-            color="green"
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-            }}
-          >
-            Submitted {submissionQuery.data.length} submissions
-          </Tag>
-        ) : (
-          <Tag
-            color="red"
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-            }}
-          >
-            Not submitted
-          </Tag>
-        )}
-      </MainHeading>
-
-      <div className="mx-10">
-        <section className="px-5">
-          <h2 className="mb-4 text-3xl">Title</h2>
-          <div className="markdown mb-5">
-            <Typography.Title level={4}>{assignment?.name}</Typography.Title>
+    <Row>
+      <Col span={24}>
+        <MainHeading
+          titleStyle="text-primary-700 dark:text-primary-500"
+          title="Assignment details"
+        >
+          <div className="flex gap-4">
+            <Tag
+              color={isNotDue ? "green" : "red"}
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+                gap: 10,
+                justifyContent: "space-between",
+              }}
+            >
+              Due on {formattedDueDate}
+            </Tag>
+            <Tag
+              color={getAssignmentStatusColor(assignment?.status as string)}
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+              }}
+            >
+              {assignment?.status.toUpperCase()}
+            </Tag>
+            <Tag
+              color="cyan"
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+                gap: 10,
+                justifyContent: "space-between",
+              }}
+            >
+              <CommentOutlined onClick={showDrawer} />
+            </Tag>
           </div>
-        </section>
-        <section className="px-5">
-          <h2 className="mb-4 text-3xl">Description</h2>
-          <div className="markdown mb-5 text-lg">
-            <ReactMarkdown>{`${assignment?.description}`}</ReactMarkdown>
-          </div>
-          <div className="mb-5">
-            <Typography.Title level={5}>
-              Created at:{" "}
-              <Typography.Text type="secondary">
-                {dayjs(assignment?.createdAt).format("DD-MM-YYYY hh:mm A")}
-              </Typography.Text>
-            </Typography.Title>
-          </div>
-          <div className="mb-5">
-            <Typography.Title level={5}>
-              Last updated at:{" "}
-              <Typography.Text type="success">
-                {dayjs(assignment?.updatedAt).format("DD-MM-YYYY hh:mm A")}
-              </Typography.Text>
-            </Typography.Title>
-          </div>
-          <div className="mb-5">
-            <EmptyStateWrapper
-              EmptyComponent={<EmptyStateAttachments />}
-              NonEmptyComponent={
-                <AttachmentsTable
-                  data={attachmentsQuery.data ?? []}
-                  isLoadingAttachment={attachmentsQuery.isFetching}
-                />
-              }
-              isLoading={attachmentsQuery.isLoading}
-              data={attachmentsQuery.data}
-            />
-          </div>
-          <div className="mb-5">
-            <EmptyStateWrapper
-              EmptyComponent={<EmptyStateAttachments isSubmissions />}
-              NonEmptyComponent={
-                <AttachmentsTable
-                  type="Submission"
-                  data={submissionQuery.data ?? []}
-                  isLoadingSubmission={submissionQuery.isFetching}
-                  onFilesDeleted={handleOnSubmissionDelete}
-                />
-              }
-              isLoading={submissionQuery.isLoading}
-              data={submissionQuery.data}
-            />
-          </div>
-          {assignment?.status !== "completed" && (
-            <div className="relative mb-8 flex items-start justify-between gap-4">
-              <Upload {...uploadProps}>
-                <Button
-                  style={{ alignItems: "center", display: "flex" }}
-                  icon={<UploadOutlined />}
-                >
-                  Select File
-                </Button>
-              </Upload>
-              <Button
-                type="primary"
-                style={{
-                  position: "absolute",
-                  left: 150,
-                  top: 0,
-                }}
-                onClick={handleUpload}
-                disabled={fileList.length === 0}
-                loading={uploading}
-              >
-                {uploading ? "Uploading" : "Start Upload"}
-              </Button>
-            </div>
+          {submissionQuery.data && submissionQuery.data.length > 0 ? (
+            <Tag
+              color="green"
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+              }}
+            >
+              Submitted {submissionQuery.data.length} submissions
+            </Tag>
+          ) : (
+            <Tag
+              color="red"
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+              }}
+            >
+              Not submitted
+            </Tag>
           )}
-        </section>
-      </div>
-      <Drawer
-        placement="right"
-        onClose={onClose}
-        open={open}
-        title="Assignment comments"
-      >
-        <CommentDrawer assignmentId={assignmentId} />
-      </Drawer>
-    </section>
+        </MainHeading>
+        <div className="mx-10">
+          <section className="px-5">
+            <h2 className="mb-4 text-3xl">Title</h2>
+            <div className="markdown mb-5">
+              <Typography.Title level={4}>{assignment?.name}</Typography.Title>
+            </div>
+          </section>
+          <section className="px-5">
+            <h2 className="mb-4 text-3xl">Description</h2>
+            <div className="markdown mb-5 text-lg">
+              <ReactMarkdown>{`${assignment?.description}`}</ReactMarkdown>
+            </div>
+            <div className="mb-5">
+              <Typography.Title level={5}>
+                Created at:{" "}
+                <Typography.Text type="secondary">
+                  {dayjs(assignment?.createdAt).format("DD-MM-YYYY hh:mm A")}
+                </Typography.Text>
+              </Typography.Title>
+            </div>
+            <div className="mb-5">
+              <Typography.Title level={5}>
+                Last updated at:{" "}
+                <Typography.Text type="success">
+                  {dayjs(assignment?.updatedAt).format("DD-MM-YYYY hh:mm A")}
+                </Typography.Text>
+              </Typography.Title>
+            </div>
+            <div className="mb-5">
+              <EmptyStateWrapper
+                EmptyComponent={<EmptyStateAttachments />}
+                NonEmptyComponent={
+                  <AttachmentsTable
+                    data={attachmentsQuery.data ?? []}
+                    isLoadingAttachment={attachmentsQuery.isFetching}
+                  />
+                }
+                isLoading={attachmentsQuery.isLoading}
+                data={attachmentsQuery.data}
+              />
+            </div>
+            <div className="mb-5">
+              <EmptyStateWrapper
+                EmptyComponent={<EmptyStateAttachments isSubmissions />}
+                NonEmptyComponent={
+                  <AttachmentsTable
+                    type="Submission"
+                    data={submissionQuery.data ?? []}
+                    isLoadingSubmission={submissionQuery.isFetching}
+                    onFilesDeleted={handleOnSubmissionDelete}
+                  />
+                }
+                isLoading={submissionQuery.isLoading}
+                data={submissionQuery.data}
+              />
+            </div>
+            {assignment?.status !== "completed" && (
+              <div className="relative mb-8 flex items-start justify-between gap-4">
+                <Upload {...uploadProps}>
+                  <Button
+                    style={{ alignItems: "center", display: "flex" }}
+                    icon={<UploadOutlined />}
+                  >
+                    Select File
+                  </Button>
+                </Upload>
+                <Button
+                  type="primary"
+                  style={{
+                    position: "absolute",
+                    left: 150,
+                    top: 0,
+                  }}
+                  onClick={handleUpload}
+                  disabled={fileList.length === 0}
+                  loading={uploading}
+                >
+                  {uploading ? "Uploading" : "Start Upload"}
+                </Button>
+              </div>
+            )}
+          </section>
+        </div>
+        <Drawer
+          placement="right"
+          onClose={onClose}
+          open={open}
+          title="Assignment comments"
+        >
+          <CommentDrawer assignmentId={assignmentId} />
+        </Drawer>
+      </Col>
+    </Row>
   );
 };

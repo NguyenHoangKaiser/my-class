@@ -100,7 +100,7 @@ function TeacherAssignments({
           pageSize: 5,
           hideOnSinglePage: true,
         }}
-        scroll={{ x: 1300 }}
+        scroll={{ x: 1200 }}
       >
         <Column<DataType>
           title="#"
@@ -150,7 +150,7 @@ function TeacherAssignments({
           }))}
           //@ts-expect-error - this is the filter
           onFilter={(value, record) => record.subject.indexOf(value) === 0}
-          // width={110}
+          width={180}
           // ellipsis
         />
         <Column<DataType>

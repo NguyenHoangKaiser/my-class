@@ -103,7 +103,9 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
               />
               <div className="ml-2 flex w-full flex-col">
                 <div className="flex w-full justify-between">
-                  <Typography.Text strong>{item.user.name}</Typography.Text>
+                  <Typography.Text strong>
+                    {item.user.displayName || item.user.name}
+                  </Typography.Text>
                   <Tag
                     color={
                       item.user.role === "teacher"

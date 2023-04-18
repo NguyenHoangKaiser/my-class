@@ -1,4 +1,3 @@
-import { assertIsStudent } from "src/server/utils/assert";
 import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 
@@ -11,7 +10,6 @@ export const studentRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
-      assertIsStudent(ctx);
       const classrooms = await ctx.prisma.classroom.findMany({
         orderBy: {
           createdAt: "asc",

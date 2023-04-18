@@ -20,15 +20,15 @@ import Image from "next/image";
 import teacherImage from "src/assets/teacher.svg";
 
 type Props = {
-  userId?: string | undefined;
+  userID?: string | undefined;
 };
 
-function StudentOverviewTab({ userId }: Props) {
-  const { data: classrooms, isLoading } = trpc.student.getClassrooms.useQuery({
-    userId,
-  });
-
+function StudentOverviewTab({ userID }: Props) {
   const router = useRouter();
+  const { userId } = router.query;
+  const { data: classrooms, isLoading } = trpc.student.getClassrooms.useQuery({
+    userId: userID || (userId as string | undefined),
+  });
   return (
     <Row>
       <Col span={24}>

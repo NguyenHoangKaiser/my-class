@@ -3,7 +3,6 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { trpc } from "src/utils/trpc";
 import {
-  Avatar,
   Badge,
   Button,
   Col,
@@ -19,6 +18,8 @@ import { Banner, MainHeading } from "src/components/common";
 import { firstLetterToUpperCase, getTagColor } from "src/utils/helper";
 import EnrollClassroomModal from "./EnrollClassroomModal";
 import Link from "next/link";
+import Image from "next/image";
+import profileImage from "src/assets/profile.jpeg";
 
 export const ClassroomOverviewScreen = ({
   classroomId,
@@ -66,7 +67,17 @@ export const ClassroomOverviewScreen = ({
             </Descriptions.Item>
             <Descriptions.Item label="Teacher">
               <Space>
-                <Avatar src={classroom?.teacher.image} />
+                {/* <Avatar src={classroom?.teacher.image} /> */}
+                <Image
+                  alt="User Avatar"
+                  width={36}
+                  height={36}
+                  className="rounded-full hover:cursor-pointer"
+                  onClick={() => {
+                    router.push(`/user/${classroom?.teacher.id}`);
+                  }}
+                  src={classroom?.teacher.image ?? profileImage}
+                />
                 <Link href={`/user/${classroom?.teacher.id}`}>
                   {classroom?.teacher.displayName || classroom?.teacher.name}
                 </Link>

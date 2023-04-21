@@ -109,7 +109,7 @@ function ClassroomsList({
                     }
                     description={
                       item.description !== "No description provided" ? (
-                        <ReactMarkdown className="line-clamp-2">{`${item.description}`}</ReactMarkdown>
+                        <ReactMarkdown className="prose line-clamp-2 dark:prose-invert">{`${item.description}`}</ReactMarkdown>
                       ) : (
                         <Tag color="red">No description provided</Tag>
                       )

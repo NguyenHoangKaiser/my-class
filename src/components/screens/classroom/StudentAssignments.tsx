@@ -92,7 +92,7 @@ function StudentAssignments({
           pageSize: 5,
           hideOnSinglePage: true,
         }}
-        scroll={{ x: 1300 }}
+        scroll={{ x: 1200 }}
       >
         <Column<DataType>
           title="#"
@@ -108,7 +108,7 @@ function StudentAssignments({
           fixed="left"
           sorter={(a, b) => a.name.localeCompare(b.name)}
           sortDirections={["ascend", "descend"]}
-          width={150}
+          width={250}
         />
         <Column<DataType>
           title="Due date"

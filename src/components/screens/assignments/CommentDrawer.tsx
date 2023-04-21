@@ -130,7 +130,7 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
                 </div>
               </div>
             </div>
-            <ReactMarkdown>{`${item.content}`}</ReactMarkdown>
+            <ReactMarkdown className="prose dark:prose-invert">{`${item.content}`}</ReactMarkdown>
           </List.Item>
         )}
       />

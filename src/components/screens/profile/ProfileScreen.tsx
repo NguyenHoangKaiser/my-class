@@ -191,7 +191,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
                     {userData?.displayName}
                   </Typography.Text>
                 )}
-                <ReactMarkdown className="my-2 text-lg text-black line-clamp-4 dark:text-white">{`${userData?.bio}`}</ReactMarkdown>
+                <ReactMarkdown className="prose my-2 line-clamp-4 dark:prose-invert">{`${userData?.bio}`}</ReactMarkdown>
                 <Button
                   block
                   type="default"

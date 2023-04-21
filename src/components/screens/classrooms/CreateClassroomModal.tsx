@@ -134,7 +134,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         {showDescPreview && (
           <Form.Item name="descPreview" label="Description preview">
             <div className="rounded-md border border-gray-300 p-2">
-              <ReactMarkdown>{`${descriptionMD}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${descriptionMD}`}</ReactMarkdown>
             </div>
           </Form.Item>
         )}
@@ -297,7 +297,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
         {showReqPreview && (
           <Form.Item name="reqPreview" label="Requirements preview">
             <div className="rounded-md border border-gray-300 p-2">
-              <ReactMarkdown>{`${requirementsMD}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${requirementsMD}`}</ReactMarkdown>
             </div>
           </Form.Item>
         )}

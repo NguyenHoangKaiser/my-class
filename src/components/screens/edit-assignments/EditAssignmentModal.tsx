@@ -1,10 +1,13 @@
-import { InboxOutlined } from "@ant-design/icons";
+import { EyeOutlined, InboxOutlined } from "@ant-design/icons";
 import type { Assignment, Classroom, Subject, User } from "@prisma/client";
 import type { DatePickerProps } from "antd";
+import { Space } from "antd";
 import { DatePicker, message, Select } from "antd";
 import { Form, Input, Modal } from "antd";
 import { trpc } from "src/utils/trpc";
 import dayjs from "dayjs";
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type EditAssignmentFormData = {
   name: string;
@@ -37,11 +40,11 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
 }) => {
   const [form] = Form.useForm<EditAssignmentFormData>();
   const editAssignment = trpc.assignment.updateAssignment.useMutation();
+  const descriptionMD = Form.useWatch("description", form);
 
-  const onFinish = async (
-    values: EditAssignmentFormData,
-    resetFields: () => void
-  ) => {
+  const [showDescPreview, setShowDescPreview] = useState(false);
+
+  const onFinish = async (values: EditAssignmentFormData) => {
     await editAssignment.mutateAsync(
       {
         assignmentId: assignment?.id as string,
@@ -55,7 +58,6 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
         onSuccess: () => {
           message.success("Assignment updated successfully!");
           refetch();
-          resetFields();
           onCancel();
         },
         onError: () => {
@@ -82,7 +84,7 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
       onCancel={onCancel}
       onOk={() => {
         form.validateFields().then((values) => {
-          onFinish(values, form.resetFields);
+          onFinish(values);
         });
       }}
     >
@@ -112,8 +114,15 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
         </Form.Item>
         <Form.Item
           name="description"
-          label="Description"
-          tooltip="Markdown styling is supported."
+          label={
+            <Space>
+              <span>Description</span>
+              <EyeOutlined
+                onClick={() => setShowDescPreview(!showDescPreview)}
+              />
+            </Space>
+          }
+          tooltip="Markdown is supported. Click the eye icon to preview the description."
           rules={[
             {
               required: true,
@@ -123,6 +132,13 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProp> = ({
         >
           <Input.TextArea placeholder="Description" showCount maxLength={200} />
         </Form.Item>
+        {showDescPreview && (
+          <Form.Item name="descPreview" label="Description preview">
+            <div className="rounded-md border border-gray-300 p-2">
+              <ReactMarkdown className="prose dark:prose-invert">{`${descriptionMD}`}</ReactMarkdown>
+            </div>
+          </Form.Item>
+        )}
         <Form.Item
           label="Subjects"
           name="subject"

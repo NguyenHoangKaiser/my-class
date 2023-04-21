@@ -15,7 +15,6 @@ import {
   Radio,
   Select,
   Space,
-  Tooltip,
   Upload,
 } from "antd";
 import React from "react";
@@ -89,7 +88,6 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
   });
 
   const onFinish = async (values: CreateClassroomFormData) => {
-    console.log(values);
     if (editClassroom.isLoading) {
       return;
     }
@@ -178,14 +176,13 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         </Form.Item>
         <Form.Item
           name="description"
+          tooltip="Markdown is supported. Click the eye icon to preview the description."
           label={
             <Space>
               <span>Description</span>
-              <Tooltip title="Markdown is supported. Click the eye icon to preview the description.">
-                <EyeOutlined
-                  onClick={() => setShowDescPreview(!showDescPreview)}
-                />
-              </Tooltip>
+              <EyeOutlined
+                onClick={() => setShowDescPreview(!showDescPreview)}
+              />
             </Space>
           }
         >
@@ -194,7 +191,7 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         {showDescPreview && (
           <Form.Item name="descPreview" label="Description preview">
             <div className="rounded-md border border-gray-300 p-2">
-              <ReactMarkdown>{`${descriptionMD}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${descriptionMD}`}</ReactMarkdown>
             </div>
           </Form.Item>
         )}
@@ -238,14 +235,7 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
             <Input.Password type="password" placeholder="Password" />
           </Form.Item>
         )}
-        <Form.Item
-          // initialValue={{
-          //   label: "English",
-          //   value: "en",
-          // }}
-          name="language"
-          label="Language"
-        >
+        <Form.Item name="language" label="Language">
           <Select
             disabled={disabled}
             options={[
@@ -354,14 +344,11 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         <Form.Item
           style={{ marginBottom: 40 }}
           name="requirements"
+          tooltip="Markdown is supported. Click the eye icon to preview the Requirements."
           label={
             <Space>
               <span>Requirements</span>
-              <Tooltip title="Markdown is supported. Click the eye icon to preview the Requirements.">
-                <EyeOutlined
-                  onClick={() => setShowReqPreview(!showReqPreview)}
-                />
-              </Tooltip>
+              <EyeOutlined onClick={() => setShowReqPreview(!showReqPreview)} />
             </Space>
           }
         >
@@ -370,7 +357,7 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
         {showReqPreview && (
           <Form.Item name="reqPreview" label="Requirements preview">
             <div className="rounded-md border border-gray-300 p-2">
-              <ReactMarkdown>{`${requirementsMD}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${requirementsMD}`}</ReactMarkdown>
             </div>
           </Form.Item>
         )}

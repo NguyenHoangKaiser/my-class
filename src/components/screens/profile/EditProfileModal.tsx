@@ -35,10 +35,7 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
 
   const [showBioPreview, setShowBioPreview] = useState(false);
 
-  const onFinish = async (
-    values: EditProfileFormData,
-    resetFields: () => void
-  ) => {
+  const onFinish = async (values: EditProfileFormData) => {
     await editProfile.mutateAsync(
       {
         ...values,
@@ -48,7 +45,6 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
         onSuccess: () => {
           message.success("Profile updated successfully!");
           refetch();
-          resetFields();
           onCancel();
         },
         onError: () => {
@@ -67,7 +63,7 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
       onCancel={onCancel}
       onOk={() => {
         form.validateFields().then((values) => {
-          onFinish(values, form.resetFields);
+          onFinish(values);
         });
       }}
     >
@@ -95,9 +91,7 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
           label={
             <Space>
               <span>Biography</span>
-              <EyeOutlined
-                onClick={() => setShowBioPreview(!setShowBioPreview)}
-              />
+              <EyeOutlined onClick={() => setShowBioPreview(!showBioPreview)} />
             </Space>
           }
           tooltip="Markdown is supported. Click the eye icon to preview the Biography."
@@ -107,7 +101,7 @@ const EditProfileModal: React.FC<EditProfileModalProp> = ({
         {showBioPreview && (
           <Form.Item name="bioPreview" label="Biography preview">
             <div className="rounded-md border border-gray-300 p-2">
-              <ReactMarkdown>{`${bioMD}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${bioMD}`}</ReactMarkdown>
             </div>
           </Form.Item>
         )}

@@ -210,8 +210,8 @@ export const EditAssignmentScreen = ({
         </section>
         <section className="px-5">
           <h2 className="mb-4 text-3xl">Description</h2>
-          <div className="markdown mb-5 text-lg">
-            <ReactMarkdown>{`${assignment?.description}`}</ReactMarkdown>
+          <div className="mb-5">
+            <ReactMarkdown className="prose dark:prose-invert">{`${assignment?.description}`}</ReactMarkdown>
           </div>
           <div className="mb-5">
             <Typography.Title level={5}>

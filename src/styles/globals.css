@@ -47,50 +47,6 @@ textarea {
   @apply border bg-white p-2 dark:bg-gray-500;
 }
 
-.markdown h1 {
-  @apply text-4xl font-bold;
-}
-
-.markdown h2 {
-  @apply text-3xl font-bold;
-}
-
-.markdown h3 {
-  @apply text-2xl font-bold;
-}
-
-.markdown h4 {
-  @apply text-xl font-bold;
-}
-
-.markdown h5 {
-  @apply text-lg font-bold;
-}
-
-.markdown ul {
-  list-style: square;
-}
-
-.markdown li {
-  margin-left: 16px;
-}
-
-.markdown a {
-  @apply link;
-}
-
-@layer base {
-  h1 {
-    @apply text-4xl font-bold;
-  }
-  h2 {
-    @apply text-3xl font-bold;
-  }
-  h3 {
-    @apply text-2xl font-bold;
-  }
-}
-
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

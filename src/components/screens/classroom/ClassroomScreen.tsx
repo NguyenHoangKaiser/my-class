@@ -141,7 +141,7 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
                 <Rate tooltips={desc} onChange={handleRate} defaultValue={0} />
               </span>
             }
-            title="Rate this classroom"
+            title="Your experience with this class ?"
           >
             <Space>
               <Typography.Text>Like this class ?</Typography.Text>

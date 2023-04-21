@@ -144,15 +144,15 @@ export const ClassroomOverviewScreen = ({
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item span={4} label="Description">
-              <ReactMarkdown className="text-base">{`${classroom?.description}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${classroom?.description}`}</ReactMarkdown>
             </Descriptions.Item>
             <Descriptions.Item span={4} label="Requirements">
-              <ReactMarkdown className="text-base">{`${classroom?.requirements}`}</ReactMarkdown>
+              <ReactMarkdown className="prose dark:prose-invert">{`${classroom?.requirements}`}</ReactMarkdown>
             </Descriptions.Item>
           </Descriptions>
         </Skeleton>
       </Col>
-      <Col span={8} className="pt-28 pl-2">
+      <Col span={8} className="pl-2 pt-28">
         <div className="flex flex-col items-center gap-5">
           {classroomQuery.isLoading ? (
             <Skeleton.Image style={{ width: 500, height: 300 }} active />

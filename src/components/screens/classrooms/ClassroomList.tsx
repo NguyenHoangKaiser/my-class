@@ -48,7 +48,7 @@ function ClassroomsList({
           loading={isLoading}
           renderItem={(item) => (
             <List.Item
-              // key={item.id}
+              key={item.id}
               style={{
                 width: 400,
                 marginBottom: 32,

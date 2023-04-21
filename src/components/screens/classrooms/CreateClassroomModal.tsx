@@ -1,9 +1,14 @@
-import { useState } from "react";
-import { EyeOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Col, message, Select, Space } from "antd";
+import { useEffect, useState } from "react";
+import {
+  EyeOutlined,
+  MinusCircleOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { Button, Checkbox, Col, message, Select, Space, Upload } from "antd";
 import { Form, Input, Modal, Radio } from "antd";
 import { trpc } from "src/utils/trpc";
 import ReactMarkdown from "react-markdown";
+import useAntUpload from "src/hooks/useAntUpload";
 
 type FormSubject = {
   name: string;
@@ -13,7 +18,7 @@ type FormSubject = {
 type CreateClassroomFormData = {
   name: string;
   description?: string;
-  language?: string;
+  language?: { label: string; value: string };
   subject: [];
   addSubjectCheck?: boolean;
   addSubject?: FormSubject[];
@@ -39,9 +44,26 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
   const modifierValue = Form.useWatch("modifier", form);
   const descriptionMD = Form.useWatch("description", form);
   const requirementsMD = Form.useWatch("requirements", form);
+  const addSubjectCheck = Form.useWatch("addSubjectCheck", form);
 
   const [showDescPreview, setShowDescPreview] = useState(false);
   const [showReqPreview, setShowReqPreview] = useState(false);
+  const [id, setId] = useState<string | undefined>(undefined);
+
+  const { handleUpload, uploadProps, fileList } = useAntUpload({
+    getUploadUrl: () => {
+      return Promise.resolve(`avatars/classroom/${id}`);
+    },
+    canUpdate: true,
+    successMessage: "Classroom banner updated successfully!",
+  });
+
+  useEffect(() => {
+    if (id && fileList.length === 1) {
+      handleUpload();
+      setId(undefined);
+    }
+  }, [fileList.length, handleUpload, id, refetch]);
 
   const onFinish = async (
     values: CreateClassroomFormData,
@@ -67,14 +89,17 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
       const formData = {
         name: values.name,
         description: values.description ?? "No description provided",
-        language: values.language ?? "en",
+        language: values.language?.value ?? "en",
         password: values.password ?? null,
         requirements: values.requirements ?? "No requirements provided",
         modifier: values.modifier,
         subject: subjectArr,
       };
 
-      await createClassroom.mutateAsync(formData);
+      await createClassroom.mutateAsync(formData).then((res) => {
+        setId(res.id);
+      });
+
       message.success("Classroom created successfully");
       resetFields();
       onCancel();
@@ -196,6 +221,16 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
           label="Subjects"
           name="subject"
           tooltip="The main subject of your class"
+          rules={
+            addSubjectCheck
+              ? []
+              : [
+                  {
+                    required: true,
+                    message: "Please select at least one subject",
+                  },
+                ]
+          }
         >
           <Select
             mode="multiple"
@@ -301,6 +336,22 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProp> = ({
             </div>
           </Form.Item>
         )}
+        <Form.Item
+          name="banner"
+          tooltip="The class banner will be displayed after you reload the page"
+          label="Class banner"
+        >
+          <div className="relative my-4 flex items-start justify-between gap-4">
+            <Upload {...uploadProps} maxCount={1} multiple={false}>
+              <Button
+                style={{ alignItems: "center", display: "flex" }}
+                icon={<UploadOutlined />}
+              >
+                Select File
+              </Button>
+            </Upload>
+          </div>
+        </Form.Item>
       </Form>
     </Modal>
   );

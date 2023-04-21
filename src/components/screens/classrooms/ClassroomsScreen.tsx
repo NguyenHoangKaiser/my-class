@@ -25,7 +25,6 @@ function ClassroomsScreen() {
     refetch: refetchClassrooms,
     isLoading,
   } = trpc.classroom.getClassroomsForTeacher.useQuery(filter);
-
   function openClassroomModal() {
     setOpen(true);
   }

@@ -102,7 +102,6 @@ export const classroomRouter = router({
         userId: z.string().optional(),
         modifier: z.string().optional(),
         language: z.string().optional(),
-        count: z.number().optional(),
         subject: z.string().optional(),
       })
     )

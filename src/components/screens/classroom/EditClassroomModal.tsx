@@ -361,7 +361,7 @@ const EditClassroomModal: React.FC<EditClassroomModalProp> = ({
             </div>
           </Form.Item>
         )}
-        <Form.Item name="banner" label="Class banner">
+        <Form.Item label="Class banner">
           <Banner
             width={"100%"}
             height={250}

@@ -133,7 +133,10 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
 
   return (
     <>
-      <MainHeading title={classroom?.name ?? "loading..."}>
+      <MainHeading
+        loading={classroomQuery.isLoading}
+        title={classroom?.name ?? "loading..."}
+      >
         {showUnenroll && !hasRated && (
           <Popover
             content={

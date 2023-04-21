@@ -1,7 +1,7 @@
 import React from "react";
-import type { ImageWithFallbackProps } from "./ImageWithFallback";
 import { supabase } from "src/libs/supabaseClient";
-import { Image, ImageProps } from "antd";
+import type { ImageProps } from "antd";
+import { Image } from "antd";
 
 type BannerProps = ImageProps & {
   classroomId: string;
@@ -37,5 +37,3 @@ function areEqual(prevProps: BannerProps, nextProps: BannerProps) {
 }
 
 export default React.memo(Banner, areEqual);
-
-// export default Banner;

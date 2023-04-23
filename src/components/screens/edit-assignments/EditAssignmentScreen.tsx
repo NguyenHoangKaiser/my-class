@@ -6,7 +6,6 @@ import {
 import {
   Button,
   Drawer,
-  message,
   Popconfirm,
   Skeleton,
   Space,
@@ -14,6 +13,7 @@ import {
   Tooltip,
   Typography,
   Upload,
+  message,
 } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
@@ -27,11 +27,12 @@ import { useIsClassroomAdmin } from "src/hooks";
 import useAntUpload from "src/hooks/useAntUpload";
 import { getAssignmentStatusColor } from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
+
 import CommentDrawer from "../assignments/CommentDrawer";
-import AttachmentsTable from "./AttachmentsTable";
 import EditAssignmentModal from "./EditAssignmentModal";
 import EditDateModal from "./EditDateModal";
 import EmptyStateAttachments from "./EmptyStateAttachments";
+import { AttachmentsTable } from "src/components/common/Table";
 
 export const EditAssignmentScreen = ({
   classroomId,
@@ -202,11 +203,7 @@ export const EditAssignmentScreen = ({
             okText="Yes"
             cancelText="No"
           >
-            <Typography.Link
-              href="#"
-              type="danger"
-              className="flex items-center gap-1"
-            >
+            <Typography.Link type="danger" className="flex items-center gap-1">
               <TrashIcon /> Delete
             </Typography.Link>
           </Popconfirm>

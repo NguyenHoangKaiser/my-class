@@ -17,9 +17,9 @@ import { EmptyStateWrapper, MainHeading } from "src/components/common";
 import useAntUpload from "src/hooks/useAntUpload";
 import { getAssignmentStatusColor } from "src/utils/constants";
 import { trpc } from "src/utils/trpc";
-import AttachmentsTable from "../edit-assignments/AttachmentsTable";
 import EmptyStateAttachments from "../edit-assignments/EmptyStateAttachments";
 import CommentDrawer from "./CommentDrawer";
+import { SubmissionsTable, AttachmentsTable } from "src/components/common/Table";
 
 export const AssignmentScreen = ({
   assignmentId,
@@ -269,8 +269,7 @@ export const AssignmentScreen = ({
                 <EmptyStateWrapper
                   EmptyComponent={<EmptyStateAttachments isSubmissions />}
                   NonEmptyComponent={
-                    <AttachmentsTable
-                      type="Submission"
+                    <SubmissionsTable
                       data={submissionQuery.data ?? []}
                       isLoadingSubmission={submissionQuery.isInitialLoading}
                       onFilesDeleted={handleOnSubmissionDelete}

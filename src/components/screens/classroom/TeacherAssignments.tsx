@@ -217,7 +217,6 @@ function TeacherAssignments({
                     gap: "1px",
                     wordBreak: "keep-all",
                   }}
-                  href="#"
                   type="danger"
                 >
                   <TrashIcon /> Delete

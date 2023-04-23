@@ -176,7 +176,6 @@ function ClassroomScreen({ classroomId }: { classroomId: string }) {
               cancelText="No"
             >
               <Typography.Link
-                href="#"
                 type="danger"
                 className="flex items-center gap-1"
               >

@@ -36,8 +36,6 @@ Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/ver
 - [x] Ability to show teacher profile for student users
 - [x] Check for when the user logged out but the session is still active
 - [x] Make the UI look better (I'm not a designer)
-- [ ] Add more pictures to the README
-- [ ] Ability to show submissions history for student users
 
 ## Major changes coming soon
 

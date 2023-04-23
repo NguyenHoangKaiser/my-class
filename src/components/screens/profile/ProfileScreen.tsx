@@ -44,7 +44,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
 
   // memoize the item of the tab
   const tabList = useMemo(() => {
-    if (data?.user?.id === userId) {
+    if (data?.user?.id === userId || !userId) {
       return [
         {
           key: "1",
@@ -60,7 +60,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
             ) : userData?.role === "student" ? (
               <StudentOverviewTab />
             ) : (
-              <Typography.Text>Please select a role first</Typography.Text>
+              <Skeleton.Input block active />
             ),
         },
         {
@@ -90,7 +90,7 @@ function ProfileScreen({ userId, isProfile }: Props) {
             ) : userData?.role === "student" ? (
               <StudentOverviewTab />
             ) : (
-              <Typography.Text>Please select a role first</Typography.Text>
+              <Skeleton.Input block active />
             ),
         },
       ] as TabsProps["items"];

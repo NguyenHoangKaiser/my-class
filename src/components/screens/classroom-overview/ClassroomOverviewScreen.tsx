@@ -35,9 +35,11 @@ export const ClassroomOverviewScreen = ({
 
   const classroom = classroomQuery.data;
 
+  // calculate rating filter out 0 rating
   const rating = classroom?.ratings
-    ? classroom.ratings.reduce((a, b) => a + b.amount, 0) /
-      classroom.ratings.length
+    ? classroom.ratings
+        .filter((rating) => rating.amount !== 0)
+        .reduce((a, b) => a + b.amount, 0) / classroom.ratings.length
     : 0;
 
   const isStudent = userQuery.data?.role === "student";
@@ -67,7 +69,6 @@ export const ClassroomOverviewScreen = ({
             </Descriptions.Item>
             <Descriptions.Item label="Teacher">
               <Space>
-                {/* <Avatar src={classroom?.teacher.image} /> */}
                 <Image
                   alt="User Avatar"
                   width={36}
@@ -164,7 +165,18 @@ export const ClassroomOverviewScreen = ({
               classroomId={classroomId}
             />
           )}
-          <Skeleton active loading={classroomQuery.isLoading}>
+          {classroomQuery.isLoading ? (
+            <Space
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Skeleton.Input active />
+              <Skeleton.Input active />
+            </Space>
+          ) : (
             <div className="mt-4 flex flex-col items-center gap-5">
               <Rate disabled allowHalf defaultValue={rating} />
               {isNotArchived && isStudent && !isEnrolled && (
@@ -200,7 +212,7 @@ export const ClassroomOverviewScreen = ({
                 </Button>
               )}
             </div>
-          </Skeleton>
+          )}
         </div>
       </Col>
       <EnrollClassroomModal

@@ -30,7 +30,6 @@ const useAntUpload = ({
           upsert: true,
         });
         if (data.error && data.error.message === "The resource was not found") {
-          console.error(data.error);
           return await supabase.storage.from("files").upload(url, file);
         }
         return data;

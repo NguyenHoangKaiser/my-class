@@ -266,7 +266,7 @@ function SubmissionsSection({ classroomId }: { classroomId: string }) {
         rowClassName={() => "editable-row"}
         columns={columns as ColumnTypes}
         dataSource={submissions}
-        loading={submissionsQuery.isFetching}
+        loading={submissionsQuery.isInitialLoading}
         bordered
         pagination={{
           pageSize: 5,

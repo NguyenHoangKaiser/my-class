@@ -78,6 +78,7 @@ function CommentDrawer({ assignmentId, submissionId }: Props) {
     <div className="flex flex-col gap-2 scroll-auto">
       <List
         bordered
+        loading={assignmentCommentQuery.isLoading}
         header={
           <Typography.Title level={5}>
             {assignmentCommentQuery.data?.length} Comments

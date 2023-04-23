@@ -8,6 +8,8 @@ import {
   Drawer,
   message,
   Popconfirm,
+  Skeleton,
+  Space,
   Tag,
   Tooltip,
   Typography,
@@ -116,14 +118,36 @@ export const EditAssignmentScreen = ({
         titleStyle="text-primary-700 dark:text-primary-500"
         title="Assignment details"
       >
-        <div className="flex gap-4">
-          {assignment?.status !== "completed" ? (
-            <Tooltip title="You can extend the due date of assignment">
+        {assignmentQuery.isLoading ? (
+          <Space size="middle">
+            <Skeleton.Input active size="large" />
+            <Skeleton.Input active size="large" />
+            <Skeleton.Button active size="large" />
+          </Space>
+        ) : (
+          <Space size="middle">
+            {assignment?.status !== "completed" ? (
+              <Tooltip title="You can extend the due date of assignment">
+                <Tag
+                  color={isNotDue ? "green" : "red"}
+                  onClick={() => toggleIsEditDueDateModalOpen()}
+                  icon={<EditOutlined />}
+                  style={{
+                    display: "flex",
+                    fontSize: "1rem",
+                    height: 40,
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                  }}
+                >
+                  Due on {formattedDueDate}
+                </Tag>
+              </Tooltip>
+            ) : (
               <Tag
                 color={isNotDue ? "green" : "red"}
-                className="cursor-pointer"
-                onClick={() => toggleIsEditDueDateModalOpen()}
-                icon={<EditOutlined />}
                 style={{
                   display: "flex",
                   fontSize: "1rem",
@@ -135,10 +159,21 @@ export const EditAssignmentScreen = ({
               >
                 Due on {formattedDueDate}
               </Tag>
-            </Tooltip>
-          ) : (
+            )}
             <Tag
-              color={isNotDue ? "green" : "red"}
+              color={getAssignmentStatusColor(assignment?.status as string)}
+              style={{
+                display: "flex",
+                fontSize: "1rem",
+                height: 40,
+                alignItems: "center",
+              }}
+            >
+              {assignment?.status.toUpperCase()}
+            </Tag>
+            <Tag
+              onClick={showDrawer}
+              color="cyan"
               style={{
                 display: "flex",
                 fontSize: "1rem",
@@ -146,37 +181,14 @@ export const EditAssignmentScreen = ({
                 alignItems: "center",
                 gap: 10,
                 justifyContent: "space-between",
+                cursor: "pointer",
               }}
             >
-              Due on {formattedDueDate}
+              <CommentOutlined />
             </Tag>
-          )}
-          <Tag
-            color={getAssignmentStatusColor(assignment?.status as string)}
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-            }}
-          >
-            {assignment?.status.toUpperCase()}
-          </Tag>
-          <Tag
-            color="cyan"
-            style={{
-              display: "flex",
-              fontSize: "1rem",
-              height: 40,
-              alignItems: "center",
-              gap: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            <CommentOutlined onClick={showDrawer} />
-          </Tag>
-        </div>
-        <div className="flex gap-3">
+          </Space>
+        )}
+        <Space size="large">
           <LinkButton onClick={() => setShowEditAssignmentModal(true)}>
             <PencilSquare /> Edit
           </LinkButton>
@@ -198,78 +210,120 @@ export const EditAssignmentScreen = ({
               <TrashIcon /> Delete
             </Typography.Link>
           </Popconfirm>
-        </div>
+        </Space>
       </MainHeading>
 
-      <div className="mx-10">
-        <section className="px-5">
-          <h2 className="mb-4 text-3xl">Title</h2>
-          <div className="markdown mb-5">
-            <Typography.Title level={4}>{assignment?.name}</Typography.Title>
-          </div>
-        </section>
-        <section className="px-5">
-          <h2 className="mb-4 text-3xl">Description</h2>
-          <div className="mb-5">
-            <ReactMarkdown className="prose dark:prose-invert">{`${assignment?.description}`}</ReactMarkdown>
-          </div>
-          <div className="mb-5">
-            <Typography.Title level={5}>
-              Created at:{" "}
-              <Typography.Text type="secondary">
-                {dayjs(assignment?.createdAt).format("DD-MM-YYYY hh:mm A")}
-              </Typography.Text>
-            </Typography.Title>
-          </div>
-          <div className="mb-5">
-            <Typography.Title level={5}>
-              Last updated at:{" "}
-              <Typography.Text type="success">
-                {dayjs(assignment?.updatedAt).format("DD-MM-YYYY hh:mm A")}
-              </Typography.Text>
-            </Typography.Title>
-          </div>
-          <div className="mb-5">
-            <EmptyStateWrapper
-              EmptyComponent={<EmptyStateAttachments />}
-              NonEmptyComponent={
-                <AttachmentsTable
-                  data={attachmentsQuery.data ?? []}
-                  onFilesDeleted={handleOnAttachmentDelete}
-                />
-              }
-              isLoading={attachmentsQuery.isLoading}
-              data={attachmentsQuery.data}
-            />
-          </div>
-          {assignment?.status !== "completed" && (
-            <div className="relative mb-8 flex items-start justify-between gap-4">
-              <Upload {...uploadProps}>
-                <Button
-                  style={{ alignItems: "center", display: "flex" }}
-                  icon={<UploadOutlined />}
-                >
-                  Select File
-                </Button>
-              </Upload>
-              {fileList.length > 0 && (
-                <Button
-                  type="primary"
-                  style={{
-                    position: "absolute",
-                    left: 150,
-                    top: 0,
-                  }}
-                  onClick={handleUpload}
-                  loading={uploading}
-                >
-                  {uploading ? "Uploading" : "Start Upload"}
-                </Button>
-              )}
+      {assignmentQuery.isLoading ? (
+        <div className="mx-10">
+          <Skeleton
+            paragraph={{
+              rows: 9,
+              width: [
+                "20%",
+                "50%",
+                "50%",
+                "20%",
+                "50%",
+                "50%",
+                "40%",
+                "40%",
+                "10%",
+              ],
+            }}
+            active
+            title={false}
+          />
+          <Skeleton.Input
+            active
+            size="large"
+            block
+            style={{
+              height: 100,
+              marginTop: 20,
+            }}
+          />
+        </div>
+      ) : (
+        <div className="mx-10">
+          <section className="px-5">
+            <h2 className="mb-4 text-3xl">Title</h2>
+            <div className="mb-5">
+              <Typography.Title level={4}>{assignment?.name}</Typography.Title>
             </div>
-          )}
-        </section>
-      </div>
+          </section>
+          <section className="px-5">
+            <h2 className="mb-4 text-3xl">Description</h2>
+            <div className="mb-5">
+              <ReactMarkdown className="prose dark:prose-invert">{`${assignment?.description}`}</ReactMarkdown>
+            </div>
+            <div className="mb-5">
+              <Typography.Title level={4}>
+                Created at:{" "}
+                <Typography.Text
+                  style={{
+                    fontSize: "1rem",
+                  }}
+                  type="secondary"
+                >
+                  {dayjs(assignment?.createdAt).format("DD-MM-YYYY hh:mm A")}
+                </Typography.Text>
+              </Typography.Title>
+            </div>
+            <div className="mb-5">
+              <Typography.Title level={4}>
+                Last updated at:{" "}
+                <Typography.Text
+                  style={{
+                    fontSize: "1rem",
+                  }}
+                  type="success"
+                >
+                  {dayjs(assignment?.updatedAt).format("DD-MM-YYYY hh:mm A")}
+                </Typography.Text>
+              </Typography.Title>
+            </div>
+            <div className="mb-5">
+              <EmptyStateWrapper
+                EmptyComponent={<EmptyStateAttachments />}
+                NonEmptyComponent={
+                  <AttachmentsTable
+                    data={attachmentsQuery.data ?? []}
+                    onFilesDeleted={handleOnAttachmentDelete}
+                  />
+                }
+                isLoading={attachmentsQuery.isInitialLoading}
+                data={attachmentsQuery.data}
+              />
+            </div>
+            {assignment?.status !== "completed" && (
+              <div className="relative mb-8 flex items-start justify-between gap-4">
+                <Upload {...uploadProps}>
+                  <Button
+                    style={{ alignItems: "center", display: "flex" }}
+                    icon={<UploadOutlined />}
+                  >
+                    Select File
+                  </Button>
+                </Upload>
+                {fileList.length > 0 && (
+                  <Button
+                    type="primary"
+                    style={{
+                      position: "absolute",
+                      left: 150,
+                      top: 0,
+                    }}
+                    onClick={handleUpload}
+                    loading={uploading}
+                  >
+                    {uploading ? "Uploading" : "Start Upload"}
+                  </Button>
+                )}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
       <Drawer
         placement="right"

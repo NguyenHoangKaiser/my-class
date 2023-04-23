@@ -17,17 +17,8 @@ export const trpc = createTRPCNext<AppRouter>({
       transformer: superjson,
       queryClientConfig: {
         defaultOptions: {
-          queries: {
-            // //TODO: remove this when in production
-            // staleTime: 1000 * 60 * 3, // 1 minutes
-            // refetchOnWindowFocus: false,
-            // refetchOnMount: false,
-          },
-          mutations: {
-            onError(error, variables, context) {
-              console.error("Mutation error", error, variables, context);
-            },
-          },
+          queries: {},
+          mutations: {},
         },
       },
       links: [

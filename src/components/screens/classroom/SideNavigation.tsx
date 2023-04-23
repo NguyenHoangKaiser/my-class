@@ -46,14 +46,14 @@ function SideNavigation() {
   const [selectedTab, setSelectedTab] = useAtom(tabAtom);
   const session = useSession();
 
-  if (!session.data) return null;
+  // if (!session.data) return null;
 
   const links =
-    session.data.user?.role === Roles.Teacher ? teacherLinks : studentLinks;
+    session.data?.user?.role === Roles.Student ? studentLinks : teacherLinks;
 
   return (
     <aside className="w-52 flex-none" aria-label="Sidebar">
-      <div className="overflow-y-auto py-4 px-3">
+      <div className="overflow-y-auto px-3 py-4">
         <Tabs
           tabPosition="left"
           activeKey={selectedTab}

@@ -100,8 +100,6 @@ function Students({ students }: { students: DataType[] }) {
               ) : null}
             </Tag>
           )}
-          // filters={UserGendersFilterOptions}
-          // onFilter={(value, record) => record.gender?.indexOf(value) === 0}
         />
         <Column<DataType>
           title="Rated"
@@ -139,33 +137,3 @@ function Students({ students }: { students: DataType[] }) {
 }
 
 export default Students;
-
-{
-  /* <Table
-  headers={["Name", "Grade", "Actions"]}
-  rows={students.map((student, index) => [
-    <div key={`${student.id}_${index}`} className="flex items-center gap-2">
-      <Image
-        width="30"
-        height="30"
-        referrerPolicy="no-referrer"
-        className="h-8 w-8 rounded-full"
-        src={student.image ?? profileImage}
-        alt=""
-      />{" "}
-      {student.name}
-    </div>,
-    "65% (D) (Not Graded Yet)",
-    (
-      <div className="flex gap-4">
-        <Link
-          href={`/students/${student.id}`}
-          className="link flex items-center gap-1"
-        >
-          <EyeIcon /> View
-        </Link>
-      </div>
-    ) as ReactNode,
-  ])}
-/>; */
-}

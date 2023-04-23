@@ -29,13 +29,15 @@ function LoggedInSection({ image }: { image: string | undefined | null }) {
   if (user) {
     displayName = user.displayName ?? user.name ?? "";
   }
-  const handleMenuClick: MenuProps["onClick"] = (e) => {
+  const handleMenuClick: MenuProps["onClick"] = async (e) => {
     switch (e.key) {
       case "1":
         router.push("/profile");
         break;
       case "2":
-        return signOut();
+        const data = await signOut({ redirect: false, callbackUrl: "/" });
+        router.push(data.url);
+        break;
       default:
         break;
     }

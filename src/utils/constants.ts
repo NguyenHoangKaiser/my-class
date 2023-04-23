@@ -138,7 +138,7 @@ export const UserGenders = {
 };
 
 export const UserGendersColor = {
-  male: "blue",
+  male: "cyan",
   female: "pink",
   other: "purple",
   default: "default",

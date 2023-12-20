@@ -5,11 +5,11 @@ export const userRouter = router({
   editProfile: protectedProcedure
     .input(
       z.object({
-        displayName: z.string(),
-        bio: z.string(),
-        location: z.string(),
-        age: z.number().int(),
-        gender: z.string(),
+        displayName: z.string().nullable(),
+        bio: z.string().nullable(),
+        location: z.string().nullable(),
+        age: z.number().int().nullable(),
+        gender: z.string().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
